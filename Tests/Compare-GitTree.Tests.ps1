@@ -12,7 +12,7 @@
 
 & (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-GitAutomationCoreTest.ps1' -Resolve)
 
-[LibGit2Sharp.TreeChanges]$diffOutput = $null
+$diffOutput = $null
 $repoRoot = $null
 
 function Init {
