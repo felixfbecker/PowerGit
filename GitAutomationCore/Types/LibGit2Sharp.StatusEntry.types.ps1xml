@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<Types>
+    <Type>
+        <Name>LibGit2Sharp.StatusEntry</Name>
+        <Members>
+            <ScriptProperty>
+                <Name>IsStaged</Name>
+                <GetScriptBlock>
+                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::NewInIndex) -or `
+                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::ModifiedInIndex) -or `
+                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::DeletedFromIndex) -or `
+                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::RenamedInIndex) -or `
+                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::TypeChangeInIndex)
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>IsUnchanged</Name>
+                <GetScriptBlock>
+                    return $this.State -eq [LibGit2Sharp.FileStatus]::Unaltered
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>IsIgnored</Name>
+                <GetScriptBlock>
+                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::Ignored)
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>IsUntracked</Name>
+                <GetScriptBlock>
+                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::NewInWorkdir)
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>IsAdded</Name>
+                <GetScriptBlock>
+                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::NewInIndex) -or `
+                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::NewInWorkdir)
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>IsModified</Name>
+                <GetScriptBlock>
+                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::ModifiedInIndex) -or `
+                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::ModifiedInWorkdir)
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>IsDeleted</Name>
+                <GetScriptBlock>
+                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::DeletedFromIndex) -or `
+                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::DeletedFromWorkdir)
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>IsRenamed</Name>
+                <GetScriptBlock>
+                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::RenamedInIndex) -or `
+                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::RenamedInWorkdir)
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>IsTypeChanged</Name>
+                <GetScriptBlock>
+                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::TypeChangedInIndex) -or `
+                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::TypeChangedInWorkdir)
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>IsUnreadable</Name>
+                <GetScriptBlock>
+                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::Unreadable)
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>IsConflicted</Name>
+                <GetScriptBlock>
+                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::Conflicted)
+                </GetScriptBlock>
+            </ScriptProperty>
+        </Members>
+    </Type>
+</Types>

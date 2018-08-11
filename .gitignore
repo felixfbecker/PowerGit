@@ -1,0 +1,20 @@
+*.pdb
+packages/
+Carbon/
+Silk/
+Pester/
+Modules
+get-libgit2.org/
+*.suo
+**/bin/**
+**/obj/**
+Output/
+**/*.user
+.output
+.vs
+
+# TODO figure out where these come from
+/GitAutomationCore/Assemblies
+/Assemblies
+/out
+/fubar

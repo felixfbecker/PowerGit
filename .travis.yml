@@ -1,0 +1,59 @@
+language: csharp
+dotnet: '2.0.0'
+mono: none
+
+os: linux
+dist: trusty
+# VM-based builds turned out to be faster
+sudo: required
+addons:
+  apt:
+    sources:
+      - sourceline: deb [arch=amd64] https://packages.microsoft.com/ubuntu/14.04/prod trusty main
+        key_url: https://packages.microsoft.com/keys/microsoft.asc
+    packages:
+      - powershell
+
+before_script:
+  - git config --global user.name "Test user"
+  - git config --global user.email "test@test.com"
+
+install:
+  - cd Source/GitAutomationCore && dotnet restore && cd ../..
+  - pwsh -c '&{
+      $ErrorActionPreference = "Stop";
+      Install-Module -Force -Scope CurrentUser Pester;
+      Install-Module -Force -Scope CurrentUser PSCodeCovIo;
+    }'
+
+script:
+  - cd Source/GitAutomationCore && dotnet build && dotnet publish -o ../../GitAutomationCore/Assemblies && cd ../..
+  - pwsh -c '&{
+      $ErrorActionPreference = "Stop";
+      $res = Invoke-Pester -PassThru -CodeCoverage .;
+      Export-CodeCovIoJson -CodeCoverage $res.CodeCoverage -RepoRoot $pwd -Path coverage.json;
+      if ($res.FailedCount -gt 0) {
+        throw "$($res.FailedCount) tests failed.";
+      }
+    }'
+  - bash <(curl -s https://codecov.io/bash) -f coverage.json
+
+matrix:
+  include:
+    - env: task=lint
+      install:
+        - pwsh -c 'Install-Module -Force -Scope CurrentUser PSScriptAnalyzer -RequiredVersion "1.17.1"'
+      script:
+        - pwsh -c 'Invoke-ScriptAnalyzer -Path . -Recurse -EnableExit | Format-List -Property RuleName,Message,ScriptPath,Line,Column'
+    - env: task=test
+    - os: osx
+      env: task=test
+      osx_image: xcode9.1
+      cache:
+        directories:
+          - $HOME/Library/Caches/Homebrew
+      before_install:
+        - brew update
+        - brew tap caskroom/cask
+        - brew cask install powershell
+
