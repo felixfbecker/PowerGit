@@ -30,6 +30,7 @@ script:
   - cd Source/GitAutomationCore && dotnet build && dotnet publish -o ../../GitAutomationCore/Assemblies && cd ../..
   - pwsh -c '&{
       $ErrorActionPreference = "Stop";
+      $ProgressPreference = "SilentlyContinue";
       $res = Invoke-Pester -PassThru -CodeCoverage .;
       Export-CodeCovIoJson -CodeCoverage $res.CodeCoverage -RepoRoot $pwd -Path coverage.json;
       if ($res.FailedCount -gt 0) {
