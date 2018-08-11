@@ -1,0 +1,20 @@
+queue: 'Hosted Linux Preview'
+
+steps:
+  - displayName: Build assemblies
+    script: |
+      cd Source/GitAutomationCore
+      dotnet publish -o ../../GitAutomationCore/Assemblies
+      cd ../..
+  - displayName: Test
+    powershell: |
+      Install-Module -Force -Scope CurrentUser Pester
+      Install-Module -Force -Scope CurrentUser PSCodeCovIo
+      $ProgressPreference = "SilentlyContinue"
+      $res = Invoke-Pester -PassThru -CodeCoverage .
+      Export-CodeCovIoJson -CodeCoverage $res.CodeCoverage -RepoRoot $pwd -Path coverage.json
+      if ($res.FailedCount -gt 0) {
+        throw "$($res.FailedCount) tests failed."
+      }
+  - displayName: Upload coverage
+    bash: bash <(curl -s https://codecov.io/bash) -f coverage.json
