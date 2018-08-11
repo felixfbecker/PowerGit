@@ -5,8 +5,7 @@ steps:
     cd Source/GitAutomationCore
     dotnet publish -o ../../GitAutomationCore/Assemblies
     cd ../..
-- displayName: Test
-  powershell: |
+- powershell: |
     Install-Module -Force -Scope CurrentUser Pester
     Install-Module -Force -Scope CurrentUser PSCodeCovIo
     $ProgressPreference = "SilentlyContinue"
@@ -15,5 +14,4 @@ steps:
     if ($res.FailedCount -gt 0) {
       throw "$($res.FailedCount) tests failed."
     }
-- displayName: Upload coverage
-  bash: bash <(curl -s https://codecov.io/bash) -f coverage.json
+- bash: bash <(curl -s https://codecov.io/bash) -f coverage.json
