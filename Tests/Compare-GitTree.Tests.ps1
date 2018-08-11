@@ -12,8 +12,8 @@
 
 & (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-GitAutomationCoreTest.ps1' -Resolve)
 
-$diffOutput = $null
-$repoRoot = $null
+[LibGit2Sharp.TreeChanges]$diffOutput = $null
+[string]$repoRoot = $null
 
 function Init {
     $Global:Error.Clear()
