@@ -34,6 +34,7 @@ function Compare-GitTree {
 
     Demonstrates how to get the diff between the commit tagged with `2.0` and the older commit tagged with `1.0` in the repository located at `C:\build\repo`.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '')]
     [CmdletBinding(DefaultParameterSetName = 'RepositoryRoot')]
     [OutputType([LibGit2Sharp.TreeChanges])]
     param(
@@ -82,7 +83,8 @@ function Compare-GitTree {
             return
         }
 
-        return [GitAutomationCore.Diff]::GetTreeChanges($repo, $oldCommit, $newCommit)
+        # use `,` to prevent unwrapping of enumerable TreeChanges type
+        return , [GitAutomationCore.Diff]::GetTreeChanges($repo, $oldCommit, $newCommit)
     } finally {
         if (-not $RepositoryObject) {
             Invoke-Command -NoNewScope -ScriptBlock {
