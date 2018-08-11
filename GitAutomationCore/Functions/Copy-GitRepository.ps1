@@ -79,30 +79,32 @@ function Copy-GitRepository {
             return $true
         }
 
-        $numBytes = $TransferProgress.ReceivedBytes
-        if ( $numBytes -lt 1kb ) {
-            $unit = 'B'
-        } elseif ( $numBytes -lt 1mb ) {
-            $unit = 'KB'
-            $numBytes = $numBytes / 1kb
-        } elseif ( $numBytes -lt 1gb ) {
-            $unit = 'MB'
-            $numBytes = $numBytes / 1mb
-        } elseif ( $numBytes -lt 1tb ) {
-            $unit = 'GB'
-            $numBytes = $numBytes / 1gb
-        } elseif ( $numBytes -lt 1pb ) {
-            $unit = 'TB'
-            $numBytes = $numBytes / 1tb
-        } else {
-            $unit = 'PB'
-            $numBytes = $numBytes / 1pb
-        }
+        if ($ProgressPreference -ne 'SilentlyContinue') {
+            $numBytes = $TransferProgress.ReceivedBytes
+            if ( $numBytes -lt 1kb ) {
+                $unit = 'B'
+            } elseif ( $numBytes -lt 1mb ) {
+                $unit = 'KB'
+                $numBytes = $numBytes / 1kb
+            } elseif ( $numBytes -lt 1gb ) {
+                $unit = 'MB'
+                $numBytes = $numBytes / 1mb
+            } elseif ( $numBytes -lt 1tb ) {
+                $unit = 'GB'
+                $numBytes = $numBytes / 1gb
+            } elseif ( $numBytes -lt 1pb ) {
+                $unit = 'TB'
+                $numBytes = $numBytes / 1tb
+            } else {
+                $unit = 'PB'
+                $numBytes = $numBytes / 1pb
+            }
 
-        Write-Progress -Activity ('Cloning {0} -> {1}' -f $Source, $DestinationPath) `
-            -Status ('{0}/{1} objects, {2:n0} {3}' -f $TransferProgress.ReceivedObjects, $TransferProgress.TotalObjects, $numBytes, $unit) `
-            -PercentComplete (($TransferProgress.ReceivedObjects / $TransferProgress.TotalObjects) * 100)
-        Set-Variable -Name 'lastUpdated' -Value (Get-Date) -Scope 1
+            Write-Progress -Activity ('Cloning {0} -> {1}' -f $Source, $DestinationPath) `
+                -Status ('{0}/{1} objects, {2:n0} {3}' -f $TransferProgress.ReceivedObjects, $TransferProgress.TotalObjects, $numBytes, $unit) `
+                -PercentComplete (($TransferProgress.ReceivedObjects / $TransferProgress.TotalObjects) * 100)
+            Set-Variable -Name 'lastUpdated' -Value (Get-Date) -Scope 1
+        }
         return (-not $cancelClone)
     }
 
