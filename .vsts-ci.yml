@@ -1,33 +1,14 @@
 
 phases:
-  - phase: Linux
-    queue: 'Hosted Linux Preview'
-    steps: &steps
-      - script: |
-          git config --global user.name "GIVEN_NAME SURNAME"
-          git config --global user.email "email@example.com"
-      - script: |
-          cd Source/GitAutomationCore
-          dotnet publish -o ../../GitAutomationCore/Assemblies
-          cd ../..
-      - powershell: |
-          Install-Module -Force -Scope CurrentUser Pester
-          Install-Module -Force -Scope CurrentUser PSCodeCovIo
-          $ProgressPreference = "SilentlyContinue"
-          $res = Invoke-Pester -PassThru -CodeCoverage . -OutputFile testresults.xml -OutputFormat NUnitXML
-          Export-CodeCovIoJson -CodeCoverage $res.CodeCoverage -RepoRoot $pwd -Path coverage.json
-          if ($res.FailedCount -gt 0) {
-            throw "$($res.FailedCount) tests failed."
-          }
-      - task: PublishTestResults@2
-        inputs:
-          testRunner: nUnit
-          testResultsFiles: 'testresults.xml'
-        condition: always()
-      - bash: bash <(curl -s https://codecov.io/bash) -f coverage.json
-  - phase: macOS
-    queue: 'Hosted macOS Preview'
-    steps: *steps
-  - phase: Windows
-    queue: 'Hosted VS2017'
-    steps: *steps
+  - template: .vsts/steps.yml
+    parameters:
+      name: Linux
+      queue: 'Hosted Linux Preview'
+  - template: .vsts/steps.yml
+    parameters:
+      name: macOS
+      queue: 'Hosted macOS Preview'
+  - template: .vsts/steps.yml
+    parameters:
+      name: Windows
+      queue: 'Hosted VS2017'
