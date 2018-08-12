@@ -9,10 +9,12 @@ phases:
       - script: |
           git config --global user.name "GIVEN_NAME SURNAME"
           git config --global user.email "email@example.com"
+        displayName: Configure git user
       - script: |
           cd Source/GitAutomationCore
           dotnet publish -o ../../GitAutomationCore/Assemblies
           cd ../..
+        displayName: Build assemblies
       - powershell: |
           Install-Module -Force -Scope CurrentUser Pester
           Install-Module -Force -Scope CurrentUser PSCodeCovIo
@@ -22,10 +24,13 @@ phases:
           if ($res.FailedCount -gt 0) {
             throw "$($res.FailedCount) tests failed."
           }
+        displayName: Run tests
       - task: PublishTestResults@2
         inputs:
           testRunner: nUnit
           testResultsFiles: 'testresults.xml'
           testRunTitle: ${{ parameters.name }}
         condition: always()
+        displayName: Publish test results
       - bash: bash <(curl -s https://codecov.io/bash) -f coverage.json
+        displayName: Upload coverage to CodeCov
