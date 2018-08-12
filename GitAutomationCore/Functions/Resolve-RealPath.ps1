@@ -15,7 +15,7 @@ function Resolve-RealPath {
         [string] $Path
     )
 
-    if ($IsWindows) {
+    if ($PSVersionTable.PSVersion.Major -lt 6 -or $IsWindows) {
         return [IO.Path]::GetFullPath($Path)
     }
 
