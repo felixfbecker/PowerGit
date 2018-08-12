@@ -41,6 +41,7 @@ function Send-GitBranch {
 
     Demonstrates how to push changes to a remote repository.
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '')]
     [CmdletBinding()]
     [OutputType([GitAutomationCore.SendBranchResult])]
     param(
@@ -65,7 +66,7 @@ function Send-GitBranch {
         $mergeStrategyParam['MergeStrategy'] = $MergeStrategy
     }
 
-    $result = New-Object -TypeName 'GitAutomationCore.SendBranchResult'
+    $result = [GitAutomationCore.SendBranchResult]::new()
 
     try {
         $tryNum = 0
@@ -87,6 +88,7 @@ function Send-GitBranch {
         }
         while ( $tryNum++ -lt $Retry -and $pushResult -ne [GitAutomationCore.PushResult]::Ok )
     } finally {
-        Write-Output -InputObject $result -NoEnumerate
+        # use `,` to prevent enumeration
+        , $result
     }
 }
