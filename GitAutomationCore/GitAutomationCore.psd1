@@ -16,7 +16,7 @@
     RootModule = 'GitAutomationCore.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.11.0'
+    ModuleVersion = '0.0.1'
 
     # ID used to uniquely identify this module
     GUID = '474f1ce8-98a3-49d2-8c7e-c3bbd5c0fcba'
@@ -25,17 +25,13 @@
     Author = 'Felix Becker'
 
     # Company or vendor of this module
-    CompanyName = ''
+    # CompanyName = ''
 
     # Copyright statement for this module
     Copyright = 'Copyright 2016 - 2018 WebMD Health Services, Copyright 2018 Felix Becker'
 
     # Description of the functionality provided by this module
-    Description = @'
-    GitAutomationCore is a PowerShell module for working with Git repositories. You can use it to create, clone, query, push to, pull from, and commit to Git repositories.
-
-    This module uses [LibGit2Sharp](https://github.com/libgit2/libgit2sharp), the .NET wrapper of [libgit2](https://libgit2.github.com/), "a portable, pure C implementation of... Git", which allows you to call Git via API instead using the Git command line interface.
-'@
+    Description = 'git for PowerShell through LibGit2Sharp. Uses the full potential of the object pipeline while providing familiar git output formatting. Does not require git to be installed.'
 
     # Minimum version of the Windows PowerShell engine required by this module
     # PowerShellVersion = ''
