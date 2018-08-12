@@ -10,6 +10,9 @@ phases:
           git config --global user.name "GIVEN_NAME SURNAME"
           git config --global user.email "email@example.com"
         displayName: Configure git user
+      - powershell: |
+          Install-Module -Force -Scope CurrentUser PSScriptAnalyzer
+          Invoke-ScriptAnalyzer -Path . -Recurse | Format-List -Property RuleName,Message,ScriptPath,Line,Column
       - script: |
           cd Source/GitAutomationCore
           dotnet publish -o ../../GitAutomationCore/Assemblies
