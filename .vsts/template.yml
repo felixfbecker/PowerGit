@@ -39,5 +39,6 @@ phases:
         inputs:
           codeCoverageTool: JaCoCo
           summaryFileLocation: $(System.DefaultWorkingDirectory)/coverage.xml
+        displayName: Upload coverage to VSTS
       - bash: bash <(curl -s https://codecov.io/bash) -f coverage.json -t $(CodeCovToken)
         displayName: Upload coverage to CodeCov
