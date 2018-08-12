@@ -49,7 +49,7 @@ Describe 'Find-GitRepository when the current directory is under a repository ro
 
 Describe 'Find-GitRepository when the current directory has no repository' {
     Clear-Error
-    Push-Location -Path $env:TEMP
+    Push-Location -Path ([IO.Path]::GetTempPath())
     try {
         $repo = Find-GitRepository
         Assert-NoRepositoryReturned -Repository $repo
@@ -64,7 +64,7 @@ Describe 'Find-GitRepository when the current directory has no repository' {
 Describe 'Find-GitRepository when given a relative path' {
     Push-Location -Path $PSScriptRoot
     try {
-        $repo = Find-GitRepository -Path '..\GitAutomationCore\bin'
+        $repo = Find-GitRepository -Path (Join-Path '..' 'GitAutomationCore')
         Assert-ThisRepositoryFound -Repository $repo
     } finally {
         Pop-Location
@@ -99,17 +99,17 @@ Describe 'Find-GitRepository when current directory is a repository root' {
 
 Describe 'Find-GitRepository when -Verify switch is used and a repository isn''t found' {
     Clear-Error
-    $repo = Find-GitRepository -Path $env:TEMP -Verify -ErrorAction SilentlyContinue
+    $repo = Find-GitRepository -Path ([IO.Path]::GetTempPath()) -Verify -ErrorAction SilentlyContinue
     Assert-NoRepositoryReturned -Repository $repo
     It 'should write an error' {
         $Global:Error | Should Match 'not in a Git repository'
-        $Global:Error | Should Match ([regex]::Escape($env:TEMP))
+        $Global:Error | Should Match ([regex]::Escape(([IO.Path]::GetTempPath())))
     }
 }
 
 Describe 'Find-GitRepository when -Verify switch is used and a repository in current directory isn''t found' {
     Clear-Error
-    Push-Location -Path $env:TEMP
+    Push-Location -Path ([IO.Path]::GetTempPath())
     try {
         $repo = Find-GitRepository -Verify -ErrorAction SilentlyContinue
         Assert-NoRepositoryReturned -Repository $repo

@@ -120,7 +120,7 @@ Describe 'Set-GitConfiguration when setting global configuration and not in a re
 }
 
 Describe 'Set-GitConfiguration when HOME environment variable exists' {
-    [LibGit2Sharp.GlobalSettings]::SetConfigSearchPaths([LibGit2Sharp.ConfigurationLevel]::Global, ($env:TEMP -replace '\\', '/') )
+    [LibGit2Sharp.GlobalSettings]::SetConfigSearchPaths([LibGit2Sharp.ConfigurationLevel]::Global, (([IO.Path]::GetTempPath()) -replace '\\', '/') )
     $tempRoot = (Resolve-TestDrivePath)
     Mock -CommandName 'Test-Path' -ModuleName 'GitAutomationCore' -ParameterFilter { $Path -eq 'env:HOME' } -MockWith { return $true }
     Mock -CommandName 'Get-Item' -ModuleName 'GitAutomationCore' -ParameterFilter { $Path -eq 'env:HOME' } -MockWith { return [pscustomobject]@{ Name = 'HOME' ; Value = (Resolve-TestDrivePath) } }
@@ -132,7 +132,7 @@ Describe 'Set-GitConfiguration when HOME environment variable exists' {
     }
 
     It 'should not create any other configuration files' {
-        Join-Path -Path $env:TEMP -ChildPath '.gitconfig' | Should Not Exist
+        Join-Path -Path ([IO.Path]::GetTempPath()) -ChildPath '.gitconfig' | Should Not Exist
     }
 }
 
