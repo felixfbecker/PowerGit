@@ -42,8 +42,7 @@ phases:
         displayName: Upload coverage to VSTS
       - bash: bash <(curl -s https://codecov.io/bash) -f coverage.json -P "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
         env:
-          CI_BUILD_ID: $(Build.BuildNumber)-${{ parameters.name }}
-          CI_BUILD_URL: https://felixfbecker.visualstudio.com/PSGitAutomationCore/_build/results?buildId=$(Build.BuildId)
+          CI_BUILD_ID: $(Build.BuildNumber)-$(Agent.OS)
           CODECOV_NAME: ${{ parameters.name }}
           VCS_BRANCH_NAME: $(Build.SourceBranchName)
           VCS_COMMIT_ID: $(Build.SourceVersion)
