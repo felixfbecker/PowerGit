@@ -35,5 +35,5 @@ phases:
           testRunTitle: ${{ parameters.name }}
         condition: always()
         displayName: Publish test results
-      - bash: bash <(curl -s https://codecov.io/bash) -f coverage.json
+      - bash: bash <(curl -s https://codecov.io/bash) -f coverage.json -t $(CodeCovToken)
         displayName: Upload coverage to CodeCov
