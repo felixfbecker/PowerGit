@@ -19,7 +19,7 @@ phases:
           cd ../..
         displayName: Build assemblies
       - powershell: |
-          Install-Module -Force -Scope CurrentUser Pester
+          Install-Module -Force -Scope CurrentUser -SkipPublisherCheck Pester
           Install-Module -Force -Scope CurrentUser PSCodeCovIo
           $ProgressPreference = "SilentlyContinue"
           $res = Invoke-Pester -PassThru -CodeCoverage . -OutputFile testresults.xml -OutputFormat NUnitXML
