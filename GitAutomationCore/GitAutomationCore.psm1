@@ -15,7 +15,7 @@ using namespace System.Runtime.InteropServices
 $runtime = if ($IsMacOS) {
     'osx'
 } else {
-    $os = if ($IsWindows) {
+    $os = if ($PSVersionTable.PSVersion.Major -lt 6 -or $IsWindows) {
         'win'
     } elseif ($IsLinux) {
         'linux'
