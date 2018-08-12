@@ -26,5 +26,6 @@ phases:
         inputs:
           testRunner: nUnit
           testResultsFiles: 'testresults.xml'
+          testRunTitle: ${{ parameters.name }}
         condition: always()
       - bash: bash <(curl -s https://codecov.io/bash) -f coverage.json
