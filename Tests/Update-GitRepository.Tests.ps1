@@ -77,6 +77,7 @@ Describe 'Update-GitRepository when updating to a remote reference' {
 
     $localRepoPath = Join-Path -Path (Resolve-TestDrivePath) -ChildPath 'LocalRepo'
     Copy-GitRepository -Source $remoteRepo -DestinationPath $localRepoPath
+    AfterAll {Remove-Item -Recurse -Force -Path $localRepoPath}.GetNewClosure()
 
     Add-GitTestFile -RepoRoot $remoteRepo -Path 'file2'
     Add-GitItem -Path (Join-Path -Path $remoteRepo -ChildPath 'file2') -RepoRoot $remoteRepo
@@ -141,8 +142,9 @@ Describe 'Update-GitRepository when updating to a branch that only exists at the
     New-GitBranch -RepoRoot $remoteRepo -Name 'develop' -Revision 'master'
     Update-GitRepository -RepoRoot $remoteRepo -Revision 'master'
 
-    $localRepoPath = Join-Path -Path (Resolve-TestDrivePath) -ChildPath 'LocalRepo'
+    $localRepoPath = Join-Path -Path (Resolve-TestDrivePath) -ChildPath ([Guid]::newGuid())
     Copy-GitRepository -Source $remoteRepo -DestinationPath $localRepoPath
+    AfterAll { Remove-Item -Force -Recurse $localRepoPath }.GetNewClosure()
 
     Update-GitRepository -RepoRoot $localRepoPath -Revision 'develop'
 
