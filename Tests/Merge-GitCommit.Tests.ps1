@@ -102,7 +102,7 @@ function ThenFileContentIs {
 
     It ('should have file with correct content') {
         $path = Join-Path -Path (Get-RepoRoot) -ChildPath $Name
-        Get-Content -Raw -Path $path| Should -Be $ExpectedContent
+        (Get-Content -Raw -Path $path).Replace("`r`n", "`n") | Should -Be $ExpectedContent.Replace("`r`n", "`n")
     }
 }
 
