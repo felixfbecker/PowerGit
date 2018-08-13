@@ -14,7 +14,7 @@ Output/
 .vs
 
 # TODO figure out where these come from
-/GitAutomationCore/Assemblies
+/PowerGit/Assemblies
 /Assemblies
 /out
 /fubar
