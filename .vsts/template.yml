@@ -13,10 +13,7 @@ phases:
       - powershell: |
           Install-Module -Force -Scope CurrentUser PSScriptAnalyzer
           Invoke-ScriptAnalyzer -Path . -Recurse | Format-List -Property RuleName,Message,ScriptPath,Line,Column
-      - script: |
-          cd Source/PowerGit
-          dotnet publish -o ../../PowerGit/Assemblies
-          cd ../..
+      - powershell: ./build.ps1
         displayName: Build assemblies
       - powershell: |
           Install-Module -Force -Scope CurrentUser -SkipPublisherCheck Pester
