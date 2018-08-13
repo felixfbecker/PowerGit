@@ -31,7 +31,7 @@
     Copyright = 'Copyright 2016 - 2018 WebMD Health Services, Copyright 2018 Felix Becker'
 
     # Description of the functionality provided by this module
-    Description = 'git for PowerShell through LibGit2Sharp. Uses the full potential of the object pipeline while providing familiar git output formatting. Does not require git to be installed.'
+    Description = 'git with the power of the object pipeline'
 
     # Minimum version of the Windows PowerShell engine required by this module
     # PowerShellVersion = ''
