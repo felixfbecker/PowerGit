@@ -5,4 +5,8 @@
  [![builds](https://img.shields.io/vso/build/felixfbecker/3de339ed-a9c4-4785-b858-fb695061bbf4/2.svg)](https://felixfbecker.visualstudio.com/PowerGit/_build/latest?definitionId=2&branch=master)
 [![codecov](https://codecov.io/gh/felixfbecker/PowerGit/branch/master/graph/badge.svg)](https://codecov.io/gh/felixfbecker/PowerGit)
 
-Fork of `PowerGit` that runs on PSCore (Windows, Linux, macOS)
+`git` with the power of the object pipeline and familiar output formatting.
+Uses `LibGit2Sharp`, so does not require any git executable to be installed.
+
+Forked from `GitAutomation` but made to work PSCore (Linux, macOS, Windows).
+
