@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -23,7 +23,7 @@ function New-GitRepository {
     This function implements the `git init` command.
 
     .OUTPUTS
-    GitAutomationCore.RepositoryInfo.
+    PowerGit.RepositoryInfo.
 
     .EXAMPLE
     New-GitRepository -Path 'C:\Projects\MyCoolNewRepo'
@@ -36,7 +36,7 @@ function New-GitRepository {
     Demonstrates how to create a repository that doesn't have a working directory. Git calls these "Bare" repositories.
     #>
     [CmdletBinding(SupportsShouldProcess = $true)]
-    [OutputType([GitAutomationCore.RepositoryInfo])]
+    [OutputType([PowerGit.RepositoryInfo])]
     param(
         [Parameter(Mandatory = $true)]
         [string]
@@ -62,7 +62,7 @@ function New-GitRepository {
     $repoPath = [LibGit2Sharp.Repository]::Init($Path, $Bare.IsPresent)
     $repo = [LibGit2Sharp.Repository]::new($repoPath)
     try {
-        return New-Object 'GitAutomationCore.RepositoryInfo' $repo.Info
+        return New-Object 'PowerGit.RepositoryInfo' $repo.Info
     } finally {
         $repo.Dispose()
     }

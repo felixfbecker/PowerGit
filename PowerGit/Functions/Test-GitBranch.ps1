@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -26,7 +26,7 @@ function Test-GitBranch {
     Demonstrates how to check if the 'develop' branch exists in the current directory.
 
     .EXAMPLE
-    Test-GitBranch -RepoRoot 'C:\Projects\GitAutomationCore' -Name 'develop'
+    Test-GitBranch -RepoRoot 'C:\Projects\PowerGit' -Name 'develop'
 
     Demonstrates how to check if the 'develop' branch exists in a specific repository.
     #>

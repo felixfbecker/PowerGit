@@ -1,9 +1,9 @@
-﻿<#
+<#
 .SYNOPSIS
-Imports the GitAutomationCore module.
+Imports the PowerGit module.
 
 .DESCRIPTION
-The `Import-GitAutomationCore.ps1` script imports the `GitAutomationCore` module from this script's directory.
+The `Import-PowerGit.ps1` script imports the `PowerGit` module from this script's directory.
 #>
 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,8 +25,8 @@ param(
 #Requires -Version 4
 Set-StrictMode -Version 'Latest'
 
-if ( (Get-Module -Name 'GitAutomationCore') ) {
-    Remove-Module -Name 'GitAutomationCore' -Force
+if ( (Get-Module -Name 'PowerGit') ) {
+    Remove-Module -Name 'PowerGit' -Force
 }
 
-Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath 'GitAutomationCore.psd1')
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath 'PowerGit.psd1')

@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -13,7 +13,7 @@
 @{
 
     # Script module or binary module file associated with this manifest.
-    RootModule = 'GitAutomationCore.psm1'
+    RootModule = 'PowerGit.psm1'
 
     # Version number of this module.
     ModuleVersion = '0.0.1'
@@ -65,7 +65,7 @@
 
     # Format files (.ps1xml) to be loaded when importing this module
     FormatsToProcess = @(
-        'Formats\GitAutomationCore.CommitInfo.formats.ps1xml',
+        'Formats\PowerGit.CommitInfo.formats.ps1xml',
         'Formats\LibGit2Sharp.StatusEntry.formats.ps1xml'
     )
 
@@ -134,7 +134,7 @@
             LicenseUri = 'http://www.apache.org/licenses/LICENSE-2.0'
 
             # A URL to the main website for this project.
-            ProjectUri = 'https://github.com/webmd-health-services/GitAutomationCore'
+            ProjectUri = 'https://github.com/webmd-health-services/PowerGit'
 
             # A URL to an icon representing this module.
             IconUri = 'https://git-scm.com/images/logos/downloads/Git-Icon-1788C.png'

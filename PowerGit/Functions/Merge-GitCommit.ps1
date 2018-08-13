@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -16,7 +16,7 @@ function Merge-GitCommit {
     Merges a commit into the current branch.
 
     .DESCRIPTION
-    The `Merge-GitCommit` function merges a commit into the current branch. The commit can be identified with its ID, by a tag name, or branch name. It returns a `GitAutomationCore.MergeResult` object, which has two properties:
+    The `Merge-GitCommit` function merges a commit into the current branch. The commit can be identified with its ID, by a tag name, or branch name. It returns a `PowerGit.MergeResult` object, which has two properties:
 
     * `Status`: the status of the merge. It will be one of the following values:
       * `Conflicts`: when there are conflicts with the merge.
@@ -35,7 +35,7 @@ function Merge-GitCommit {
     Demonstrates how to merge a branch into the current branch.
     #>
     [CmdletBinding()]
-    [OutputType([GitAutomationCore.MergeResult])]
+    [OutputType([PowerGit.MergeResult])]
     param(
         [string]
         # The path to the repository where the files should be added. The default is the current directory as returned by Get-Location.
@@ -83,7 +83,7 @@ function Merge-GitCommit {
     $signature = $repo.Config.BuildSignature((Get-Date))
     try {
         $result = $repo.Merge($Revision, $signature, $mergeOptions)
-        New-Object -TypeName 'GitAutomationCore.MergeResult' -ArgumentList $result
+        New-Object -TypeName 'PowerGit.MergeResult' -ArgumentList $result
     } catch {
         Write-Error -Exception $_.Exception
     } finally {

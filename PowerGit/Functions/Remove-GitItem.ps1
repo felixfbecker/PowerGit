@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -25,7 +25,7 @@ function Remove-GitItem {
     Remove-GitItem -Path 'file.ps1'
 
     .Example
-    Get-ChildItem '.\GitAutomationCore\Functions','.\Tests' | Remove-GitItem
+    Get-ChildItem '.\PowerGit\Functions','.\Tests' | Remove-GitItem
 
     #>
 

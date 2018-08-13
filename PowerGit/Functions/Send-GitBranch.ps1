@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -22,7 +22,7 @@ function Send-GitBranch {
 
     The `Retry` parameter controls how many pull/merge/push attempts to make. The default is "5".
 
-    Returns a `GitAutomationCore.SendBranchResult`. To see if the push succeeded, check the `LastPushResult` property, which is a `GitAutomationCore.PushResult` enumeration. A value of `Ok` means the push succeeded. Other values are `Failed` or `Rejected`.
+    Returns a `PowerGit.SendBranchResult`. To see if the push succeeded, check the `LastPushResult` property, which is a `PowerGit.PushResult` enumeration. A value of `Ok` means the push succeeded. Other values are `Failed` or `Rejected`.
 
     The result object contains lists for every merge and push operation this function attempts. Merge results are in a `MergeResult` object, from first attempt to most recent attempt. Push results are in a `PushResult` property, from first attempt to most recent attempt.
 
@@ -43,7 +43,7 @@ function Send-GitBranch {
     #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '')]
     [CmdletBinding()]
-    [OutputType([GitAutomationCore.SendBranchResult])]
+    [OutputType([PowerGit.SendBranchResult])]
     param(
         [string]
         $RepoRoot = (Get-Location).ProviderPath,
@@ -66,7 +66,7 @@ function Send-GitBranch {
         $mergeStrategyParam['MergeStrategy'] = $MergeStrategy
     }
 
-    $result = [GitAutomationCore.SendBranchResult]::new()
+    $result = [PowerGit.SendBranchResult]::new()
 
     try {
         $tryNum = 0
@@ -86,7 +86,7 @@ function Send-GitBranch {
             $pushResult = Send-GitCommit -RepoRoot $RepoRoot
             $result.PushResult.Add($pushResult)
         }
-        while ( $tryNum++ -lt $Retry -and $pushResult -ne [GitAutomationCore.PushResult]::Ok )
+        while ( $tryNum++ -lt $Retry -and $pushResult -ne [PowerGit.PushResult]::Ok )
     } finally {
         # use `,` to prevent enumeration
         , $result

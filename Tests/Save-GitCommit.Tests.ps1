@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -10,7 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-GitAutomationCoreTest.ps1' -Resolve)
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-PowerGitTest.ps1' -Resolve)
 
 $repoRoot = $null
 [LibGit2Sharp.Signature]$signature = $null
@@ -35,7 +35,7 @@ Describe 'Save-GitCommit when committing changes' {
     Add-GitItem -Path 'file1' -RepoRoot $repoRoot
     $commit = Save-GitCommit -Message 'fubar' -RepoRoot $repoRoot -Signature $signature
     It 'should return a commit object' {
-        $commit.pstypenames | Where-Object { $_ -eq 'GitAutomationCore.CommitInfo' } | Should Not BeNullOrEmpty
+        $commit.pstypenames | Where-Object { $_ -eq 'PowerGit.CommitInfo' } | Should Not BeNullOrEmpty
     }
     It 'should commit everything' {
         git -C $repoRoot status --porcelain | Should BeNullOrEmpty

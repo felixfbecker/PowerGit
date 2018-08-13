@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -16,14 +16,14 @@ function Save-GitCommit {
     Commits changes to a Git repository.
 
     .DESCRIPTION
-    The `Save-GitCommit` function commits changes to a Git repository. Those changes must be staged first with `git add` or the `GitAutomationCore` module's `Add-GitItem` function. If there are no changes staged, nothing happens, and nothing is returned.
+    The `Save-GitCommit` function commits changes to a Git repository. Those changes must be staged first with `git add` or the `PowerGit` module's `Add-GitItem` function. If there are no changes staged, nothing happens, and nothing is returned.
 
     You are required to pass a commit message with the `Message` parameter. This module is intended to be used by non-interactive repository automation scripts, so opening in an editor is not supported.
 
     Implements the `git commit` command.
 
     .OUTPUTS
-    GitAutomationCore.CommitInfo
+    PowerGit.CommitInfo
 
     .LINK
     Add-GitItem
@@ -34,7 +34,7 @@ function Save-GitCommit {
     Demonstrates how to commit staged changes in a Git repository. In this example, the repository is assumed to be in the current directory.
 
     .EXAMPLE
-    Save-GitCommit -Message 'Creating Save-GitCommit function.' -RepoRoot 'C:\Projects\GitAutomationCore'
+    Save-GitCommit -Message 'Creating Save-GitCommit function.' -RepoRoot 'C:\Projects\PowerGit'
 
     Demonstrates how to commit changes to a repository other than the current directory.
 
@@ -44,7 +44,7 @@ function Save-GitCommit {
     Demonstrates how to set custom author metadata. In this case, the commit will be from user "Name" whose email address is "email@example.com".
     #>
     [CmdletBinding()]
-    [OutputType([GitAutomationCore.CommitInfo])]
+    [OutputType([PowerGit.CommitInfo])]
     param(
         [Parameter(Mandatory = $true)]
         [string]
@@ -86,7 +86,7 @@ function Save-GitCommit {
         }
 
         $repo.Commit( $Message, $Signature, $Signature, $commitOptions ) |
-            ForEach-Object { New-Object 'GitAutomationCore.CommitInfo' $_ }
+            ForEach-Object { New-Object 'PowerGit.CommitInfo' $_ }
     } catch [LibGit2Sharp.EmptyCommitException] {
         $Global:Error.RemoveAt(0)
         Write-Warning -Message ('Nothing to commit. Git only commits changes that are staged. To stage changes, use the Add-GitItem function or the `git add` command.')

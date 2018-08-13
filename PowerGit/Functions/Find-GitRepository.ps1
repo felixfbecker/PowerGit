@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -31,9 +31,9 @@ function Find-GitRepository {
     Demonstrates how to find the Git repository of the current directory.
 
     .EXAMPLE
-    Find-GitRepository -Path 'C:\Projects\GitAutomationCore\GitAutomationCore\bin'
+    Find-GitRepository -Path 'C:\Projects\PowerGit\PowerGit\bin'
 
-    Demonstrates how to find the Git repository that a specific directory is a part of. In this case, a `LibGit2Sharp.Repository` object is returned for the repository at `C:\Projects\GitAutomationCore`.
+    Demonstrates how to find the Git repository that a specific directory is a part of. In this case, a `LibGit2Sharp.Repository` object is returned for the repository at `C:\Projects\PowerGit`.
     #>
     [CmdletBinding()]
     [OutputType([LibGit2Sharp.Repository])]

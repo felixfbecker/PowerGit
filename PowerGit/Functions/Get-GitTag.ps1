@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -31,14 +31,14 @@ function Get-GitTag {
     Demonstrates how to return a specific tag.  If no tag matches, then `$null` is returned.
 
     .EXAMPLE
-    Get-GitTag -Name '13.8.*' -RepoRoot 'C:\Projects\GitAutomationCore'
+    Get-GitTag -Name '13.8.*' -RepoRoot 'C:\Projects\PowerGit'
 
     Demonstrates how to return all tags that match a wildcard in the given repository.'
     #>
 
 
     [CmdletBinding()]
-    [OutputType([GitAutomationCore.TagInfo])]
+    [OutputType([PowerGit.TagInfo])]
     param(
         [string]
         # Specifies which git repository to check. Defaults to the current directory.
@@ -58,7 +58,7 @@ function Get-GitTag {
 
     try {
         $repo.Tags | ForEach-Object {
-            New-Object GitAutomationCore.TagInfo $_
+            New-Object PowerGit.TagInfo $_
         } |
             Where-Object {
             if ( $PSBoundParameters.ContainsKey('Name') ) {

@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -81,7 +81,7 @@ function Send-GitObject {
     $remote = $repo.Network.Remotes | Where-Object { $_.Name -eq $RemoteName }
     if ( -not $remote ) {
         Write-Error -Message ('A remote named "{0}" does not exist.' -f $RemoteName)
-        return [GitAutomationCore.PushResult]::Failed
+        return [PowerGit.PushResult]::Failed
     }
 
     if ( $Tags ) {
@@ -90,15 +90,15 @@ function Send-GitObject {
 
     try {
         $repo.Network.Push($remote, $RefSpec, $pushOptions)
-        return [GitAutomationCore.PushResult]::Ok
+        return [PowerGit.PushResult]::Ok
     } catch {
         Write-Error -ErrorRecord $_
 
         switch ( $_.FullyQualifiedErrorId ) {
-            'NonFastForwardException' { return [GitAutomationCore.PushResult]::Rejected }
-            'LibGit2SharpException' { return [GitAutomationCore.PushResult]::Failed }
-            'BareRepositoryException' { return [GitAutomationCore.PushResult]::Failed }
-            default { return [GitAutomationCore.PushResult]::Failed }
+            'NonFastForwardException' { return [PowerGit.PushResult]::Rejected }
+            'LibGit2SharpException' { return [PowerGit.PushResult]::Failed }
+            'BareRepositoryException' { return [PowerGit.PushResult]::Failed }
+            default { return [PowerGit.PushResult]::Failed }
         }
     } finally {
         $repo.Dispose()

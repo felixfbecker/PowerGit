@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -23,7 +23,7 @@ function Get-GitCommit {
     To get the commit of the current checkout, pass `HEAD` to the `Revision` parameter.
     #>
     [CmdletBinding(DefaultParameterSetName = 'All')]
-    [OutputType([GitAutomationCore.CommitInfo])]
+    [OutputType([PowerGit.CommitInfo])]
     param(
         [Parameter(ParameterSetName = 'All')]
         [switch]
@@ -68,12 +68,12 @@ function Get-GitCommit {
         if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
             $filter = New-Object -TypeName 'LibGit2Sharp.CommitFilter'
             $filter.IncludeReachableFrom = $repo.Refs
-            $repo.Commits.QueryBy($filter) | ForEach-Object { New-Object -TypeName 'GitAutomationCore.CommitInfo' -ArgumentList $_ }
+            $repo.Commits.QueryBy($filter) | ForEach-Object { New-Object -TypeName 'PowerGit.CommitInfo' -ArgumentList $_ }
             return
         } elseif ( $PSCmdlet.ParameterSetName -eq 'Lookup' ) {
             $change = $repo.Lookup($Revision)
             if ( $change ) {
-                return New-Object -TypeName 'GitAutomationCore.CommitInfo' -ArgumentList $change
+                return New-Object -TypeName 'PowerGit.CommitInfo' -ArgumentList $change
             } else {
                 Write-Error -Message ('Commit ''{0}'' not found in repository ''{1}''.' -f $Revision, $repo.Info.WorkingDirectory) -ErrorAction $ErrorActionPreference
                 return
@@ -103,7 +103,7 @@ function Get-GitCommit {
                 $filteredCommits = $filteredCommits | Where-Object { $_.Parents.Count -le 1 }
             }
 
-            $filteredCommits | ForEach-Object { New-Object -TypeName 'GitAutomationCore.CommitInfo' -ArgumentList $_ }
+            $filteredCommits | ForEach-Object { New-Object -TypeName 'PowerGit.CommitInfo' -ArgumentList $_ }
         }
     } finally {
         $repo.Dispose()

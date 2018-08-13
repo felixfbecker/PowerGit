@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -49,7 +49,7 @@ function Sync-GitBranch {
     Demonstrates the simplest way to get your current branch up-to-date with its remote branch.
 
     .EXAMPLE
-    Sync-GitBranch -RepoRoot 'C:\Projects\GitAutomationCore'
+    Sync-GitBranch -RepoRoot 'C:\Projects\PowerGit'
 
     Demonstrates how to pull remotes commits for a repository that isn't in the current directory.
     #>

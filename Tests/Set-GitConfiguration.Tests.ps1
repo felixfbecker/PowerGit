@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -13,7 +13,7 @@
 #Requires -Version 4
 Set-StrictMode -Version 'Latest'
 
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-GitAutomationCoreTest.ps1' -Resolve)
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-PowerGitTest.ps1' -Resolve)
 
 $globalSearchPaths = [LibGit2Sharp.GlobalSettings]::GetConfigSearchPaths([LibGit2Sharp.ConfigurationLevel]::Global)
 
@@ -54,10 +54,10 @@ Describe 'Set-GitConfiguration when repo does not exist' {
 
 Describe 'Set-GitConfiguration when setting global configuration' {
     $value = [Guid]::NewGuid()
-    Set-GitConfiguration -Name 'GitAutomationCore.test' -Value $value -Scope Global
+    Set-GitConfiguration -Name 'PowerGit.test' -Value $value -Scope Global
     $repo = Find-GitRepository -Path $PSScriptRoot
     It 'should set option globally' {
-        $repo.Config | Where-Object { $_.Key -eq 'GitAutomationCore.test' -and $_.Value -eq $value -and $_.Level -eq [LibGit2Sharp.ConfigurationLevel]::Global } | Should Not BeNullOrEmpty
+        $repo.Config | Where-Object { $_.Key -eq 'PowerGit.test' -and $_.Value -eq $value -and $_.Level -eq [LibGit2Sharp.ConfigurationLevel]::Global } | Should Not BeNullOrEmpty
     }
 }
 
@@ -105,7 +105,7 @@ Describe 'Set-GitConfiguration when using a relative path to a specific configur
 
 Describe 'Set-GitConfiguration when setting global configuration and not in a repository' {
     $tempRoot = (Resolve-TestDrivePath)
-    Mock -CommandName 'Test-Path' -ModuleName 'GitAutomationCore' -ParameterFilter { $Path -eq 'env:HOME' } -MockWith { return $false }
+    Mock -CommandName 'Test-Path' -ModuleName 'PowerGit' -ParameterFilter { $Path -eq 'env:HOME' } -MockWith { return $false }
     Push-Location -Path $tempRoot
     try {
         [LibGit2Sharp.GlobalSettings]::SetConfigSearchPaths([LibGit2Sharp.ConfigurationLevel]::Global, ($tempRoot -replace '\\', '/'))
@@ -122,8 +122,8 @@ Describe 'Set-GitConfiguration when setting global configuration and not in a re
 Describe 'Set-GitConfiguration when HOME environment variable exists' {
     [LibGit2Sharp.GlobalSettings]::SetConfigSearchPaths([LibGit2Sharp.ConfigurationLevel]::Global, (([IO.Path]::GetTempPath()) -replace '\\', '/') )
     $tempRoot = (Resolve-TestDrivePath)
-    Mock -CommandName 'Test-Path' -ModuleName 'GitAutomationCore' -ParameterFilter { $Path -eq 'env:HOME' } -MockWith { return $true }
-    Mock -CommandName 'Get-Item' -ModuleName 'GitAutomationCore' -ParameterFilter { $Path -eq 'env:HOME' } -MockWith { return [pscustomobject]@{ Name = 'HOME' ; Value = (Resolve-TestDrivePath) } }
+    Mock -CommandName 'Test-Path' -ModuleName 'PowerGit' -ParameterFilter { $Path -eq 'env:HOME' } -MockWith { return $true }
+    Mock -CommandName 'Get-Item' -ModuleName 'PowerGit' -ParameterFilter { $Path -eq 'env:HOME' } -MockWith { return [pscustomobject]@{ Name = 'HOME' ; Value = (Resolve-TestDrivePath) } }
 
     Set-GitConfiguration -Name 'core.autocrlf' -Value 'false' -Scope Global -ErrorVariable 'errors'
     Assert-ConfigurationVariableSet -Path (Join-Path -Path $tempRoot -ChildPath '.gitconfig')

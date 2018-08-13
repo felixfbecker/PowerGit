@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -12,7 +12,7 @@
 
 Set-StrictMode -Version 'Latest'
 
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-GitAutomationCoreTest.ps1' -Resolve)
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-PowerGitTest.ps1' -Resolve)
 
 function GivenRemoteRepository {
     param(
@@ -183,7 +183,7 @@ Describe 'Send-GitObject.when pushing changes to a remote repository' {
     GivenCommit
     WhenSendingObject 'refs/heads/master'
     ThenNoErrorsWereThrown
-    ThenPushResultIs ([GitAutomationCore.PushResult]::Ok)
+    ThenPushResultIs ([PowerGit.PushResult]::Ok)
     ThenRemoteContainsLocalCommits
 }
 
@@ -192,7 +192,7 @@ Describe 'Send-GitObject.when there are no local changes to push to remote' {
     GivenLocalRepositoryTracksRemote 'LocalRepo'
     WhenSendingObject 'refs/heads/master'
     ThenNoErrorsWereThrown
-    ThenPushResultIs ([GitAutomationCore.PushResult]::Ok)
+    ThenPushResultIs ([PowerGit.PushResult]::Ok)
 }
 
 Describe 'Send-GitObject.when remote repository has changes not contained locally' {
@@ -202,7 +202,7 @@ Describe 'Send-GitObject.when remote repository has changes not contained locall
     GivenCommit
     WhenSendingObject 'refs/heads/master' -ErrorAction SilentlyContinue
     ThenErrorWasThrown 'that you are trying to update on the remote contains commits that are not present locally.'
-    ThenPushResultIs ([GitAutomationCore.PushResult]::Rejected)
+    ThenPushResultIs ([PowerGit.PushResult]::Rejected)
 }
 
 Describe 'Send-GitObject.when no upstream remote is defined' {
@@ -210,7 +210,7 @@ Describe 'Send-GitObject.when no upstream remote is defined' {
     GivenCommit
     WhenSendingObject 'refs/heads/master' -ErrorAction SilentlyContinue
     ThenErrorWasThrown 'A\ remote\ named\ "origin"\ does\ not\ exist\.'
-    ThenPushResultIs ([GitAutomationCore.PushResult]::Failed)
+    ThenPushResultIs ([PowerGit.PushResult]::Failed)
 }
 
 Describe 'Send-GitObject.when refspec doesn''t exist' {
@@ -218,7 +218,7 @@ Describe 'Send-GitObject.when refspec doesn''t exist' {
     GivenLocalRepositoryTracksRemote 'LocalRepo'
     WhenSendingObject 'refs/heads/dsfsdaf' -ErrorAction SilentlyContinue
     ThenErrorWasThrown 'does\ not\ match\ any\ existing\ object'
-    ThenPushResultIs ([GitAutomationCore.PushResult]::Failed)
+    ThenPushResultIs ([PowerGit.PushResult]::Failed)
 }
 
 Describe 'Send-GitObject.when pushing tags' {

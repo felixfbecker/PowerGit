@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -10,7 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-GitAutomationCoreTest.ps1' -Resolve)
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-PowerGitTest.ps1' -Resolve)
 
 [LibGit2Sharp.TreeChanges]$diffOutput = $null
 [string]$repoRoot = $null
@@ -84,7 +84,7 @@ function WhenGettingDiff {
     if ($GivenRepositoryRoot) {
         $script:diffOutput = Compare-GitTree -RepositoryRoot $repoRoot -ReferenceCommit $ReferenceCommit @DifferenceCommitParam
     } elseif ($GivenRepositoryObject) {
-        Mock -CommandName 'Invoke-Command' -ModuleName 'GitAutomationCore' -ParameterFilter { $ScriptBlock.ToString() -match 'Dispose' }
+        Mock -CommandName 'Invoke-Command' -ModuleName 'PowerGit' -ParameterFilter { $ScriptBlock.ToString() -match 'Dispose' }
         $repoObject = Get-GitRepository -RepoRoot $repoRoot
         try {
             $script:diffOutput = Compare-GitTree -RepositoryObject $repoObject -ReferenceCommit $ReferenceCommit @DifferenceCommitParam
@@ -106,7 +106,7 @@ function WhenGettingDiff {
 
 function ThenDidNotDisposeRepoObject {
     It 'should not dispose the repository object' {
-        Assert-MockCalled -CommandName 'Invoke-Command' -ModuleName 'GitAutomationCore' -ParameterFilter { $ScriptBlock.ToString() -match 'Dispose' } -Times 0
+        Assert-MockCalled -CommandName 'Invoke-Command' -ModuleName 'PowerGit' -ParameterFilter { $ScriptBlock.ToString() -match 'Dispose' } -Times 0
     }
 }
 

@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -31,7 +31,7 @@ if (-not (Test-Path "$PSScriptRoot/Assemblies/installed")) {
 }
 
 Import-Module "$PSScriptRoot/Assemblies/LibGit2Sharp.dll"
-Import-Module "$PSScriptRoot/Assemblies/GitAutomationCore.dll"
+Import-Module "$PSScriptRoot/Assemblies/PowerGit.dll"
 
 $sshCmd = Get-Command 'ssh' -ErrorAction Ignore
 if ($sshCmd) {
@@ -45,10 +45,10 @@ if ($sshCmd) {
 }
 
 if ($sshPath) {
-    [GitAutomationCore.SshExeTransport]::Unregister()
-    [GitAutomationCore.SshExeTransport]::Register($sshPath)
+    [PowerGit.SshExeTransport]::Unregister()
+    [PowerGit.SshExeTransport]::Register($sshPath)
 } else {
-    Write-Warning -Message ('SSH support is disabled. To enable SSH, please install Git for Windows. GitAutomationCore uses the version of SSH that ships with Git for Windows.')
+    Write-Warning -Message ('SSH support is disabled. To enable SSH, please install Git for Windows. PowerGit uses the version of SSH that ships with Git for Windows.')
 }
 
 Get-ChildItem -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Functions' -Resolve) -Filter '*.ps1' |

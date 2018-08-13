@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -10,7 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-GitAutomationCoreTest.ps1' -Resolve)
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-PowerGitTest.ps1' -Resolve)
 
 $name = $null
 $email = $null
@@ -80,7 +80,7 @@ Describe 'New-GitSignature.when passing author information' {
 }
 
 Describe 'New-GitSignature.when reading configuration from global files' {
-    $blankGitConfigPath = Join-Path -Path $PSScriptRoot -ChildPath '../GitAutomationCore/gitconfig'
+    $blankGitConfigPath = Join-Path -Path $PSScriptRoot -ChildPath '../PowerGit/gitconfig'
     $config = [LibGit2Sharp.Configuration]::BuildFrom($blankGitConfigPath)
     $name = $config | Where-Object { $_.Key -eq 'user.name' } | Select-Object -ExpandProperty 'Value'
     $clearName = $false
@@ -122,7 +122,7 @@ Describe 'New-GitSignature.when reading configuration from repository' {
 }
 
 Describe 'New-GitSignature.when configuration is missing' {
-    $blankGitConfigPath = Join-Path -Path $PSScriptRoot -ChildPath '../GitAutomationCore/gitconfig'
+    $blankGitConfigPath = Join-Path -Path $PSScriptRoot -ChildPath '../PowerGit/gitconfig'
     $config = [LibGit2Sharp.Configuration]::BuildFrom($blankGitConfigPath)
     $name = $config | Where-Object { $_.Key -eq 'user.name' } | Select-Object -ExpandProperty 'Value'
     $email = $config | Where-Object { $_.Key -eq 'user.email' } | Select-Object -ExpandProperty 'Value'

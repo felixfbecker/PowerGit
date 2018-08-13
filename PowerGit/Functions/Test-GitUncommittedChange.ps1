@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -23,7 +23,7 @@ function Test-GitUncommittedChange {
     Implements the `git diff --exit-code` command ( No output if no uncommitted changes, otherwise output diff )
 
     .EXAMPLE
-    Test-GitUncommittedChange -RepoRoot 'C:\Projects\GitAutomationCore'
+    Test-GitUncommittedChange -RepoRoot 'C:\Projects\PowerGit'
 
     Demonstrates how to check for uncommitted changes in a repository that isn't the current directory.
     #>

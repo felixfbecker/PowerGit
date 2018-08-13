@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -10,13 +10,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-GitAutomationCoreTest.ps1' -Resolve)
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-PowerGitTest.ps1' -Resolve)
 
 $serverWorkingDirectory = $null
 $serverBareDirectory = $null
 $clientDirectory = $null
-[GitAutomationCore.CommitInfo]$lastCommit = $null
-[GitAutomationCore.SendBranchResult]$result = $null
+[PowerGit.CommitInfo]$lastCommit = $null
+[PowerGit.SendBranchResult]$result = $null
 
 function GivenBranch {
     param(
@@ -199,7 +199,7 @@ function ThenMergeStatusIs {
 function ThenPushStatus {
     param(
         [Parameter(Mandatory = $true, ParameterSetName = 'Is')]
-        [GitAutomationCore.PushResult]
+        [PowerGit.PushResult]
         $Is,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'IsNull')]

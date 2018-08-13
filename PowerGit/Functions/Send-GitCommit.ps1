@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -20,7 +20,7 @@ function Send-GitCommit {
 
     If the repository requires authentication, pass the username/password via the `Credential` parameter.
 
-    Returns a `GitAutomationCore.PushResult` that represents the result of the push. One of:
+    Returns a `PowerGit.PushResult` that represents the result of the push. One of:
 
     * `Ok`: the push succeeded
     * `Failed`: the push failed.
@@ -39,7 +39,7 @@ function Send-GitCommit {
     Pushes commits from the repository located at 'C:\Build\TestGitRepo' to its remote using authentication
     #>
     [CmdletBinding()]
-    [OutputType([GitAutomationCore.PushResult])]
+    [OutputType([PowerGit.PushResult])]
     param(
         [string]
         # Specifies the location of the repository to synchronize. Defaults to the current directory.
@@ -64,7 +64,7 @@ function Send-GitCommit {
 
         $result = Send-GitObject -RefSpec $currentBranch.CanonicalName -RepoRoot $RepoRoot -Credential $Credential
 
-        if ( -not $SetUpstream -or $result -ne [GitAutomationCore.PushResult]::Ok ) {
+        if ( -not $SetUpstream -or $result -ne [PowerGit.PushResult]::Ok ) {
             return $result
         }
 

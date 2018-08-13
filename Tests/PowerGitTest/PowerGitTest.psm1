@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -10,8 +10,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-Import-Module -Force "$PSScriptRoot/../../GitAutomationCore/Functions/Resolve-RealPath.ps1"
-$testDrive = New-Item -ItemType Directory -Path (Join-Path ([IO.Path]::GetTempPath()) ('GitAutomationCoreTest-' + [Guid]::NewGuid())) | Resolve-RealPath
+Import-Module -Force "$PSScriptRoot/../../PowerGit/Functions/Resolve-RealPath.ps1"
+$testDrive = New-Item -ItemType Directory -Path (Join-Path ([IO.Path]::GetTempPath()) ('PowerGitTest-' + [Guid]::NewGuid())) | Resolve-RealPath
 
 function Add-GitTestFile {
     [CmdletBinding()]
@@ -53,7 +53,7 @@ function New-GitTestRepo {
     param()
 
     $testDrive = (Resolve-TestDrivePath)
-    $repoRoot = Join-Path -Path $testDrive -ChildPath ('GitAutomationCore.{0}' -f ([IO.Path]::GetRandomFileName()))
+    $repoRoot = Join-Path -Path $testDrive -ChildPath ('PowerGit.{0}' -f ([IO.Path]::GetRandomFileName()))
     New-GitRepository -Path $repoRoot | Format-List | Out-String | Write-Debug
     return $repoRoot
 }

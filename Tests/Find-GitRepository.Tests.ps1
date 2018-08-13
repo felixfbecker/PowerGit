@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -12,7 +12,7 @@
 
 Set-StrictMode -Version 'Latest'
 
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-GitAutomationCoreTest.ps1' -Resolve)
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-PowerGitTest.ps1' -Resolve)
 
 function Assert-ThisRepositoryFound {
     param(
@@ -64,7 +64,7 @@ Describe 'Find-GitRepository when the current directory has no repository' {
 Describe 'Find-GitRepository when given a relative path' {
     Push-Location -Path $PSScriptRoot
     try {
-        $repo = Find-GitRepository -Path (Join-Path '..' 'GitAutomationCore')
+        $repo = Find-GitRepository -Path (Join-Path '..' 'PowerGit')
         Assert-ThisRepositoryFound -Repository $repo
     } finally {
         Pop-Location

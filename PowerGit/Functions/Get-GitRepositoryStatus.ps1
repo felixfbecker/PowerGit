@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -40,10 +40,10 @@ function Get-GitRepositoryStatus {
 
         State    FilePath
         -----    --------
-         a       GitAutomationCore\Formats\LibGit2Sharp.StatusEntry.ps1xml
-         a       GitAutomationCore\Functions\Get-GitRepositoryStatus.ps1
-          m      GitAutomationCore\GitAutomationCore.psd1
-         a       GitAutomationCore\Types\LibGit2Sharp.StatusEntry.types.ps1xml
+         a       PowerGit\Formats\LibGit2Sharp.StatusEntry.ps1xml
+         a       PowerGit\Functions\Get-GitRepositoryStatus.ps1
+          m      PowerGit\PowerGit.psd1
+         a       PowerGit\Types\LibGit2Sharp.StatusEntry.types.ps1xml
          a       Tests\Get-GitRepositoryStatus.Tests.ps1
 
     The state will display:
@@ -68,7 +68,7 @@ function Get-GitRepositoryStatus {
     Demonstrates how to get the status of any uncommitted changes for the repository in the current directory.
 
     .EXAMPLE
-    Get-GitRepositoryStatus -RepoRoot 'C:\Projects\GitAutomationCore'
+    Get-GitRepositoryStatus -RepoRoot 'C:\Projects\PowerGit'
 
     Demonstrates how to get the status of any uncommitted changes for the repository at a specific location.
 
@@ -78,9 +78,9 @@ function Get-GitRepositoryStatus {
     Demonstrates how to get the status for specific files at or under the current directory using the Path parameter. In this case, only modified files named `build.ps1` or that match the wildcard `*.cs` under the current directory will be returned.
 
     .EXAMPLE
-    Get-GitRepositoryStatus -Path 'build.ps1','*.cs' -RepoRoot 'C:\Projects\GitAutomationCore`
+    Get-GitRepositoryStatus -Path 'build.ps1','*.cs' -RepoRoot 'C:\Projects\PowerGit`
 
-    Demonstrates how to get the status for specific files under the root of a specific repository. In this case, only modified files named `build.ps1` or that match the wildcard `*.cs` under `C:\Projects\GitAutomationCore` will be returned.
+    Demonstrates how to get the status for specific files under the root of a specific repository. In this case, only modified files named `build.ps1` or that match the wildcard `*.cs` under `C:\Projects\PowerGit` will be returned.
     #>
     [CmdletBinding()]
     [OutputType([LibGit2Sharp.StatusEntry])]

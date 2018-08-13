@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -27,17 +27,17 @@ function Update-GitRepository {
     This function implements the `git checkout <target>` command.
 
     .EXAMPLE
-    Update-GitRepository -RepoRoot 'C:\Projects\GitAutomationCore' -Revision 'feature/ticket'
+    Update-GitRepository -RepoRoot 'C:\Projects\PowerGit' -Revision 'feature/ticket'
 
     Demonstrates how to checkout the 'feature/ticket' branch of the given repository.
 
     .EXAMPLE
-    Update-GitRepository -RepoRoot 'C:\Projects\GitAutomationCore' -Revision 'refs/tags/tag1'
+    Update-GitRepository -RepoRoot 'C:\Projects\PowerGit' -Revision 'refs/tags/tag1'
 
     Demonstrates how to create a detached head at the tag 'tag1'.
 
     .EXAMPLE
-    Update-GitRepository -RepoRoot 'C:\Projects\GitAutomationCore' -Revision 'develop' -Force
+    Update-GitRepository -RepoRoot 'C:\Projects\PowerGit' -Revision 'develop' -Force
 
     Demonstrates how to remove any uncommitted changes during the checkout by using the `Force` switch.
     #>

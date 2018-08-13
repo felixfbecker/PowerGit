@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -12,7 +12,7 @@
 
 Set-StrictMode -Version 'Latest'
 
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-GitAutomationCoreTest.ps1' -Resolve)
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-PowerGitTest.ps1' -Resolve)
 
 $remoteRepoRoot = $null
 $remoteWorkingRoot = $null
@@ -202,7 +202,7 @@ Describe 'Send-GitCommit.when pushing changes to a remote repository' {
     $commit = GivenCommit -InLocal
     WhenSendingCommits
     ThenNoErrorsWereThrown
-    ThenPushResultIs ([GitAutomationCore.PushResult]::Ok)
+    ThenPushResultIs ([PowerGit.PushResult]::Ok)
     ThenRemoteRevision $commit.Sha -Exists
 }
 
@@ -211,7 +211,7 @@ Describe 'Send-GitCommit.when there are no local changes to push to remote' {
     GivenLocalRepoIs -ClonedFromRemote
     WhenSendingCommits
     ThenNoErrorsWereThrown
-    ThenPushResultIs ([GitAutomationCore.PushResult]::Ok)
+    ThenPushResultIs ([PowerGit.PushResult]::Ok)
 }
 
 Describe 'Send-GitCommit.when remote repository has changes not contained locally' {
@@ -221,7 +221,7 @@ Describe 'Send-GitCommit.when remote repository has changes not contained locall
     GivenCommit -InLocal
     WhenSendingCommits -ErrorAction SilentlyContinue
     ThenErrorWasThrown 'that you are trying to update on the remote contains commits that are not present locally.'
-    ThenPushResultIs ([GitAutomationCore.PushResult]::Rejected)
+    ThenPushResultIs ([PowerGit.PushResult]::Rejected)
 }
 
 Describe 'Send-GitCommit.when no upstream remote is defined' {
@@ -230,7 +230,7 @@ Describe 'Send-GitCommit.when no upstream remote is defined' {
     GivenCommit -InLocal
     WhenSendingCommits -ErrorAction SilentlyContinue
     ThenErrorWasThrown 'A\ remote\ named\ "origin"\ does\ not\ exist\.'
-    ThenPushResultIs ([GitAutomationCore.PushResult]::Failed)
+    ThenPushResultIs ([PowerGit.PushResult]::Failed)
 }
 
 Describe 'Send-GitCommit.when changes on other branches' {
@@ -251,7 +251,7 @@ Describe 'Send-GitCommit.when pushing a new branch' {
     GivenBranch 'develop' -InLocal
     $commit = GivenCommit -InLocal
     WhenSendingCommits -SetUpstream
-    ThenPushResultIs ([GitAutomationCore.PushResult]::Ok)
+    ThenPushResultIs ([PowerGit.PushResult]::Ok)
     ThenRemoteRevision $commit.Sha -Exists
     ThenRemoteRevision 'develop' -Exists
     ThenLocalHead 'refs/heads/develop' -Tracks 'refs/remotes/origin/develop'
@@ -264,7 +264,7 @@ Describe 'Send-GitCommit.when pushing new commits on a branch' {
     GivenLocalRepoIs -ClonedFromRemote
     $commit = GivenCommit -InLocal -OnBranch 'develop'
     WhenSendingCommits
-    ThenPushResultIs ([GitAutomationCore.PushResult]::Ok)
+    ThenPushResultIs ([PowerGit.PushResult]::Ok)
     ThenRemoteRevision $commit.Sha -Exists
     ThenRemoteRevision 'develop' -Exists
 }

@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -10,7 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-GitAutomationCoreTest.ps1' -Resolve)
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-PowerGitTest.ps1' -Resolve)
 
 $commitOutput = $null
 $repoRoot = $null
@@ -184,7 +184,7 @@ Describe 'Get-GitCommit.when no parameters specified' {
     GivenRepository
     GivenCommit -NumberOfCommits 2
     WhenGettingCommit
-    ThenReturned -Type [GitAutomationCore.CommitInfo]
+    ThenReturned -Type [PowerGit.CommitInfo]
     ThenNumberCommitsReturnedIs 2
     ThenNoErrorMessages
 }
@@ -200,7 +200,7 @@ Describe 'Get-GitCommit.when getting all commits' {
     GivenBranch 'someotherbranch'
     GivenCommit -NumberOfCommits 5
     WhenGettingCommit -All
-    ThenReturned -Type [GitAutomationCore.CommitInfo]
+    ThenReturned -Type [PowerGit.CommitInfo]
     ThenNumberCommitsReturnedIs 15
     ThenNoErrorMessages
 }
@@ -210,7 +210,7 @@ Describe 'Get-GitCommit.when getting specifically the current HEAD commit' {
     GivenRepository
     GivenCommit -NumberOfCommits 3
     WhenGettingCommit -Revision 'HEAD'
-    ThenReturned -Type [GitAutomationCore.CommitInfo]
+    ThenReturned -Type [PowerGit.CommitInfo]
     ThenNumberCommitsReturnedIs 1
     ThenCommitIsHeadCommit
     ThenNoErrorMessages
@@ -251,7 +251,7 @@ Describe 'Get-GitCommit.when getting all commits until a specific commit' {
     AddTag '1.0'
     GivenCommit -NumberOfCommits 3
     WhenGettingCommit -Until '1.0'
-    ThenReturned -Type [GitAutomationCore.CommitInfo]
+    ThenReturned -Type [PowerGit.CommitInfo]
     ThenNumberCommitsReturnedIs 3
     ThenNoErrorMessages
 }
@@ -266,7 +266,7 @@ Describe 'Get-GitCommit.when getting list of commits between two specific commit
     AddTag '2.0'
     GivenCommit -NumberOfCommits 1
     WhenGettingCommit -Since '2.0' -Until '1.0'
-    ThenReturned -Type [GitAutomationCore.CommitInfo]
+    ThenReturned -Type [PowerGit.CommitInfo]
     ThenNumberCommitsReturnedIs 4
     ThenNoErrorMessages
 }
@@ -281,7 +281,7 @@ Describe 'Get-GitCommit.when getting list of commits with excluding merge commit
     AddTag '2.0'
     GivenCommit -NumberOfCommits 1
     WhenGettingCommit -Since '2.0' -Until '1.0' -NoMerges
-    ThenReturned -Type [GitAutomationCore.CommitInfo]
+    ThenReturned -Type [PowerGit.CommitInfo]
     ThenNumberCommitsReturnedIs 3
     ThenNoErrorMessages
 }

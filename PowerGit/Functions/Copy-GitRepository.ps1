@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -21,7 +21,7 @@ function Copy-GitRepository {
     To clone a local repository, pass a file system path to the `Uri` parameter.
 
     .EXAMPLE
-    Copy-GitRepository -Uri 'https://github.com/webmd-health-services/GitAutomationCore' -DestinationPath GitAutomationCore
+    Copy-GitRepository -Uri 'https://github.com/webmd-health-services/PowerGit' -DestinationPath PowerGit
     #>
     param(
         [Parameter(Mandatory = $true)]

@@ -15,9 +15,9 @@ limitations under the License.
 <Configuration>
     <ViewDefinitions>
         <View>
-            <Name>GitAutomationCore.CommitInfo</Name>
+            <Name>PowerGit.CommitInfo</Name>
             <ViewSelectedBy>
-                <TypeName>GitAutomationCore.CommitInfo</TypeName>
+                <TypeName>PowerGit.CommitInfo</TypeName>
             </ViewSelectedBy>
             <TableControl>
                 <TableHeaders>

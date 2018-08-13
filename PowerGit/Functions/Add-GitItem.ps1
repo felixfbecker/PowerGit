@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -26,22 +26,22 @@ function Add-GitItem {
     Save-GitCommit
 
     .EXAMPLE
-    Add-GitItem -Path 'C:\Projects\GitAutomationCore'
+    Add-GitItem -Path 'C:\Projects\PowerGit'
 
     Demonstrates how to add all the items under a directory to the next commit to the repository in the current directory.
 
     .EXAMPLE
-    Add-GitItem -Path 'C:\Projects\GitAutomationCore\Functions\Add-GitItem.ps1','C:\Projects\GitAutomationCore\Tests\Add-GitItem.Tests.ps1'
+    Add-GitItem -Path 'C:\Projects\PowerGit\Functions\Add-GitItem.ps1','C:\Projects\PowerGit\Tests\Add-GitItem.Tests.ps1'
 
     Demonstrates how to add multiple items and files to the next commit.
 
     .EXAMPLE
-    Get-ChildItem '.\GitAutomationCore\Functions','.\Tests' | Add-GitItem
+    Get-ChildItem '.\PowerGit\Functions','.\Tests' | Add-GitItem
 
     Demonstrates that you can pipe paths or file system objects to Add-GitItem. When passing directories, all untracked/new or modified files under that directory are added. When passing files, only that file is added.
 
     .EXAMPLE
-    Add-GitItem -Path 'C:\Projects\GitAutomationCore' -RepoRoot 'C:\Projects\GitAutomationCore'
+    Add-GitItem -Path 'C:\Projects\PowerGit' -RepoRoot 'C:\Projects\PowerGit'
 
     Demonstrates how to operate on a repository that isn't the current directory.
 

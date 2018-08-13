@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -26,7 +26,7 @@ function Get-GitRepository {
     Demonstrates how to get a `LibGit2Sharp.Repository` object for the repository in the current directory.
 
     .EXAMPLE
-    Get-GitRepository -RepoRoot 'C:\Projects\GitAutomationCore'
+    Get-GitRepository -RepoRoot 'C:\Projects\PowerGit'
 
     Demonstrates how to get a `LibGit2Sharp.Repository` object for a specific repository.
     #>

@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -23,7 +23,7 @@ function Get-GitBranch {
    It defaults to the current repository. Use the `RepoRoot` parameter to specify an explicit path to another repo.
 
    .EXAMPLE
-   Get-GitBranch -RepoRoot 'C:\Projects\GitAutomationCore' -Current
+   Get-GitBranch -RepoRoot 'C:\Projects\PowerGit' -Current
 
    Returns an object representing the current branch for the specified repo.
 
@@ -33,7 +33,7 @@ function Get-GitBranch {
    Returns objects for all the branches in the current directory.
    #>
     [CmdletBinding()]
-    [OutputType([GitAutomationCore.BranchInfo])]
+    [OutputType([PowerGit.BranchInfo])]
     param(
         [string]
         # Specifies which git repository to check. Defaults to the current directory.
@@ -53,10 +53,10 @@ function Get-GitBranch {
 
     try {
         if ( $Current ) {
-            New-Object GitAutomationCore.BranchInfo $repo.Head
+            New-Object PowerGit.BranchInfo $repo.Head
             return
         } else {
-            $repo.Branches | ForEach-Object { New-Object GitAutomationCore.BranchInfo $_ }
+            $repo.Branches | ForEach-Object { New-Object PowerGit.BranchInfo $_ }
             return
         }
     } finally {

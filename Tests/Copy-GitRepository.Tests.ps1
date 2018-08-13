@@ -1,4 +1,4 @@
-﻿# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -12,7 +12,7 @@
 
 Set-StrictMode -Version 'Latest'
 
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-GitAutomationCoreTest.ps1' -Resolve)
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-PowerGitTest.ps1' -Resolve)
 
 $output = $null
 
@@ -68,7 +68,7 @@ function WhenCloningRepository {
 }
 
 Describe 'Copy-GitRepository when cloning a remote repository' {
-    $destination = Join-Path -Path (Resolve-TestDrivePath) -ChildPath 'GitAutomationCore'
+    $destination = Join-Path -Path (Resolve-TestDrivePath) -ChildPath 'PowerGit'
     GivenThereAreNoErrors
     WhenCloningRepository 'https://github.com/felixfbecker/stringscore' -To $destination
     ThenRepositoryWasClonedTo $destination -WithNoOutput
