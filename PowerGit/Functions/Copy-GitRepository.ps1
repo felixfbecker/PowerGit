@@ -24,12 +24,11 @@ function Copy-GitRepository {
     Copy-GitRepository -Uri 'https://github.com/webmd-health-services/PowerGit' -DestinationPath PowerGit
     #>
     param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory, Position = 0)]
         [string]
         # The URI or path to the source repository to clone.
         $Source,
 
-        [Parameter(Mandatory = $true)]
         [string]
         # The directory where the repository should be cloned to. Must not exist or be empty.
         $DestinationPath,
@@ -47,6 +46,9 @@ function Copy-GitRepository {
     Use-CallerPreference -Cmdlet $PSCmdlet -Session $ExecutionContext.SessionState
 
     $Source = ConvertTo-GitFullPath -Uri $Source
+    if (-not $DestinationPath) {
+        $DestinationPath = Join-Path $PWD (Split-Path $Source -LeafBase)
+    }
     $DestinationPath = ConvertTo-GitFullPath -Path $DestinationPath
 
     $options = [libgit2sharp.CloneOptions]::new()
