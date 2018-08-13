@@ -13,6 +13,7 @@ phases:
       - powershell: |
           Install-Module -Force -Scope CurrentUser PSScriptAnalyzer
           Invoke-ScriptAnalyzer -Path . -Recurse | Format-List -Property RuleName,Message,ScriptPath,Line,Column
+        displayName: Run PSScriptAnalyzer
       - powershell: ./build.ps1
         displayName: Build assemblies
       - powershell: |
