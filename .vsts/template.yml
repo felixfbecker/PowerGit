@@ -14,15 +14,15 @@ phases:
           Install-Module -Force -Scope CurrentUser PSScriptAnalyzer
           Invoke-ScriptAnalyzer -Path . -Recurse | Format-List -Property RuleName,Message,ScriptPath,Line,Column
       - script: |
-          cd Source/GitAutomationCore
-          dotnet publish -o ../../GitAutomationCore/Assemblies
+          cd Source/PowerGit
+          dotnet publish -o ../../PowerGit/Assemblies
           cd ../..
         displayName: Build assemblies
       - powershell: |
           Install-Module -Force -Scope CurrentUser -SkipPublisherCheck Pester
           Install-Module -Force -Scope CurrentUser PSCodeCovIo
           $ProgressPreference = "SilentlyContinue"
-          $res = Invoke-Pester -PassThru -CodeCoverage GitAutomationCore/Functions/*.ps1 -CodeCoverageOutputFile coverage.xml -OutputFile testresults.xml -OutputFormat NUnitXML
+          $res = Invoke-Pester -PassThru -CodeCoverage PowerGit/Functions/*.ps1 -CodeCoverageOutputFile coverage.xml -OutputFile testresults.xml -OutputFormat NUnitXML
           Export-CodeCovIoJson -CodeCoverage $res.CodeCoverage -RepoRoot $pwd -Path coverage.json
           if ($res.FailedCount -gt 0) {
             throw "$($res.FailedCount) tests failed."
