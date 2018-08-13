@@ -57,7 +57,7 @@ function Add-GitItem {
     #>
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Alias('FullName')]
         [string[]]
         # The paths to the files/directories to add to the next commit.
