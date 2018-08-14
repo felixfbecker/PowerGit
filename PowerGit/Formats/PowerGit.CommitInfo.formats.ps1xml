@@ -43,7 +43,7 @@ limitations under the License.
                             </ListItem>
                             <ListItem>
                                 <Label>Patch</Label>
-                                <ScriptBlock>$_.Patch.ToColoredString()</ScriptBlock>
+                                <ScriptBlock>$_.Patch | ConvertTo-ColoredPatch</ScriptBlock>
                                 <ItemSelectionCondition>
                                     <PropertyName>Patch</PropertyName>
                                 </ItemSelectionCondition>
@@ -82,7 +82,7 @@ limitations under the License.
                             </ListItem>
                             <ListItem>
                                 <Label>Patch</Label>
-                                <ScriptBlock>Patch.ToColoredString()</ScriptBlock>
+                                <ScriptBlock>$_.Patch | ConvertTo-ColoredPatch</ScriptBlock>
                                 <ItemSelectionCondition>
                                     <PropertyName>Patch</PropertyName>
                                 </ItemSelectionCondition>
@@ -129,7 +129,7 @@ limitations under the License.
                             </ListItem>
                             <ListItem>
                                 <Label>Patch</Label>
-                                <ScriptBlock>Patch.ToColoredString()</ScriptBlock>
+                                <ScriptBlock>$_.Patch | ConvertTo-ColoredPatch</ScriptBlock>
                                 <ItemSelectionCondition>
                                     <PropertyName>Patch</PropertyName>
                                 </ItemSelectionCondition>

@@ -62,13 +62,13 @@
 
     # Type files (.ps1xml) to be loaded when importing this module
     TypesToProcess = @(
-        'Types\LibGit2Sharp.StatusEntry.types.ps1xml',
-        'Types\LibGit2Sharp.Patch.types.ps1xml'
+        'Types\LibGit2Sharp.StatusEntry.types.ps1xml'
     )
 
     # Format files (.ps1xml) to be loaded when importing this module
     FormatsToProcess = @(
         'Formats\PowerGit.CommitInfo.formats.ps1xml',
+        'Formats\LibGit2Sharp.Patch.formats.ps1xml',
         'Formats\LibGit2Sharp.StatusEntry.formats.ps1xml'
     )
 
@@ -79,6 +79,7 @@
     FunctionsToExport = @(
         'Add-GitItem',
         'Compare-GitTree',
+        'ConvertTo-ColoredPatch',
         'Copy-GitRepository',
         'Find-GitRepository',
         'Get-GitBranch',
