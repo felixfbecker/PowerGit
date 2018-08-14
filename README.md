@@ -29,7 +29,7 @@ Forked from `GitAutomation` but made to work PSCore (Linux, macOS, Windows).
 | `git add README.md`                                      | `Add-GitItem README.md`                                           |
 | `git commit -m "message"`                                | `Save-GitCommit -m "message"`                                     |
 | `git log`                                                | `Get-GitCommit`                                                   |
-| `git log --oneline`                                      | `Get-GitCommit | Format-Table`                                    |
+| `git log --oneline`                                      | `Get-GitCommit \| Format-Table`                                    |
 | `git log -p`                                             | `Get-GitCommit -p`                                                |
 
 ## Tips
