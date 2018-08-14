@@ -61,7 +61,10 @@
     # ScriptsToProcess = @()
 
     # Type files (.ps1xml) to be loaded when importing this module
-    TypesToProcess = @( 'Types\LibGit2Sharp.StatusEntry.types.ps1xml' )
+    TypesToProcess = @(
+        'Types\LibGit2Sharp.StatusEntry.types.ps1xml',
+        'Types\LibGit2Sharp.Patch.types.ps1xml'
+    )
 
     # Format files (.ps1xml) to be loaded when importing this module
     FormatsToProcess = @(

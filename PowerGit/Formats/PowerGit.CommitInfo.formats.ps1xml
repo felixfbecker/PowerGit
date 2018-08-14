@@ -14,23 +14,142 @@ limitations under the License.
 -->
 <Configuration>
     <ViewDefinitions>
+        <!-- Resembles the git log output with format=medium (default) -->
         <View>
-            <Name>PowerGit.CommitInfo</Name>
+            <Name>Medium</Name>
+            <ViewSelectedBy>
+                <TypeName>PowerGit.CommitInfo</TypeName>
+            </ViewSelectedBy>
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <!-- Yellow -->
+                                <Label>&#27;[33mSha</Label>
+                                <ScriptBlock>"$($_.Sha)$([char]0x001b)[0m"</ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Author</Label>
+                                <PropertyName>Author</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Date</Label>
+                                <ScriptBlock>"$($_.Author.When)"</ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Message</Label>
+                                <PropertyName>Message</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Patch</Label>
+                                <ScriptBlock>$_.Patch.ToColoredString()</ScriptBlock>
+                                <ItemSelectionCondition>
+                                    <PropertyName>Patch</PropertyName>
+                                </ItemSelectionCondition>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+        <!-- Resembles the git log output with format=full -->
+        <View>
+            <Name>Full</Name>
+            <ViewSelectedBy>
+                <TypeName>PowerGit.CommitInfo</TypeName>
+            </ViewSelectedBy>
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <!-- Yellow -->
+                                <Label>&#27;[33mSha</Label>
+                                <ScriptBlock>"$($_.Sha)$([char]0x001b)[0m"</ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Author</Label>
+                                <PropertyName>Author</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Committer</Label>
+                                <PropertyName>Committer</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Message</Label>
+                                <PropertyName>Message</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Patch</Label>
+                                <ScriptBlock>Patch.ToColoredString()</ScriptBlock>
+                                <ItemSelectionCondition>
+                                    <PropertyName>Patch</PropertyName>
+                                </ItemSelectionCondition>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+        <!-- Resembles the default git log output with format=fuller -->
+        <View>
+            <Name>Fuller</Name>
+            <ViewSelectedBy>
+                <TypeName>PowerGit.CommitInfo</TypeName>
+            </ViewSelectedBy>
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <!-- Yellow -->
+                                <Label>&#27;[33mSha</Label>
+                                <ScriptBlock>"$($_.Sha)$([char]0x001b)[0m"</ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Author</Label>
+                                <PropertyName>Author</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>AuthorDate</Label>
+                                <ScriptBlock>$_.Author.When</ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Committer</Label>
+                                <PropertyName>Committer</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>CommitterDate</Label>
+                                <ScriptBlock>$_.Committer.When</ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Message</Label>
+                                <PropertyName>Message</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Patch</Label>
+                                <ScriptBlock>Patch.ToColoredString()</ScriptBlock>
+                                <ItemSelectionCondition>
+                                    <PropertyName>Patch</PropertyName>
+                                </ItemSelectionCondition>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+        <!-- Resembles the git log output with format=oneline -->
+        <View>
+            <Name>Oneline</Name>
             <ViewSelectedBy>
                 <TypeName>PowerGit.CommitInfo</TypeName>
             </ViewSelectedBy>
             <TableControl>
+                <AutoSize/>
                 <TableHeaders>
                     <TableColumnHeader>
                         <Label>Sha</Label>
-                        <Width>8</Width>
-                    </TableColumnHeader>
-                    <TableColumnHeader>
-                        <Label>Date</Label>
-                        <Width>20</Width>
-                    </TableColumnHeader>
-                    <TableColumnHeader>
-                        <Label>Author</Label>
                     </TableColumnHeader>
                     <TableColumnHeader>
                         <Label>Message</Label>
@@ -40,15 +159,8 @@ limitations under the License.
                     <TableRowEntry>
                         <TableColumnItems>
                             <TableColumnItem>
-                                <ScriptBlock>
-                                    $_.Sha.Substring(0, 7)
-                                </ScriptBlock>
-                            </TableColumnItem>
-                            <TableColumnItem>
-                                <ScriptBlock>'{0:MM/dd/yyyy hh:mm tt}' -f $_.Author.When</ScriptBlock>
-                            </TableColumnItem>
-                            <TableColumnItem>
-                                <PropertyName>Author</PropertyName>
+                                <!-- Yellow -->
+                                <ScriptBlock>"$([char]0x001b)[33m$($_.Sha.Substring(0, 7))$([char]0x001b)[0m"</ScriptBlock>
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>MessageShort</PropertyName>

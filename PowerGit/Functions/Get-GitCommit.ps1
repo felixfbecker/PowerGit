@@ -51,6 +51,10 @@ function Get-GitCommit {
         # Do not include any merge commits in the generated commit list.
         $NoMerges,
 
+        [switch]
+        # Include the patch for each commit.
+        $Patch,
+
         [string]
         # The path to the repository. Defaults to the current directory.
         $RepoRoot
@@ -65,15 +69,14 @@ function Get-GitCommit {
     }
 
     try {
-        if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
+        $commits = if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
             $filter = New-Object -TypeName 'LibGit2Sharp.CommitFilter'
             $filter.IncludeReachableFrom = $repo.Refs
-            $repo.Commits.QueryBy($filter) | ForEach-Object { New-Object -TypeName 'PowerGit.CommitInfo' -ArgumentList $_ }
-            return
+            $repo.Commits.QueryBy($filter)
         } elseif ( $PSCmdlet.ParameterSetName -eq 'Lookup' ) {
             $change = $repo.Lookup($Revision)
             if ( $change ) {
-                return New-Object -TypeName 'PowerGit.CommitInfo' -ArgumentList $change
+                $change
             } else {
                 Write-Error -Message ('Commit ''{0}'' not found in repository ''{1}''.' -f $Revision, $repo.Info.WorkingDirectory) -ErrorAction $ErrorActionPreference
                 return
@@ -103,7 +106,17 @@ function Get-GitCommit {
                 $filteredCommits = $filteredCommits | Where-Object { $_.Parents.Count -le 1 }
             }
 
-            $filteredCommits | ForEach-Object { New-Object -TypeName 'PowerGit.CommitInfo' -ArgumentList $_ }
+            $filteredCommits
+        }
+        $commits | ForEach-Object {
+            [LibGit2Sharp.Patch]$patchObj = $null
+            if ($Patch) {
+                $parent = [System.Linq.Enumerable]::FirstOrDefault($_.Parents)
+                if ($parent) {
+                    $patchObj = [PowerGit.Diff]::GetTreePatch($repo, $_, $parent)
+                }
+            }
+            [PowerGit.CommitInfo]::new($_, $patchObj)
         }
     } finally {
         $repo.Dispose()
