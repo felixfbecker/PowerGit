@@ -19,6 +19,50 @@ Forked from `GitAutomation` but made to work PSCore (Linux, macOS, Windows).
 - Stay as close as possible to native `git` behaviour
 - High test coverage
 - Run cross-platform on Windows, macOS and Linux
+- Interop with [PSGitHub](https://github.com/pcgeek86/PSGitHub)
+
+## How to use
+
+### Cloning
+
+Use `Copy-GitRepository`. It works just like `git clone`, but with fancier progress reporting:
+
+![Copy-GitRepository demo](./Screenshots/Copy-GitRepository.svg)
+
+### Log
+
+Use `Get-GitCommit` to query the commits in the repository.  
+
+To page the output, make sure to pipe into `Out-Host -Paging` (short `oh -p`).
+
+Multiple [git pretty formats](https://git-scm.com/docs/pretty-formats) are supported.
+The default output mirrors the default git `medium` output:
+
+![Get-GitCommit demo](./Screenshots/Get-GitCommit.svg)
+
+`short`, `full` and `fuller` are supported as alternative list views, e.g. `Get-GitCommit | Format-List -View Fuller` (or short `fl -v fuller`).
+
+For `oneline`, simply pipe to `Format-Table` (short `ft`).
+
+![Get-GitCommit | Format-List -View Oneline demo](./Screenshots/Get-GitCommit-Oneline.svg)
+
+Pass `-Patch` (short `-p`) like in native git to include colored diffs.
+
+![Get-GitCommit -Patch demo](./Screenshots/Get-GitCommit-Patch.svg)
+
+### Add
+
+### Commit
+
+### Push
+
+### Pull
+
+### Merge
+
+### Rebase
+
+### Compare
 
 ## Cheat sheet
 
@@ -29,8 +73,10 @@ Forked from `GitAutomation` but made to work PSCore (Linux, macOS, Windows).
 | `git add README.md`                                      | `Add-GitItem README.md`                                           |
 | `git commit -m "message"`                                | `Save-GitCommit -m "message"`                                     |
 | `git log`                                                | `Get-GitCommit`                                                   |
-| `git log --oneline`                                      | `Get-GitCommit \| Format-Table`                                    |
+| `git log --oneline`                                      | `Get-GitCommit \| Format-Table`                                   |
 | `git log -p`                                             | `Get-GitCommit -p`                                                |
+| `git show be1db11`                                       | `Get-GitCommit be1db11 -Patch`                                    |
+| `git rev-parse HEAD`                                     | `(Get-GitCommit HEAD).Sha`                                        |
 
 ## Tips
 
@@ -39,11 +85,3 @@ Forked from `GitAutomation` but made to work PSCore (Linux, macOS, Windows).
 - PowerShell allows shortening commands if the abbreviation is umambiguous. That means you can write `Copy-GitRepo` instead of `Copy-GitRepository`
 - Same for parameters: you can write `-m` instead of `-Message`, just like with native git
 - Commands and parameters in PowerShell are case-insenstive. If you prefer writing everything lowercase, you can do that
-
-## Output formats
-
-PowerGit includes format views that resemble most [git pretty formats](https://git-scm.com/docs/pretty-formats) (Oneline, Short, Medium, Full, Fuller).
-Just like with native `git`, by default "Medium" is used.
-You can use a different format view by piping a commit object into `Format-List -View $view` (or short `fl -v`) where `$view` is one of the view names mentioned above (except Oneline, for which you must use `Format-List`)
-
-To enable paging like with git, pipe into `Out-Host -Paging` (or short `oh -p`).
