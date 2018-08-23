@@ -7,13 +7,26 @@ trigger:
 phases:
   - template: .vsts/template.yml
     parameters:
-      name: Linux
+      name: Test Linux
       queue: 'Hosted Linux Preview'
   - template: .vsts/template.yml
     parameters:
-      name: macOS
+      name: Test macOS
       queue: 'Hosted macOS Preview'
   - template: .vsts/template.yml
     parameters:
-      name: Windows
+      name: Test Windows
       queue: 'Hosted VS2017'
+  - phase: Release
+    queue: 'Hosted Linux Preview'
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    dependsOn:
+      - Test Linux
+      - Test macOS
+      - Test Windows
+    steps:
+      - bash: npm ci && ./node_modules/.bin/semantic-release
+        env:
+          NUGET_API_KEY: $(NuGetApiKey)
+          GITHUB_TOKEN: $(GitHubToken)
+        displayName: Run semantic-release
