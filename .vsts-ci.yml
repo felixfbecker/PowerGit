@@ -17,14 +17,17 @@ phases:
     parameters:
       name: test_windows
       queue: 'Hosted VS2017'
-  - phase: Release
-    queue: 'Hosted VS2017'
+  - phase: release
+    queue: 'Hosted Linux Preview'
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     dependsOn:
       - test_linux
       - test_macos
       - test_windows
     steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: ^10.3.0
       - bash: npm ci && ./node_modules/.bin/semantic-release
         env:
           NUGET_API_KEY: $(NuGetApiKey)
