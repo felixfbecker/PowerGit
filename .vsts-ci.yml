@@ -18,7 +18,7 @@ phases:
       name: Test Windows
       queue: 'Hosted VS2017'
   - phase: Release
-    queue: 'Hosted Linux Preview'
+    queue: 'Hosted VS2017'
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     dependsOn:
       - Test Linux
