@@ -1,4 +1,8 @@
 name: $(BuildID)
+trigger:
+  branches:
+    include:
+      - master
 
 phases:
   - template: .vsts/template.yml
