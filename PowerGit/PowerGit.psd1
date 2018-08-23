@@ -16,7 +16,7 @@
     RootModule = 'PowerGit.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.0.1'
+    ModuleVersion = '0.0.2'
 
     # ID used to uniquely identify this module
     GUID = '474f1ce8-98a3-49d2-8c7e-c3bbd5c0fcba'
