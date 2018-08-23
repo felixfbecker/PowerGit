@@ -33,23 +33,23 @@ if (-not (Test-Path "$PSScriptRoot/Assemblies/installed")) {
 Import-Module "$PSScriptRoot/Assemblies/LibGit2Sharp.dll"
 Import-Module "$PSScriptRoot/Assemblies/PowerGit.dll"
 
-$sshCmd = Get-Command 'ssh' -ErrorAction Ignore
-if ($sshCmd) {
-    $sshPath = $sshCmd.Path
-} else {
-    $gitCmd = Get-Command -Name 'git.exe' -ErrorAction Ignore
-    if ($gitCmd) {
-        $sshPath = Split-Path -Path $gitCmd.Path -Parent
-        $sshPath = Join-Path -Path $sshPath -ChildPath '..\usr\bin\ssh.exe' -Resolve -ErrorAction Ignore
-    }
-}
+# $sshCmd = Get-Command 'ssh' -ErrorAction Ignore
+# if ($sshCmd) {
+#     $sshPath = $sshCmd.Path
+# } else {
+#     $gitCmd = Get-Command -Name 'git.exe' -ErrorAction Ignore
+#     if ($gitCmd) {
+#         $sshPath = Split-Path -Path $gitCmd.Path -Parent
+#         $sshPath = Join-Path -Path $sshPath -ChildPath '..\usr\bin\ssh.exe' -Resolve -ErrorAction Ignore
+#     }
+# }
 
-if ($sshPath) {
-    [PowerGit.SshExeTransport]::Unregister()
-    [PowerGit.SshExeTransport]::Register($sshPath)
-} else {
-    Write-Warning -Message ('SSH support is disabled. To enable SSH, please install Git for Windows. PowerGit uses the version of SSH that ships with Git for Windows.')
-}
+# if ($sshPath) {
+#     [PowerGit.SshExeTransport]::Unregister()
+#     [PowerGit.SshExeTransport]::Register($sshPath)
+# } else {
+#     Write-Warning -Message ('SSH support is disabled. To enable SSH, please install Git for Windows. PowerGit uses the version of SSH that ships with Git for Windows.')
+# }
 
 Get-ChildItem -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Functions' -Resolve) -Filter '*.ps1' |
     Where-Object { $_.Name -notlike '*.Tests.ps1' } |
