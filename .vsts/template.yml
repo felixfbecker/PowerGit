@@ -46,3 +46,9 @@ phases:
           VCS_COMMIT_ID: $(Build.SourceVersion)
           CODECOV_TOKEN: $(CodeCovToken)
         displayName: Upload coverage to CodeCov
+      - bash: npm ci && ./node_modules/.bin/semantic-release
+        env:
+          NUGET_API_KEY: $(NuGetApiKey)
+          GITHUB_TOKEN: $(GitHubToken)
+        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+        displayName: Release

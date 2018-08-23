@@ -12,6 +12,7 @@ Output/
 **/*.user
 .output
 .vs
+/node_modules/
 
 # TODO figure out where these come from
 /PowerGit/Assemblies
