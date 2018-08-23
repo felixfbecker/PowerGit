@@ -7,23 +7,23 @@ trigger:
 phases:
   - template: .vsts/template.yml
     parameters:
-      name: Test Linux
+      name: test_linux
       queue: 'Hosted Linux Preview'
   - template: .vsts/template.yml
     parameters:
-      name: Test macOS
+      name: test_macos
       queue: 'Hosted macOS Preview'
   - template: .vsts/template.yml
     parameters:
-      name: Test Windows
+      name: test_windows
       queue: 'Hosted VS2017'
   - phase: Release
     queue: 'Hosted VS2017'
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     dependsOn:
-      - Test Linux
-      - Test macOS
-      - Test Windows
+      - test_linux
+      - test_macos
+      - test_windows
     steps:
       - bash: npm ci && ./node_modules/.bin/semantic-release
         env:
