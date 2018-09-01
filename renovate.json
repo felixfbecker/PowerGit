@@ -1,5 +1,6 @@
 {
-  "extends": ["config:base"],
+  "extends": ["config:base", ":maintainLockFilesMonthly"],
   "semanticCommits": true,
-  "prCreation": "not-pending"
+  "prCreation": "not-pending",
+  "rangeStrategy": "replace"
 }
