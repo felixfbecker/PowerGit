@@ -2,6 +2,8 @@ verifyConditions:
   - '@semantic-release/github'
 prepare:
   - path: '@semantic-release/exec'
+    cmd: pwsh build.ps1 -Configuration Release
+  - path: '@semantic-release/exec'
     shell: pwsh
     cmd: |
       Update-ModuleManifest -ErrorAction Stop -Path ./PowerGit/PowerGit.psd1 -ModuleVersion '${nextRelease.version}' -ReleaseNotes @'
