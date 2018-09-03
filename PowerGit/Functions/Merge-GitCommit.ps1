@@ -41,10 +41,11 @@ function Merge-GitCommit {
         # The path to the repository where the files should be added. The default is the current directory as returned by Get-Location.
         $RepoRoot = (Get-Location).ProviderPath,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Alias('Sha')]
         [string]
         # The revision to merge into the current commit (i.e. HEAD). A revision can be a specific commit ID/sha (short or long), branch name, tag name, etc. Run git help gitrevisions or go to https://git-scm.com/docs/gitrevisions for full documentation on Git's revision syntax.
-        $Revision = "HEAD",
+        $Revision,
 
         [string]
         [ValidateSet('No', 'Only')]
@@ -83,7 +84,7 @@ function Merge-GitCommit {
     $signature = $repo.Config.BuildSignature((Get-Date))
     try {
         $result = $repo.Merge($Revision, $signature, $mergeOptions)
-        New-Object -TypeName 'PowerGit.MergeResult' -ArgumentList $result
+        [PowerGit.MergeResult]::new($result)
     } catch {
         Write-Error -Exception $_.Exception
     } finally {
