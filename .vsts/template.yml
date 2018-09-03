@@ -12,7 +12,7 @@ phases:
         displayName: Configure git user
       - powershell: |
           Install-Module -Force -Scope CurrentUser PSScriptAnalyzer
-          Invoke-ScriptAnalyzer -Path . -Recurse | Format-List -Property RuleName,Message,ScriptPath,Line,Column
+          Invoke-ScriptAnalyzer -Path . -Recurse -Settings PSScriptAnalyzerSettings.psd1 | Format-List -Property RuleName,Message,ScriptPath,Line,Column
         displayName: Run PSScriptAnalyzer
       - powershell: ./build.ps1
         displayName: Build assemblies
