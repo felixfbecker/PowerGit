@@ -38,10 +38,10 @@ function New-GitRepository {
     [CmdletBinding(SupportsShouldProcess = $true)]
     [OutputType([PowerGit.RepositoryInfo])]
     param(
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [string]
         # The path to the repository to create.
-        $Path,
+        $Path = '.',
 
         [Switch]
         $Bare
@@ -62,7 +62,7 @@ function New-GitRepository {
     $repoPath = [LibGit2Sharp.Repository]::Init($Path, $Bare.IsPresent)
     $repo = [LibGit2Sharp.Repository]::new($repoPath)
     try {
-        return New-Object 'PowerGit.RepositoryInfo' $repo.Info
+        return [PowerGit.RepositoryInfo]::new($repo.Info)
     } finally {
         $repo.Dispose()
     }
