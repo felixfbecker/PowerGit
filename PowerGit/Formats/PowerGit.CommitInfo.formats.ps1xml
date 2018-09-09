@@ -27,7 +27,7 @@ limitations under the License.
                             <ListItem>
                                 <!-- Yellow -->
                                 <Label>&#27;[33mSha</Label>
-                                <ScriptBlock>"$($_.Sha)$([char]0x001b)[0m"</ScriptBlock>
+                                <ScriptBlock>"$($_.Sha)`e[0m"</ScriptBlock>
                             </ListItem>
                             <ListItem>
                                 <Label>Author</Label>
@@ -66,7 +66,7 @@ limitations under the License.
                             <ListItem>
                                 <!-- Yellow -->
                                 <Label>&#27;[33mSha</Label>
-                                <ScriptBlock>"$($_.Sha)$([char]0x001b)[0m"</ScriptBlock>
+                                <ScriptBlock>"$($_.Sha)`e[0m"</ScriptBlock>
                             </ListItem>
                             <ListItem>
                                 <Label>Author</Label>
@@ -105,7 +105,7 @@ limitations under the License.
                             <ListItem>
                                 <!-- Yellow -->
                                 <Label>&#27;[33mSha</Label>
-                                <ScriptBlock>"$($_.Sha)$([char]0x001b)[0m"</ScriptBlock>
+                                <ScriptBlock>"$($_.Sha)`e[0m"</ScriptBlock>
                             </ListItem>
                             <ListItem>
                                 <Label>Author</Label>
@@ -160,7 +160,7 @@ limitations under the License.
                         <TableColumnItems>
                             <TableColumnItem>
                                 <!-- Yellow -->
-                                <ScriptBlock>"$([char]0x001b)[33m$($_.Sha.Substring(0, 7))$([char]0x001b)[0m"</ScriptBlock>
+                                <ScriptBlock>"`e[33m$($_.Sha.Substring(0, 7))`e[0m"</ScriptBlock>
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>MessageShort</PropertyName>
