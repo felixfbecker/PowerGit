@@ -9,17 +9,17 @@ phases:
   - template: .vsts/template.yml
     parameters:
       name: test_linux
-      queue: 'Hosted Linux Preview'
+      queue: 'Hosted Linux'
   - template: .vsts/template.yml
     parameters:
       name: test_macos
-      queue: 'Hosted macOS Preview'
+      queue: 'Hosted macOS'
   - template: .vsts/template.yml
     parameters:
       name: test_windows
       queue: 'Hosted VS2017'
   - phase: release
-    queue: 'Hosted Linux Preview'
+    queue: 'Hosted Linux'
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     dependsOn:
       - test_linux
