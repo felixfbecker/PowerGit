@@ -5,21 +5,22 @@ trigger:
       - master
       - renovate/*
 
-phases:
+jobs:
   - template: .vsts/template.yml
     parameters:
       name: test_linux
-      queue: 'Hosted Linux'
+      image: ubuntu-16.04
   - template: .vsts/template.yml
     parameters:
       name: test_macos
-      queue: 'Hosted macOS'
+      image: macOS-10.14
   - template: .vsts/template.yml
     parameters:
       name: test_windows
-      queue: 'Hosted VS2017'
-  - phase: release
-    queue: 'Hosted Linux'
+      image: windows-2019
+  - job: release
+    pool:
+      vmImage: 'Hosted Linux'
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     dependsOn:
       - test_linux
