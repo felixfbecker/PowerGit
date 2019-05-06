@@ -4,9 +4,9 @@ trigger:
     include:
       - master
       - renovate/*
-  pr:
-    include:
-      - '*'
+pr:
+  include:
+    - '*'
 
 phases:
   - template: .vsts/template.yml
