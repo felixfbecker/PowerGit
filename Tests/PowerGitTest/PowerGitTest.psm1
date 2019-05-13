@@ -26,7 +26,7 @@ function Add-GitTestFile {
     Push-Location $RepoRoot
     try {
         foreach ( $filePath in $Path ) {
-            if ( (Test-Path -Path $filePath -PathType Leaf) ) {
+            if ((Test-Path -Path $filePath -PathType Leaf)) {
                 continue
             }
 
@@ -40,7 +40,10 @@ function Add-GitTestFile {
 
 function Assert-ThereAreNoErrors {
     It 'should write no errors' {
-        $Global:Error.Count | Should Be 0
+        if ($Global:Error) {
+            $Global:Error | Out-String | Write-Warning
+        }
+        $Global:Error | Should -BeNullOrEmpty
     }
 }
 

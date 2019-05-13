@@ -28,7 +28,7 @@ function Test-GitRemoteUri {
     [CmdletBinding()]
     [OutputType([boolean])]
     param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]
         # The uri to test
         $Uri

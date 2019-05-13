@@ -13,82 +13,83 @@
 function Send-GitBranch {
     <#
     .SYNOPSIS
-    Pushes the current branch to a remote repository, merging in changes from the remote branch, if necessary.
+    Pushes commits from the current git branch to its remote repository.
 
     .DESCRIPTION
-    The `Send-GitBranch` function sends the changes in the current branch to a remote repository. If there are any new changes for that branch on the remote repository, they are pulled in and merged with the local branch using the `Sync-GitBranch` function.
+    The `Send-GitBranch` function sends all commits on the current branch of the
+    local Git repository to its upstream remote repository. If you are pushing a
+    new branch, use the `SetUpstream` switch to ensure Git tracks the new remote
+    branch as a copy of the local branch.
 
-    Use the `MergeStrategy` argument to control how new changes are merged into your branch. The default is to use the `merge.ff` Git setting, which is to fast-forward when possible, merge otherwise.
+    If the repository requires authentication, pass the username/password via
+    the `Credential` parameter.
 
-    The `Retry` parameter controls how many pull/merge/push attempts to make. The default is "5".
-
-    Returns a `PowerGit.SendBranchResult`. To see if the push succeeded, check the `LastPushResult` property, which is a `PowerGit.PushResult` enumeration. A value of `Ok` means the push succeeded. Other values are `Failed` or `Rejected`.
-
-    The result object contains lists for every merge and push operation this function attempts. Merge results are in a `MergeResult` object, from first attempt to most recent attempt. Push results are in a `PushResult` property, from first attempt to most recent attempt.
-
-    The most recent merge result is available as the `LastMergeResult` property. The most recent push result is available as the `LastPushResult` property.
-
-    This command implements the `git push` command, and, if there are new changes in the remote repository, the `git pull` command.
-
-    .LINK
-    Sync-GitBranch
-
-    .LINK
-    Send-GitCommit
+    This function implements the `git push` command.
 
     .EXAMPLE
     Send-GitBranch
 
-    Demonstrates how to push changes to a remote repository.
+    Pushes commits from the repository at the current location to its upstream
+    remote repository
+
+    .EXAMPLE
+    Send-GitBranch -RepoRoot 'C:\Build\TestGitRepo' -Credential $PsCredential
+
+    Pushes commits from the repository located at 'C:\Build\TestGitRepo' to its
+    remote using authentication
     #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '')]
     [CmdletBinding()]
-    [OutputType([PowerGit.SendBranchResult])]
+    [OutputType([LibGit2Sharp.Branch])]
     param(
-        [string]
-        $RepoRoot = (Get-Location).ProviderPath,
+        [Parameter(ValueFromPipeline)]
+        [LibGit2Sharp.Branch] $InputObject,
 
-        [ValidateSet('FastForward', 'Merge')]
-        [string]
-        # What to do when merging remote changes into your local branch. By default, will use your configured `merge.ff` configuration options. Set to `Merge` to always create a merge commit. Use `FastForward` to only allow fast-forward "merges" (i.e. move the remote branch to point to your local branch head if there are no new changes on the remote branch). When automating, the safest option is `Merge`. If you choose `FastForward` and the remote branch has new changes on it, this function will fail.
-        $MergeStrategy,
+        # The remote to push the branch to
+        [Parameter(Position = 0)]
+        [string] $Remote,
 
-        [int]
-        # The number of times to retry the push. Default is 5.
-        $Retry = 5
+        # The name of the branch to push
+        [Parameter(Position = 1)]
+        [string] $Name,
+
+        # Specifies the location of the repository to synchronize. Defaults to the current directory.
+        [string] $RepoRoot = (Get-Location).ProviderPath,
+
+        # Add tracking information for any new branches pushed so Git sees the local branch and remote branch as the same.
+        [Alias('u')]
+        [switch] $SetUpstream,
+
+        # Usually, the command refuses to update a remote ref that is not an ancestor of the local ref used to overwrite it.
+        # This flag disables this check by prefixing all refspecs with "+".
+        [switch] $Force,
+
+        # The credentials to use to connect to the source repository.
+        [pscredential] $Credential
     )
 
-    Set-StrictMode -Version 'Latest'
-    Use-CallerPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
+    process {
+        Set-StrictMode -Version 'Latest'
+        Use-CallerPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
 
-    $mergeStrategyParam = @{ }
-    if ( $MergeStrategy ) {
-        $mergeStrategyParam['MergeStrategy'] = $MergeStrategy
-    }
-
-    $result = [PowerGit.SendBranchResult]::new()
-
-    try {
-        $tryNum = 0
-        do {
-            $syncResult = Sync-GitBranch -RepoRoot $RepoRoot @mergeStrategyParam
-            if ( -not $syncResult ) {
-                return
+        if (-not $InputObject) {
+            $InputObject = if ($Name) {
+                Get-GitBranch -RepoRoot $RepoRoot -Name $Name
+            } else {
+                Get-GitHead -RepoRoot $RepoRoot
             }
-
-            $result.MergeResult.Add($syncResult)
-
-            if ( $syncResult.Status -eq [LibGit2Sharp.MergeStatus]::Conflicts ) {
-                Write-Error -Message ('There are merge conflicts pulling remote changes into local branch.')
-                return
-            }
-
-            $pushResult = Send-GitCommit -RepoRoot $RepoRoot
-            $result.PushResult.Add($pushResult)
         }
-        while ( $tryNum++ -lt $Retry -and $pushResult -ne [PowerGit.PushResult]::Ok )
-    } finally {
-        # use `,` to prevent enumeration
-        , $result
+        $sendParams = @{
+            RepoRoot = $RepoRoot
+            SetUpstream = [bool]$SetUpstream
+            Force = [bool]$Force
+        }
+        if ($Credential) {
+            $sendParams.Credential = $Credential
+        }
+        if (-not $InputObject) {
+            Write-Warning "No git branch matching $Name"
+            return
+        }
+        $InputObject | Send-GitObject @sendParams
     }
 }

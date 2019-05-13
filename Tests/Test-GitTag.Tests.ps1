@@ -23,11 +23,11 @@ Describe 'Test-GitTag when running from a valid git repository' {
     New-GitTag -RepoRoot $repo -Name 'tip'
 
     It 'should return true if the tag exists' {
-        Test-GitTag -RepoRoot $repo -Name 'tip' | Should Be $true
+        Test-GitTag -RepoRoot $repo -Name 'tip' | Should -Be $true
     }
 
     It 'should return false if the tag does not exist' {
-        Test-GitTag -RepoRoot $repo -Name 'whocares' | Should Be $false
+        Test-GitTag -RepoRoot $repo -Name 'whocares' | Should -Be $false
     }
 
     Assert-ThereAreNoErrors
@@ -39,7 +39,7 @@ Describe 'Test-GitTag when running from an invalid git repository' {
     Test-GitTag -RepoRoot 'C:\I\do\not\exist' -Name 'whocares' -ErrorAction SilentlyContinue
 
     It 'should throw an error' {
-        $Global:Error.Count | Should Be 1
+        $Global:Error.Count | Should -Be 1
         $Global:Error | Should Match 'does not exist'
     }
 }

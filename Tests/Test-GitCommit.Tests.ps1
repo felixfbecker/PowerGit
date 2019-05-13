@@ -71,7 +71,7 @@ function WhenTestingRevision {
     )
 
     $repoRootParam = @{ 'RepoRoot' = $repoRoot }
-    if ( $NoRepoRootParameter ) {
+    if ($NoRepoRootParameter) {
         $repoRootParam = @{ }
     }
 

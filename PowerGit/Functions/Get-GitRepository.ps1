@@ -33,22 +33,21 @@ function Get-GitRepository {
     [CmdletBinding()]
     [OutputType([LibGit2Sharp.Repository])]
     param(
-        [string]
         # The root to the repository to get. Defaults to the current directory.
-        $RepoRoot = (Get-Location).ProviderPath
+        [string] $RepoRoot = (Get-Location).ProviderPath
     )
 
     Set-StrictMode -Version 'Latest'
 
     $RepoRoot = Resolve-Path -Path $RepoRoot -ErrorAction Ignore | Select-Object -ExpandProperty 'ProviderPath'
-    if ( -not $RepoRoot ) {
-        Write-Error -Message ('Repository ''{0}'' does not exist.' -f $PSBoundParameters['RepoRoot'])
-        return
-    }
+if (-not $RepoRoot) {
+    Write-Error -Message ('Repository ''{0}'' does not exist.' -f $PSBoundParameters['RepoRoot'])
+    return
+}
 
-    try {
-        New-Object 'LibGit2Sharp.Repository' ($RepoRoot)
-    } catch {
-        Write-Error -ErrorRecord $_
-    }
+try {
+    [LibGit2Sharp.Repository]::new($RepoRoot)
+} catch {
+    Write-Error -ErrorRecord $_
+}
 }

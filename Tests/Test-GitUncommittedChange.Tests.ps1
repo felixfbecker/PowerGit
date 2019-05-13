@@ -21,13 +21,13 @@ Describe 'Test-GitUncommittedChange when checking for uncommitted changes' {
     Save-GitCommit -RepoRoot $repo -Message 'added file1'
 
     It 'should return false if there are no changes' {
-        Test-GitUncommittedChange -RepoRoot $repo | Should Be $false
+        Test-GitUncommittedChange -RepoRoot $repo | Should -Be $false
     }
 
     '' | Set-Content -Path (Join-Path -Path $repo -ChildPath 'file1')
 
     It 'should return true if a file has been modified' {
-        Test-GitUncommittedChange -RepoRoot $repo | Should Be $true
+        Test-GitUncommittedChange -RepoRoot $repo | Should -Be $true
     }
 
     Add-GitItem -Path (Join-Path $repo -ChildPath 'file1') -RepoRoot $repo
@@ -37,7 +37,7 @@ Describe 'Test-GitUncommittedChange when checking for uncommitted changes' {
     Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file2') -RepoRoot $repo
 
     It 'should return true if a file has been added' {
-        Test-GitUncommittedChange -RepoRoot $repo | Should Be $true
+        Test-GitUncommittedChange -RepoRoot $repo | Should -Be $true
     }
 
     Save-GitCommit -RepoRoot $repo -Message 'added file2'
@@ -45,7 +45,7 @@ Describe 'Test-GitUncommittedChange when checking for uncommitted changes' {
     Rename-Item -Path (Join-Path -Path $repo -ChildPath 'file2') -NewName 'file2.Awesome'
 
     It 'should return true if a file has been renamed' {
-        Test-GitUncommittedChange -RepoRoot $repo | Should Be $true
+        Test-GitUncommittedChange -RepoRoot $repo | Should -Be $true
     }
 
     Add-GitItem -Path (Join-Path $repo -ChildPath 'file2.Awesome') -RepoRoot $repo
@@ -54,7 +54,7 @@ Describe 'Test-GitUncommittedChange when checking for uncommitted changes' {
     Remove-Item -Path (Join-Path -Path $repo -ChildPath 'file1')
 
     It 'should return true if a file has been deleted' {
-        Test-GitUncommittedChange -RepoRoot $repo | Should Be $true
+        Test-GitUncommittedChange -RepoRoot $repo | Should -Be $true
     }
 
     Assert-ThereAreNoErrors
@@ -65,7 +65,7 @@ Describe 'Test-GitUncommittedChanges when the given repo doesn''t exist' {
 
     Test-GitUncommittedChange -RepoRoot 'C:\I\do\not\exist' -ErrorAction SilentlyContinue
     It 'should write an error' {
-        $Global:Error.Count | Should Be 1
+        $Global:Error.Count | Should -Be 1
         $Global:Error | Should Match 'does not exist'
     }
 }

@@ -22,7 +22,7 @@ function Assert-ThisRepositoryFound {
 
     It 'should return this repository' {
         $Repository | Should Not BeNullOrEmpty
-        $Repository.Info.WorkingDirectory | Should Be (Join-Path -Path $PSScriptRoot -ChildPath '..\' -Resolve)
+        $Repository.Info.WorkingDirectory | Should -Be (Join-Path -Path $PSScriptRoot -ChildPath '..\' -Resolve)
     }
 }
 
@@ -54,7 +54,7 @@ Describe 'Find-GitRepository when the current directory has no repository' {
         $repo = Find-GitRepository
         Assert-NoRepositoryReturned -Repository $repo
         It 'should write no errors' {
-            $Global:Error.Count | Should Be 0
+            $Global:Error.Count | Should -Be 0
         }
     } finally {
         Pop-Location
@@ -76,7 +76,7 @@ Describe 'Find-GitRepository when a path doesn''t exist' {
     $repo = Find-GitRepository -Path 'C:\I\do\not\exist' -ErrorAction SilentlyContinue
     Assert-NoRepositoryReturned $repo
     It 'should write an error' {
-        $Global:Error.Count | Should Be 1
+        $Global:Error.Count | Should -Be 1
         $Global:Error | Should Match 'does not exist'
     }
 }

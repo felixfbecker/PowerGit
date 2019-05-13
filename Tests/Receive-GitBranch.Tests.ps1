@@ -15,7 +15,7 @@
 $serverWorkingDirectory = $null
 $serverBareDirectory = $null
 $clientDirectory = $null
-[PowerGit.CommitInfo]$lastCommit = $null
+[LibGit2Sharp.Commit]$lastCommit = $null
 
 function GivenBranch {
     param(
@@ -30,7 +30,7 @@ function GivenCheckedOut {
         $Revision
     )
 
-    Update-GitRepository -RepoRoot $clientDirectory -Revision $Revision
+    Set-GitHead -RepoRoot $clientDirectory -Revision $Revision
 }
 
 function GivenConflicts {
@@ -41,7 +41,7 @@ function GivenConflicts {
         $script:lastCommit = Save-GitCommit -RepoRoot $dir -Message 'conflict first'
     }
 
-    Send-GitCommit -RepoRoot $serverWorkingDirectory
+    Send-GitBranch -RepoRoot $serverWorkingDirectory
 }
 
 function GivenNewCommitIn {
@@ -58,8 +58,8 @@ function GivenNewCommitIn {
         Add-GitItem -Path $filePath
         $script:lastCommit = Save-GitCommit -Message $filePath
 
-        if ( $AndPushed ) {
-            Send-GitCommit
+        if ($AndPushed) {
+            Send-GitBranch
         }
     } finally {
         Pop-Location
@@ -103,7 +103,7 @@ function Init {
         '' | Set-Content -Path 'master'
         Add-GitItem 'master'
         $script:lastCommit = Save-GitCommit -Message 'first'
-        Send-GitCommit
+        Send-GitBranch
     } finally {
         Pop-Location
     }
@@ -176,14 +176,14 @@ function WhenUpdated {
     )
 
     $mergeStrategyArg = @{}
-    if ( $AndMergeStrategyIs ) {
+    if ($AndMergeStrategyIs) {
         $mergeStrategyArg['MergeStrategy'] = $AndMergeStrategyIs
     }
 
-    $script:result = Sync-GitBranch -RepoRoot $RepoRoot @mergeStrategyArg
+    $script:result = Receive-GitBranch -RepoRoot $RepoRoot @mergeStrategyArg
 }
 
-Describe 'Sync-GitBranch.when no new commits on the server' {
+Describe 'Receive-GitBranch.when no new commits on the server' {
     Init
     GivenNewCommitIn $clientDirectory
     WhenUpdated -RepoRoot $clientDirectory
@@ -191,14 +191,14 @@ Describe 'Sync-GitBranch.when no new commits on the server' {
     ThenHeadIsLastCommit
 }
 
-Describe 'Sync-GitBranch.when no new commits local and no new commits on server' {
+Describe 'Receive-GitBranch.when no new commits local and no new commits on server' {
     Init
     WhenUpdated -RepoRoot $clientDirectory
     ThenStatusIs 'UpToDate'
     ThenHeadIsLastCommit
 }
 
-Describe 'Sync-GitBranch.when no new commits local and new commits on server' {
+Describe 'Receive-GitBranch.when no new commits local and new commits on server' {
     Init
     GivenNewCommitIn $serverWorkingDirectory -AndPushed
     WhenUpdated -RepoRoot $clientDirectory
@@ -206,7 +206,7 @@ Describe 'Sync-GitBranch.when no new commits local and new commits on server' {
     ThenHeadIsLastCommit
 }
 
-Describe 'Sync-GitBranch.when no new commits local and new commits on server' {
+Describe 'Receive-GitBranch.when no new commits local and new commits on server' {
     Init
     GivenNewCommitIn $serverWorkingDirectory -AndPushed
     WhenUpdated -RepoRoot $clientDirectory -AndMergeStrategyIs 'Merge'
@@ -214,7 +214,7 @@ Describe 'Sync-GitBranch.when no new commits local and new commits on server' {
     ThenHeadIsNewCommit
 }
 
-Describe 'Sync-GitBranch.when new commits local and new commits on server' {
+Describe 'Receive-GitBranch.when new commits local and new commits on server' {
     Init
     GivenNewCommitIn $serverWorkingDirectory -AndPushed
     GivenNewCommitIn $clientDirectory
@@ -223,7 +223,7 @@ Describe 'Sync-GitBranch.when new commits local and new commits on server' {
     ThenHeadIsNewCommit
 }
 
-Describe 'Sync-GitBranch.when new commits local and new commits on server and merge must be fast-forwarded' {
+Describe 'Receive-GitBranch.when new commits local and new commits on server and merge must be fast-forwarded' {
     Init
     GivenNewCommitIn $serverWorkingDirectory -AndPushed
     GivenNewCommitIn $clientDirectory
@@ -233,7 +233,7 @@ Describe 'Sync-GitBranch.when new commits local and new commits on server and me
     ThenHeadIsLastCommit
 }
 
-Describe 'Sync-GitBranch.when no local branch' {
+Describe 'Receive-GitBranch.when no local branch' {
     Init
     GivenNewCommitIn $clientDirectory
     GivenCheckedOut $lastCommit.Sha
@@ -243,7 +243,7 @@ Describe 'Sync-GitBranch.when no local branch' {
     ThenHeadIsLastCommit
 }
 
-Describe 'Sync-GitBranch.when no tracking branch and there is a remote equivalent' {
+Describe 'Receive-GitBranch.when no tracking branch and there is a remote equivalent' {
     Init
     GivenNewCommitIn $clientDirectory
     GivenNewCommitIn $serverWorkingDirectory -AndPushed
@@ -253,7 +253,7 @@ Describe 'Sync-GitBranch.when no tracking branch and there is a remote equivalen
     ThenHeadIsNewCommit
 }
 
-Describe 'Sync-GitBranch.when no tracking branch and there is no remote equivalent' {
+Describe 'Receive-GitBranch.when no tracking branch and there is no remote equivalent' {
     Init
     GivenBranch 'develop'
     GivenNewCommitIn $clientDirectory
@@ -263,17 +263,17 @@ Describe 'Sync-GitBranch.when no tracking branch and there is no remote equivale
     ThenHeadIsLastCommit 'develop'
 }
 
-Describe 'Sync-GitBranch.when the given repo doesn''t exist' {
+Describe 'Receive-GitBranch.when the given repo doesn''t exist' {
     Clear-Error
 
-    Sync-GitBranch -RepoRoot 'C:\I\do\not\exist' -ErrorAction SilentlyContinue
+    Receive-GitBranch -RepoRoot 'C:\I\do\not\exist' -ErrorAction SilentlyContinue
     It 'should write an error' {
-        $Global:Error.Count | Should Be 1
+        $Global:Error.Count | Should -Be 1
         $Global:Error | Should Match 'does not exist'
     }
 }
 
-Describe 'Sync-GitBranch.when there are conflicts between local and remote' {
+Describe 'Receive-GitBranch.when there are conflicts between local and remote' {
     Init
     GivenConflicts
     WhenUpdated -RepoRoot $clientDirectory

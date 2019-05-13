@@ -29,20 +29,19 @@ function Test-GitTag {
     [CmdletBinding()]
     [OutputType([bool])]
     param(
-        [string]
         # Specifies which git repository to check. Defaults to the current directory.
-        $RepoRoot = (Get-Location).ProviderPath,
+        [string] $RepoRoot = (Get-Location).ProviderPath,
 
-        [Parameter(Mandatory = $true)]
-        [string]
         # The name of the tag to check for.
-        $Name
+        [Parameter(Mandatory)]
+        [string] $Name
     )
 
-    Set-StrictMode -Version 'Latest'
+    process {
+        Set-StrictMode -Version 'Latest'
 
-    $tag = Get-GitTag -RepoRoot $RepoRoot -Name $Name |
-        Where-Object { $_.Name -eq $Name }
+        $tag = Get-GitTag -RepoRoot $RepoRoot -Name $Name
 
-    return ($null -ne $tag)
+        return ($null -ne $tag)
+    }
 }

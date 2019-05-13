@@ -73,7 +73,7 @@ function ThenFileShouldBeStaged {
                 Where-Object { $_.IsStaged } |
                 Measure-Object |
                 Select-Object -ExpandProperty 'Count' |
-                Should Be 1
+                Should -Be 1
         }
     }
 }
@@ -86,11 +86,11 @@ function ThenFileShouldNotBeStaged {
 
     foreach ( $pathItem in $Path ) {
         It ('should not stage {0}' -f $pathItem) {
-            Get-GitRepositoryStatus -RepoRoot $repoRoot -Path $pathItem |
+            Get-GitRepositoryStatus -RepoRoot $repoRoot -Path $pathItem 6>$null |
                 Where-Object { $_.IsStaged } |
                 Measure-Object |
                 Select-Object -ExpandProperty 'Count' |
-                Should Be 0
+                Should -Be 0
         }
     }
 }
@@ -121,62 +121,64 @@ function ThenErrorShouldBeThrown {
     }
 }
 
-Describe 'Remove-GitItem.When File is moved from git repository correctly' {
-    GivenRepositoryWithFile -Name 'foo.bar'
-    GivenFileToStage -Name 'foo.bar'
-    WhenFileIsStaged
-    ThenFileShouldBeStaged -Path 'foo.bar'
-    ThenFileShouldBeDeleted -Path 'foo.bar'
-    ThenNoErrorShouldBeThrown
-}
+Describe Remove-GitItem {
+    Describe 'When File is moved from git repository correctly' {
+        GivenRepositoryWithFile -Name 'foo.bar'
+        GivenFileToStage -Name 'foo.bar'
+        WhenFileIsStaged
+        ThenFileShouldBeStaged -Path 'foo.bar'
+        ThenFileShouldBeDeleted -Path 'foo.bar'
+        ThenNoErrorShouldBeThrown
+    }
 
-Describe 'Remove-GitItem.When multiple Files are moved from git repository correctly' {
-    GivenRepositoryWithFile -Name 'foo.bar', 'bar.fooo'
-    GivenFileToStage  -Name 'foo.bar', 'bar.fooo'
-    WhenFileIsStaged
-    ThenFileShouldBeStaged -Path 'foo.bar', 'bar.fooo'
-    ThenFileShouldBeDeleted -Path 'foo.bar', 'bar.fooo'
-    ThenNoErrorShouldBeThrown
-}
+    Describe 'When multiple Files are moved from git repository correctly' {
+        GivenRepositoryWithFile -Name 'foo.bar', 'bar.fooo'
+        GivenFileToStage  -Name 'foo.bar', 'bar.fooo'
+        WhenFileIsStaged
+        ThenFileShouldBeStaged -Path 'foo.bar', 'bar.fooo'
+        ThenFileShouldBeDeleted -Path 'foo.bar', 'bar.fooo'
+        ThenNoErrorShouldBeThrown
+    }
 
-Describe 'Remove-GitItem.When multiple Files are moved from git repository correctly via the pipeline' {
-    GivenRepositoryWithFile -Name 'foo.bar', 'bar.fooo'
-    GivenFileToStage  -Name 'foo.bar', 'bar.fooo'
-    WhenFileIsStagedByPipeline
-    ThenFileShouldBeStaged -Path 'foo.bar', 'bar.fooo'
-    ThenFileShouldBeDeleted -Path 'foo.bar', 'bar.fooo'
-    ThenNoErrorShouldBeThrown
-}
+    Describe 'When multiple Files are moved from git repository correctly via the pipeline' {
+        GivenRepositoryWithFile -Name 'foo.bar', 'bar.fooo'
+        GivenFileToStage  -Name 'foo.bar', 'bar.fooo'
+        WhenFileIsStagedByPipeline
+        ThenFileShouldBeStaged -Path 'foo.bar', 'bar.fooo'
+        ThenFileShouldBeDeleted -Path 'foo.bar', 'bar.fooo'
+        ThenNoErrorShouldBeThrown
+    }
 
-Describe 'Remove-GitItem.When File is moved from git repository correctly via the pipeline' {
-    GivenRepositoryWithFile -Name 'foo.bar'
-    GivenFileToStage -Name 'foo.bar'
-    WhenFileIsStagedByPipeline
-    ThenFileShouldBeStaged -Path 'foo.bar'
-    ThenFileShouldBeDeleted -Path 'foo.bar'
-    ThenNoErrorShouldBeThrown
-}
+    Describe 'When File is moved from git repository correctly via the pipeline' {
+        GivenRepositoryWithFile -Name 'foo.bar'
+        GivenFileToStage -Name 'foo.bar'
+        WhenFileIsStagedByPipeline
+        ThenFileShouldBeStaged -Path 'foo.bar'
+        ThenFileShouldBeDeleted -Path 'foo.bar'
+        ThenNoErrorShouldBeThrown
+    }
 
-Describe 'Remove-GitItem.When File is already removed from git repository correctly' {
-    GivenRepositoryWithFile -Name 'foo.bar'
-    GivenFileIsDeleted -Name 'foo.bar'
-    GivenFileToStage  -Name 'foo.bar'
-    WhenFileIsStaged
-    ThenFileShouldBeStaged -Path 'foo.bar'
-    ThenFileShouldBeDeleted -Path 'foo.bar'
-    ThenNoErrorShouldBeThrown
-}
+    Describe 'When File is already removed from git repository correctly' {
+        GivenRepositoryWithFile -Name 'foo.bar'
+        GivenFileIsDeleted -Name 'foo.bar'
+        GivenFileToStage  -Name 'foo.bar'
+        WhenFileIsStaged
+        ThenFileShouldBeStaged -Path 'foo.bar'
+        ThenFileShouldBeDeleted -Path 'foo.bar'
+        ThenNoErrorShouldBeThrown
+    }
 
-Describe 'Remove-GitItem.When File doesnt exist in the repository' {
-    GivenRepositoryWithFile -Name 'a.file'
-    GivenFileToStage  -Name 'different.file'
-    WhenFileIsStaged
-    ThenFileShouldNotBeStaged -Path 'different.file'
-    ThenNoErrorShouldBeThrown
-}
+    Describe 'When File doesnt exist in the repository' {
+        GivenRepositoryWithFile -Name 'a.file'
+        GivenFileToStage  -Name 'different.file'
+        WhenFileIsStaged
+        ThenFileShouldNotBeStaged -Path 'different.file'
+        ThenNoErrorShouldBeThrown
+    }
 
-Describe 'Remove-GitItem.When invalid repository is passed' {
-    GivenIncorrectRepo -RepoName 'foobar'
-    WhenFileIsStaged
-    ThenErrorShouldBeThrown -ExpectedError 'Can''t find a repository in ''foobar'''
+    Describe 'When invalid repository is passed' {
+        GivenIncorrectRepo -RepoName 'foobar'
+        WhenFileIsStaged
+        ThenErrorShouldBeThrown -ExpectedError 'Can''t find a repository in ''foobar'''
+    }
 }

@@ -38,9 +38,6 @@ function Test-GitUncommittedChange {
 
     Set-StrictMode -Version 'Latest'
 
-    if ( Get-GitRepositoryStatus -RepoRoot $RepoRoot ) {
-        return $true
-    }
-
-    return $false
+    $status = Get-GitRepositoryStatus -RepoRoot $RepoRoot 6>$null
+    return [bool]$status
 }

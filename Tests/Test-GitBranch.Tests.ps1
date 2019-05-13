@@ -21,11 +21,11 @@ Describe 'Test-GitBranch when running from a valid git repository' {
     Save-GitCommit -RepoRoot $repo -Message 'file1 commit'
 
     It 'should return true if the branch name exists' {
-        Test-GitBranch -RepoRoot $repo -Name 'master' | Should Be $true
+        Test-GitBranch -RepoRoot $repo -Name 'master' | Should -Be $true
     }
 
     It 'should return false if the branch name does not exist' {
-        Test-GitBranch -RepoRoot $repo -Name 'whocares' | Should Be $false
+        Test-GitBranch -RepoRoot $repo -Name 'whocares' | Should -Be $false
     }
     Assert-ThereAreNoErrors
 }
@@ -36,7 +36,7 @@ Describe 'Test-GitBranch when passed an invalid repository' {
     Test-GitBranch -RepoRoot 'C:\I\do\not\exist' -Name 'whocares' -ErrorAction SilentlyContinue
 
     It 'should throw an error' {
-        $Global:Error.Count | Should Be 1
+        $Global:Error.Count | Should -Be 1
         $Global:Error | Should Match 'does not exist'
     }
 }

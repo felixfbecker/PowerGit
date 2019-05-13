@@ -2,5 +2,5 @@
   "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
   "powershell.codeFormatting.alignPropertyValuePairs": false,
   "powershell.codeFormatting.newLineAfterCloseBrace": false,
-  "editor.formatOnSave": true
+  "editor.formatOnSave": false
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ limitations under the License.
                     <CustomEntry>
                         <CustomItem>
                             <Frame>
-                                <LeftIndent>4</LeftIndent>
+                                <LeftIndent>2</LeftIndent>
                                 <CustomItem>
                                     <ExpressionBinding>
                                         <ScriptBlock>
-                                            if ( $_.IsStaged ) {
+                                            if ($_.IsStaged) {
                                                 'Staged for Commit'
                                             }
                                             else {
@@ -33,7 +33,7 @@ limitations under the License.
                                             }
                                         </ScriptBlock>
                                     </ExpressionBinding>
-                                    <NewLine/>
+                                    <NewLine />
                                 </CustomItem>
                             </Frame>
                         </CustomItem>
@@ -68,42 +68,42 @@ limitations under the License.
                             <TableColumnItem>
                                 <ScriptBlock>
                                     $ignored = ''
-                                    if ( $_.IsIgnored ) {
-                                        $ignored = 'i'
+                                    if ($_.IsIgnored) {
+                                        $ignored = 'I'
                                     }
 
                                     $added = ''
-                                    if ( $_.IsAdded ) {
-                                        $added = 'a'
+                                    if ($_.IsAdded) {
+                                        $added = "A"
                                     }
 
                                     $modified = ''
-                                    if ( $_.IsModified ) {
-                                        $modified = 'm'
+                                    if ($_.IsModified) {
+                                        $modified = 'M'
                                     }
 
                                     $deleted = ''
-                                    if ( $_.IsDeleted ) {
-                                        $deleted = 'd'
+                                    if ($_.IsDeleted) {
+                                        $deleted = 'D'
                                     }
 
                                     $renamed = ''
-                                    if ( $_.IsRenamed ) {
-                                        $renamed = 'r'
+                                    if ($_.IsRenamed) {
+                                        $renamed = 'R'
                                     }
 
                                     $typeChanged = ''
-                                    if ( $_.IsTypeChanged ) {
-                                        $typeChanged = 't'
+                                    if ($_.IsTypeChanged) {
+                                        $typeChanged = 'T'
                                     }
 
                                     $unreadable = ''
-                                    if ( $_.IsUnreadable ) {
+                                    if ($_.IsUnreadable) {
                                         $unreadable = '?'
                                     }
 
                                     $conflicted = ''
-                                    if ( $_.IsConflicted ) {
+                                    if ($_.IsConflicted) {
                                         $conflicted = '!'
                                     }
 

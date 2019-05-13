@@ -12,7 +12,7 @@
 
 & (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-PowerGitTest.ps1' -Resolve)
 
-Describe 'Receive-GitCommit' {
+Describe 'Receive-GitObject' {
     Clear-Error
 
     $remoteRepo = New-GitTestRepo
@@ -31,7 +31,7 @@ Describe 'Receive-GitCommit' {
     $remote = Find-GitRepository -Path $remoteRepo
     try {
         $repo.Head.Tip.Sha | Should Not Be $remote.Head.Tip.Sha
-        Receive-GitCommit -RepoRoot $localRepoPath
+        Receive-GitObject -RepoRoot $localRepoPath
 
         It 'should fetch commits for tracked local branches' {
             [LibGit2Sharp.Branch]$remoteOrigin = $repo.Branches | Where-Object { $_.FriendlyName -eq 'origin/master' }
@@ -53,9 +53,9 @@ Describe 'Receive-GitCommit' {
 Describe 'Receive-GitChange when the given repo doesn''t exist' {
     Clear-Error
 
-    Receive-GitCommit -RepoRoot 'C:\I\do\not\exist' -ErrorAction SilentlyContinue
+    Receive-GitObject -RepoRoot 'C:\I\do\not\exist' -ErrorAction SilentlyContinue
     It 'should write an error' {
-        $Global:Error.Count | Should Be 1
+        $Global:Error.Count | Should -Be 1
         $Global:Error | Should Match 'does not exist'
     }
 }

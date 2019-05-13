@@ -34,19 +34,19 @@ function GivenACommit {
 
     if ($ThatModifies) {
         [Guid]::NewGuid() | Select-Object -ExpandProperty Guid | Set-Content -Path (Join-Path -Path $repoRoot -ChildPath $ThatModifies) -Force
-        Add-GitItem -RepoRoot $repoRoot -Path $ThatModifies
-    }
+    Add-GitItem -RepoRoot $repoRoot -Path $ThatModifies
+}
 
-    Save-GitCommit -RepoRoot $repoRoot -Message 'Compare-GitTree tests commit'
+Save-GitCommit -RepoRoot $repoRoot -Message 'Compare-GitTree tests commit'
 }
 
 function GivenARepository {
     $script:repoRoot = Join-Path -Path $TestDrive.FullName -ChildPath 'repo'
     New-GitRepository -Path $repoRoot | Out-Null
 
-    Add-GitTestFile -RepoRoot $repoRoot -Path 'InitialCommit.txt'
-    Add-GitItem -RepoRoot $repoRoot -Path 'InitialCommit.txt'
-    Save-GitCommit -RepoRoot $repoRoot -Message 'Initial Commit'
+Add-GitTestFile -RepoRoot $repoRoot -Path 'InitialCommit.txt'
+Add-GitItem -RepoRoot $repoRoot -Path 'InitialCommit.txt'
+Save-GitCommit -RepoRoot $repoRoot -Message 'Initial Commit'
 }
 
 function GivenTag {
@@ -64,38 +64,26 @@ function WhenGettingDiff {
         [switch]
         $GivenRepositoryRoot,
 
-        [Parameter(ParameterSetName = 'RepositoryObject')]
-        [switch]
-        $GivenRepositoryObject,
-
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]
-        $ReferenceCommit,
+        $ReferenceRevision,
 
         [string]
-        $DifferenceCommit
+        $DifferenceRevision
     )
 
-    $DifferenceCommitParam = @{}
-    if ($DifferenceCommit) {
-        $DifferenceCommitParam['DifferenceCommit'] = $DifferenceCommit
+    $DifferenceRevisionParam = @{ }
+    if ($DifferenceRevision) {
+        $DifferenceRevisionParam['DifferenceRevision'] = $DifferenceRevision
     }
 
     if ($GivenRepositoryRoot) {
-        $script:diffOutput = Compare-GitTree -RepositoryRoot $repoRoot -ReferenceCommit $ReferenceCommit @DifferenceCommitParam
-    } elseif ($GivenRepositoryObject) {
-        Mock -CommandName 'Invoke-Command' -ModuleName 'PowerGit' -ParameterFilter { $ScriptBlock.ToString() -match 'Dispose' }
-        $repoObject = Get-GitRepository -RepoRoot $repoRoot
-        try {
-            $script:diffOutput = Compare-GitTree -RepositoryObject $repoObject -ReferenceCommit $ReferenceCommit @DifferenceCommitParam
-        } finally {
-            $repoObject.Dispose()
-        }
+        $script:diffOutput = Compare-GitTree -RepoRoot $repoRoot -ReferenceRevision $ReferenceRevision @DifferenceRevisionParam
     } else {
         Push-Location -Path $repoRoot
         try {
-            $result = Compare-GitTree -ReferenceCommit $ReferenceCommit @DifferenceCommitParam
-            if ( $result ) {
+            $result = Compare-GitTree -ReferenceRevision $ReferenceRevision @DifferenceRevisionParam
+            if ($result) {
                 $script:diffOutput = $result
             }
         } finally {
@@ -124,10 +112,10 @@ function ThenDiffCount {
 
     It 'diff object should represent the correct amount of changes' {
         ($diffOutput.Added | Measure-Object).Count | Should -Be $Added
-        ($diffOutput.Deleted | Measure-Object).Count  | Should -Be $Deleted
-        ($diffOutput.Modified | Measure-Object).Count | Should -Be $Modified
-        ($diffOutput.Renamed | Measure-Object).Count  | Should -Be $Renamed
-    }
+($diffOutput.Deleted | Measure-Object).Count | Should -Be $Deleted
+($diffOutput.Modified | Measure-Object).Count | Should -Be $Modified
+($diffOutput.Renamed | Measure-Object).Count | Should -Be $Renamed
+}
 }
 
 function ThenErrorMessage {
@@ -137,20 +125,20 @@ function ThenErrorMessage {
 
     It ('should write error /{0}/' -f $Message) {
         $Global:Error[0] | Should -Match $Message
-    }
+}
 }
 
 function ThenNoErrorMessages {
     It 'should not write any errors' {
         $Global:Error | Should -BeNullOrEmpty
-    }
+}
 }
 
 function ThenReturned {
     param(
-        [Parameter(Mandatory = $true, ParameterSetName = 'Type')]
+        [Parameter(Mandatory, ParameterSetName = 'Type')]
         $Type,
-        [Parameter(Mandatory = $true, ParameterSetName = 'Nothing')]
+        [Parameter(Mandatory, ParameterSetName = 'Nothing')]
         [switch]
         $Nothing
     )
@@ -158,27 +146,27 @@ function ThenReturned {
     if ($Nothing) {
         It 'should not return anything' {
             $diffOutput | Should -BeNullOrEmpty
-        }
-    } else {
-        It 'should return the correct object type' {
-            , $diffOutput | Should -BeOfType $Type
-        }
     }
+} else {
+    It 'should return the correct object type' {
+        , $diffOutput | Should -BeOfType $Type
+}
+}
 }
 
 Describe 'Compare-GitTree.when when a commit does not exist' {
     Init
     GivenARepository
-    WhenGettingDiff -ReferenceCommit 'nonexistentcommit' -ErrorAction SilentlyContinue
+    WhenGettingDiff -ReferenceRevision 'nonexistentcommit' -ErrorAction SilentlyContinue
     ThenReturned -Nothing
-    ThenErrorMessage 'Commit ''nonexistentcommit'' not found in repository'
+    ThenErrorMessage 'Revision ''nonexistentcommit'' not found in repository'
 }
 
 Describe 'Compare-GitTree.when getting diff between HEAD and its parent commit in the current directory repository' {
     Init
     GivenARepository
     GivenACommit -ThatAdds 'file1.txt'
-    WhenGettingDiff -ReferenceCommit 'HEAD^'
+    WhenGettingDiff -ReferenceRevision 'HEAD^'
     ThenReturned -Type [LibGit2Sharp.TreeChanges]
     ThenDiffCount -Added 1
     ThenNoErrorMessages
@@ -188,20 +176,9 @@ Describe 'Compare-GitTree.when getting diff between HEAD and its parent commit f
     Init
     GivenARepository
     GivenACommit -ThatAdds 'file1.txt'
-    WhenGettingDiff -GivenRepositoryRoot -ReferenceCommit 'HEAD^'
+    WhenGettingDiff -GivenRepositoryRoot -ReferenceRevision 'HEAD^'
     ThenReturned -Type [LibGit2Sharp.TreeChanges]
     ThenDiffCount -Added 1
-    ThenNoErrorMessages
-}
-
-Describe 'Compare-GitTree.when getting diff between HEAD and its parent commit for the given repository Object' {
-    Init
-    GivenARepository
-    GivenACommit -ThatAdds 'file1.txt'
-    WhenGettingDiff -GivenRepositoryObject -ReferenceCommit 'HEAD^'
-    ThenReturned -Type [LibGit2Sharp.TreeChanges]
-    ThenDiffCount -Added 1
-    ThenDidNotDisposeRepoObject
     ThenNoErrorMessages
 }
 
@@ -214,7 +191,7 @@ Describe 'Compare-GitTree.when getting diff between two specific commits' {
     GivenACommit -ThatAdds 'file3.txt'
     GivenTag '2.0'
     GivenACommit -ThatAdds 'fileafter2.0.txt'
-    WhenGettingDiff -ReferenceCommit '1.0' -DifferenceCommit '2.0'
+    WhenGettingDiff -ReferenceRevision '1.0' -DifferenceRevision '2.0'
     ThenReturned -Type [LibGit2Sharp.TreeChanges]
     ThenDiffCount -Added 1 -Modified 1
     ThenNoErrorMessages

@@ -18,78 +18,63 @@ function Compare-GitTree {
     .DESCRIPTION
     The `Compare-GitTree` function returns a `LibGit2Sharp.TreeChanges` object representing the file tree changes in a repository between two commits. The tree changes are the names of the files that have been added, removed, modified, and renamed in a git repository.
 
-    Pass the name of commits to diff, such as commit hash, branch name, or tag name, to the `ReferenceCommit` and `DifferenceCommit` parameters.
+    Pass the name of commits to diff, such as commit hash, branch name, or tag name, to the `ReferenceRevision` and `DifferenceRevision` parameters.
 
-    You must specify a commit reference name for the `ReferenceCommit` parameter. The `DifferenceCommit` parameter is optional and defaults to `HEAD`.
+    You must specify a commit reference name for the `ReferenceRevision` parameter. The `DifferenceRevision` parameter is optional and defaults to `HEAD`.
 
     This function implements the `git diff --name-only` command.
 
     .EXAMPLE
-    Compare-GitTree -ReferenceCommit 'HEAD^'
+    Compare-GitTree -ReferenceRevision 'HEAD^'
 
     Demonstrates how to get the diff between the default `HEAD` commit and its parent commit referenced by `HEAD^`.
 
     .EXAMPLE
-    Compare-GitTree -RepoRoot 'C:\build\repo' -ReferenceCommit 'tags/1.0' -DifferenceCommit 'tags/2.0'
+    Compare-GitTree -RepoRoot 'C:\build\repo' -ReferenceRevision 'tags/1.0' -DifferenceRevision 'tags/2.0'
 
     Demonstrates how to get the diff between the commit tagged with `2.0` and the older commit tagged with `1.0` in the repository located at `C:\build\repo`.
     #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '')]
-    [CmdletBinding(DefaultParameterSetName = 'RepositoryRoot')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '')] # needed to prevent enumerable expansion
+    [CmdletBinding(DefaultParameterSetName = 'RepoRoot')]
     [OutputType([LibGit2Sharp.TreeChanges])]
     param(
-        [Parameter(ParameterSetName = 'RepositoryRoot')]
-        [Alias('RepoRoot')]
-        [string]
         # The root path to the repository. Defaults to the current directory.
-        $RepositoryRoot = (Get-Location).ProviderPath,
+        [Parameter(ParameterSetName = 'RepoRoot')]
+        [string] $RepoRoot = (Get-Location).ProviderPath,
 
-        [Parameter(Mandatory = $true, ParameterSetName = 'RepositoryObject')]
-        [LibGit2Sharp.Repository]
-        $RepositoryObject,
+        # A commit to compare `DifferenceRevision` against, e.g. commit hash, branch name, tag name.
+        [Parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName)]
+        [Alias('Sha')]
+        [Alias('FriendlyName')]
+        [Alias('ReferenceCommit')]
+        [string] $ReferenceRevision,
 
-        [Parameter(Mandatory = $true)]
-        [string]
-        # A commit to compare `DifferenceCommit` against, e.g. commit hash, branch name, tag name.
-        $ReferenceCommit,
-
-        [string]
-        # A commit to compare `ReferenceCommit` against, e.g. commit hash, branch name, tag name. Defaults to `HEAD`.
-        $DifferenceCommit = 'HEAD'
+        # A commit to compare `ReferenceRevision` against, e.g. commit hash, branch name, tag name. Defaults to `HEAD`.
+        [Parameter()]
+        [Alias('DifferenceCommit')]
+        [string] $DifferenceRevision = 'HEAD'
     )
 
     Set-StrictMode -Version 'Latest'
     Use-CallerPreference -Cmdlet $PSCmdlet -Session $ExecutionContext.SessionState
 
-    if ($RepositoryObject) {
-        $repo = $RepositoryObject
-    } else {
-        $repo = Find-GitRepository -Path $RepositoryRoot -Verify
-        if (-not $repo) {
-            Write-Error -Message ('Unable to get diff between ''{0}'' and ''{1}''. See previous errors for more details.' -f $ReferenceCommit, $DifferenceCommit)
-            return
-        }
+    $repo = Find-GitRepository -Path $RepoRoot -Verify
+    if (-not $repo) {
+        Write-Error -Message ('Unable to get diff between ''{0}'' and ''{1}''. See previous errors for more details.' -f $ReferenceRevision, $DifferenceRevision)
+        return
     }
 
-    try {
-        $oldCommit = $repo.Lookup($ReferenceCommit)
-        $newCommit = $repo.Lookup($DifferenceCommit)
+    $oldCommit = $repo.Lookup($ReferenceRevision)
+    $newCommit = $repo.Lookup($DifferenceRevision)
 
-        if (-not $oldCommit) {
-            Write-Error -Message ('Commit ''{0}'' not found in repository ''{1}''.' -f $ReferenceCommit, $repo.Info.WorkingDirectory)
-            return
-        } elseif (-not $newCommit) {
-            Write-Error -Message ('Commit ''{0}'' not found in repository ''{1}''.' -f $DifferenceCommit, $repo.Info.WorkingDirectory)
-            return
-        }
-
-        # use `,` to prevent unwrapping of enumerable TreeChanges type
-        return , [PowerGit.Diff]::GetTreeChanges($repo, $oldCommit, $newCommit)
-    } finally {
-        if (-not $RepositoryObject) {
-            Invoke-Command -NoNewScope -ScriptBlock {
-                $repo.Dispose()
-            }
-        }
+    if (-not $oldCommit) {
+        Write-Error -Message ('Revision ''{0}'' not found in repository ''{1}''.' -f $ReferenceRevision, $repo.Info.WorkingDirectory)
+        return
+    } elseif (-not $newCommit) {
+        Write-Error -Message ('Revision ''{0}'' not found in repository ''{1}''.' -f $DifferenceRevision, $repo.Info.WorkingDirectory)
+        return
     }
+
+    # use `,` to prevent unwrapping of enumerable TreeChanges type
+    return , [PowerGit.Diff]::GetTreeChanges($repo, $oldCommit, $newCommit)
 }

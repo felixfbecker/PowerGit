@@ -2,6 +2,6 @@
   "recommendations": [
     "ms-vscode.PowerShell",
     "EditorConfig.EditorConfig",
-    "DotJoshJohnson.xml"
+    "redhat.vscode-xml"
   ]
 }

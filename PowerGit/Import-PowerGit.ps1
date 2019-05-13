@@ -25,7 +25,7 @@ param(
 #Requires -Version 4
 Set-StrictMode -Version 'Latest'
 
-if ( (Get-Module -Name 'PowerGit') ) {
+if ((Get-Module -Name 'PowerGit')) {
     Remove-Module -Name 'PowerGit' -Force
 }
 

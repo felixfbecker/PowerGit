@@ -22,6 +22,9 @@ function Add-GitItem {
 
     This function implements the `git add` command.
 
+    .INPUTS
+    System.IO.FileInfo. You can pipe the output of Get-ChildItem or Get-Item to this command.
+
     .LINK
     Save-GitCommit
 
@@ -57,19 +60,19 @@ function Add-GitItem {
     #>
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Alias('FullName')]
-        [string[]]
         # The paths to the files/directories to add to the next commit.
-        $Path,
+        [Parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName, ValueFromPipeline, ParameterSetName = 'Path')]
+        [Alias('FullName')]
+        [string[]] $Path,
 
-        [string]
+        [Parameter(Mandatory, ParameterSetName = 'All')]
+        [switch] $All,
+
         # The path to the repository where the files should be added. The default is the current directory as returned by Get-Location.
-        $RepoRoot = (Get-Location).ProviderPath,
+        [string] $RepoRoot = (Get-Location).ProviderPath,
 
-        [Switch]
         # Return `IO.FileInfo` and/or `IO.DirectoryInfo` objects for each file and/or directory added, respectively.
-        $PassThru
+        [Switch] $PassThru
     )
 
     begin {
@@ -79,19 +82,24 @@ function Add-GitItem {
     }
 
     process {
-        if ( -not ((Test-Path -Path 'variable:repo') -and $repo) ) {
+        if (-not ((Test-Path -Path 'variable:repo') -and $repo)) {
             return
         }
 
-        foreach ( $pathItem in $Path ) {
-            if ( -not [IO.Path]::IsPathRooted($pathItem) ) {
+        if ($All) {
+            [LibGit2Sharp.Commands]::Stage($repo, '*')
+            return
+        }
+
+        foreach ($pathItem in $Path) {
+            if (-not [IO.Path]::IsPathRooted($pathItem)) {
                 $pathItem = Join-Path -Path $repo.Info.WorkingDirectory -ChildPath $pathItem -Resolve
-                if ( -not $pathItem ) {
+                if (-not $pathItem) {
                     continue
                 }
             }
 
-            if ( -not (Test-Path -Path $pathItem) ) {
+            if (-not (Test-Path -Path $pathItem)) {
                 Write-Error -Message ('Cannot find path ''{0}'' because it does not exist.' -f $pathItem)
                 continue
             }
@@ -106,14 +114,14 @@ function Add-GitItem {
 
             [LibGit2Sharp.Commands]::Stage($repo, $pathItem)
 
-            if ( $PassThru ) {
+            if ($PassThru) {
                 Get-Item -Path $pathItem
             }
         }
     }
 
     end {
-        if ( ((Test-Path -Path 'variable:repo') -and $repo) ) {
+        if (((Test-Path -Path 'variable:repo') -and $repo)) {
             $repo.Dispose()
         }
     }

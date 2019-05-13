@@ -14,29 +14,27 @@ function ConvertTo-GitFullPath {
     [CmdletBinding()]
     [OutputType([string])]
     param(
-        [Parameter(Mandatory = $true, ParameterSetName = 'Path')]
-        [string]
         # A path to convert to a full path.
-        $Path,
+        [Parameter(Mandatory, ParameterSetName = 'Path')]
+        [string] $Path,
 
-        [Parameter(Mandatory = $true, ParameterSetName = 'Uri')]
-        [uri]
         # A URI to convert to a full path. It can be a local path.
-        $Uri
+        [Parameter(Mandatory, ParameterSetName = 'Uri')]
+        [uri] $Uri
     )
 
     Set-StrictMode -Version 'Latest'
     Use-CallerPreference -Cmdlet $PSCmdlet -Session $ExecutionContext.SessionState
 
-    if ( $PSCmdlet.ParameterSetName -eq 'Uri' ) {
-        if ( $Uri.Scheme ) {
+    if ($PSCmdlet.ParameterSetName -eq 'Uri') {
+        if ($Uri.Scheme) {
             return $Uri.ToString()
         }
 
         $Path = $Uri.ToString()
     }
 
-    if ( [IO.Path]::IsPathRooted($Path) ) {
+    if ([IO.Path]::IsPathRooted($Path)) {
         return $Path
     }
 

@@ -41,66 +41,122 @@ function Send-GitObject {
     Demonstrates how to push all tags to the default remote repository.
     #>
     [CmdletBinding()]
+    [OutputType([LibGit2Sharp.Branch], ParameterSetName = 'BranchObject')] # returns input to support piping
     param(
-        [Parameter(Mandatory = $true, ParameterSetName = 'ByRefSpec')]
-        [string[]]
+        [Parameter(Mandatory, ParameterSetName = 'BranchObject', ValueFromPipeline)]
+        [LibGit2Sharp.Branch] $BranchObject,
+
+        [Parameter(ParameterSetName = 'BranchObject')]
+        [Alias('u')]
+        [switch] $SetUpstream,
+
         # The refs that should be pushed to the remote repository.
-        $RefSpec,
+        [Parameter(Mandatory, ParameterSetName = 'ByRefSpec')]
+        [string[]] $RefSpec,
 
-        [Parameter(Mandatory = $true, ParameterSetname = 'Tags')]
-        [Switch]
         # Push all tags to the remote repository.
-        $Tags,
+        [Parameter(Mandatory, ParameterSetname = 'Tags')]
+        [Switch] $Tags,
 
-        [string]
-        # The name of the remote repository to send the changes to. The default is `origin`.
-        $RemoteName = 'origin',
+        # The name of the remote repository to send the changes to. The default is the branch's upstream or "origin".
+        [Parameter(Position = 0)]
+        [string] $Remote,
 
-        [string]
+        # Usually, the command refuses to update a remote ref that is not an ancestor of the local ref used to overwrite it.
+        # This flag disables this check by prefixing all refspecs with "+".
+        [switch] $Force,
+
         # The path to the local repository from which to push changes. Defaults to the current directory.
-        $RepoRoot = (Get-Location).ProviderPath,
+        [string] $RepoRoot = (Get-Location).ProviderPath,
 
-        [pscredential]
         # The credentials to use to connect to the source repository.
-        $Credential
+        [pscredential] $Credential
     )
 
-    Set-StrictMode -Version 'Latest'
-    Use-CallerPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
+    process {
+        Set-StrictMode -Version 'Latest'
+        Use-CallerPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
 
-    $repo = Find-GitRepository -Path $RepoRoot -Verify
+        $repo = Find-GitRepository -Path $RepoRoot -Verify
 
-    $pushOptions = New-Object -TypeName 'LibGit2Sharp.PushOptions'
-    if ( $Credential ) {
-        $gitCredential = New-Object -TypeName 'LibGit2Sharp.SecureUsernamePasswordCredentials'
-        $gitCredential.Username = $Credential.UserName
-        $gitCredential.Password = $Credential.Password
-        $pushOptions.CredentialsProvider = { return $gitCredential }
-    }
+        $cancel = $false
 
-    $remote = $repo.Network.Remotes | Where-Object { $_.Name -eq $RemoteName }
-    if ( -not $remote ) {
-        Write-Error -Message ('A remote named "{0}" does not exist.' -f $RemoteName)
-        return [PowerGit.PushResult]::Failed
-    }
-
-    if ( $Tags ) {
-        $RefSpec = $repo.Tags | ForEach-Object { $_.CanonicalName }
-    }
-
-    try {
-        $repo.Network.Push($remote, $RefSpec, $pushOptions)
-        return [PowerGit.PushResult]::Ok
-    } catch {
-        Write-Error -ErrorRecord $_
-
-        switch ( $_.FullyQualifiedErrorId ) {
-            'NonFastForwardException' { return [PowerGit.PushResult]::Rejected }
-            'LibGit2SharpException' { return [PowerGit.PushResult]::Failed }
-            'BareRepositoryException' { return [PowerGit.PushResult]::Failed }
-            default { return [PowerGit.PushResult]::Failed }
+        $pushOptions = [LibGit2Sharp.PushOptions]::new()
+        $pushOptions.OnPushTransferProgress = {
+            param([int]$current, [int]$total, [long]$bytes)
+            if ($ProgressPreference -ne 'SilentlyContinue' -and $total -ne 0) {
+                Write-Progress -Activity 'Pushing objects' -PercentComplete (($current / $total) * 100) -Status "$($bytes)B"
+            }
+            return -not $cancel -and -not $PSCmdlet.Stopping
         }
-    } finally {
-        $repo.Dispose()
+        $pushOptions.OnPackBuilderProgress = {
+            param([LibGit2Sharp.Handlers.PackBuilderStage]$stage, [int]$current, [int]$total)
+            if ($ProgressPreference -ne 'SilentlyContinue' -and $total -ne 0) {
+                Write-Progress -Activity 'Packing objects' -PercentComplete (($current / $total) * 100) -CurrentOperation $stage
+            }
+            return -not $cancel -and -not $PSCmdlet.Stopping
+        }
+        $pushOptions.OnPushStatusError = {
+            param([LibGit2Sharp.PushStatusError]$PushStatusError)
+            Write-Error -Message "$($PushStatusError.Reference): $($PushStatusError.Message)"
+        }
+        $pushOptions.CredentialsProvider = {
+            param([string]$Url, [string]$UsernameForUrl, [LibGit2Sharp.SupportedCredentialTypes]$Types)
+            if (-not $Credential) {
+                $Credential = Get-Credential -Title "Authentication required for $Url"
+            }
+            $gitCredential = [LibGit2Sharp.SecureUsernamePasswordCredentials]::new()
+            $gitCredential.Username = $Credential.UserName
+            $gitCredential.Password = $Credential.Password
+            return $gitCredential
+        }
+
+        if (-not $Remote) {
+            $Remote = if ($null -ne $BranchObject -and $BranchObject.RemoteName) {
+                $BranchObject.RemoteName
+            } else {
+                'origin'
+            }
+        }
+
+        [LibGit2Sharp.Remote]$remoteObject = $repo.Network.Remotes[$Remote]
+
+        if (-not $remoteObject) {
+            Write-Error "A remote named ""$Remote"" does not exist."
+            return
+        }
+
+        if ($PSCmdlet.ParameterSetName -eq 'BranchObject') {
+            $RefSpec = $BranchObject.CanonicalName
+        }
+
+        if ($Tags) {
+            $RefSpec = $repo.Tags | ForEach-Object { $_.CanonicalName }
+        }
+
+        if ($Force) {
+            $RefSpec = $RefSpec | ForEach-Object {
+                if (-not $_.StartsWith('+')) { "+$_" } else { $_ }
+            }
+        }
+
+        try {
+            Write-Verbose "Pushing refspec $RefSpec of repository $RepoRoot to remote $($remoteObject.Name)"
+            $repo.Network.Push($remoteObject, $RefSpec, $pushOptions) | Out-Null
+            if ($SetUpstream) {
+                # Setup tracking with the new remote branch.
+                $repo.Branches.Update($BranchObject, {
+                        param([LibGit2Sharp.BranchUpdater] $Updater)
+                        $updater.Remote = $Remote
+                        $updater.UpstreamBranch = $BranchObject.CanonicalName
+                    }) | Out-Null;
+            }
+            return $BranchObject
+        } catch {
+            Write-Error -ErrorRecord $_
+        } finally {
+            $cancel = $true
+            $repo.Dispose()
+        }
     }
 }

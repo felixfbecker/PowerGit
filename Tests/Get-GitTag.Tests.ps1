@@ -12,116 +12,115 @@
 
 & (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-PowerGitTest.ps1' -Resolve)
 
-Describe 'Get-GitTag without passing a name' {
-    Clear-Error
+Describe Get-GitTag {
+    Describe 'without passing a name' {
+        It 'should get all the tags' {
+            $ErrorActionPreference = 'Stop'
 
-    $repo = New-GitTestRepo
-    Add-GitTestFile -RepoRoot $repo -Path 'file1'
-    Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file1') -RepoRoot $repo
-    $c1 = Save-GitCommit -RepoRoot $repo -Message 'file1 commit'
+            $repo = New-GitTestRepo
+            Add-GitTestFile -RepoRoot $repo -Path 'file1'
+            Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file1') -RepoRoot $repo
+            $c1 = Save-GitCommit -RepoRoot $repo -Message 'file1 commit'
 
-    Add-GitTestFile -RepoRoot $repo -Path 'file2'
-    Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file2') -RepoRoot $repo
-    $c2 = Save-GitCommit -RepoRoot $repo -Message 'file2 commit'
+            Add-GitTestFile -RepoRoot $repo -Path 'file2'
+            Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file2') -RepoRoot $repo
+            $c2 = Save-GitCommit -RepoRoot $repo -Message 'file2 commit'
 
-    New-GitTag -RepoRoot $repo -Name 'tag1' -Revision $c1.Sha
-    New-GitTag -RepoRoot $repo -Name 'tag2' -Revision $c2.Sha
-    $tags = Get-GitTag -RepoRoot $repo
+            New-GitTag -RepoRoot $repo -Name 'tag1' -Revision $c1.Sha
+            New-GitTag -RepoRoot $repo -Name 'tag2' -Revision $c2.Sha
+            $tags = Get-GitTag -RepoRoot $repo
 
-    It 'should get all the tags' {
-        $tags.Count | Should Be 2
-        $tags[0].Name | Should Be 'tag1'
-        $tags[0].Sha | Should Be $c1.Sha
-        $tags[1].Name | Should Be 'tag2'
-        $tags[1].Sha | Should Be $c2.Sha
+            $tags | Should -HaveCount 2
+            $tags[0].Name | Should -Be 'tag1'
+            $tags[0].Sha | Should -Be $c1.Sha
+            $tags[1].Name | Should -Be 'tag2'
+            $tags[1].Sha | Should -Be $c2.Sha
+        }
     }
 
-    Assert-ThereAreNoErrors
-}
+    Describe 'when passing a specific name' {
+        It 'should get the specific tag' {
+            $ErrorActionPreference = 'Stop'
 
-Describe 'Get-GitTag when passing a specific name' {
-    Clear-Error
+            $repo = New-GitTestRepo
+            Add-GitTestFile -RepoRoot $repo -Path 'file1'
+            Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file1') -RepoRoot $repo
+            $c1 = Save-GitCommit -RepoRoot $repo -Message 'file1 commit'
 
-    $repo = New-GitTestRepo
-    Add-GitTestFile -RepoRoot $repo -Path 'file1'
-    Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file1') -RepoRoot $repo
-    $c1 = Save-GitCommit -RepoRoot $repo -Message 'file1 commit'
+            Add-GitTestFile -RepoRoot $repo -Path 'file2'
+            Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file2') -RepoRoot $repo
+            $c2 = Save-GitCommit -RepoRoot $repo -Message 'file2 commit'
 
-    Add-GitTestFile -RepoRoot $repo -Path 'file2'
-    Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file2') -RepoRoot $repo
-    $c2 = Save-GitCommit -RepoRoot $repo -Message 'file2 commit'
+            New-GitTag -RepoRoot $repo -Name 'tag1' -Revision $c1.Sha
+            New-GitTag -RepoRoot $repo -Name 'tag2' -Revision $c2.Sha
+            $tags = Get-GitTag -RepoRoot $repo -Name 'tag1'
 
-    New-GitTag -RepoRoot $repo -Name 'tag1' -Revision $c1.Sha
-    New-GitTag -RepoRoot $repo -Name 'tag2' -Revision $c2.Sha
-    $tags = Get-GitTag -RepoRoot $repo -Name 'tag1'
-
-    It 'should get the specific tag' {
-        $tags | Should Not BeNullOrEmpty
-        $tags.Name | Should Be 'tag1'
-        $tags.Sha | Should Be $c1.Sha
+            $tags | Should -Not -BeNullOrEmpty
+            $tags.Name | Should -Be 'tag1'
+            $tags.Sha | Should -Be $c1.Sha
+        }
     }
 
-    Assert-ThereAreNoErrors
-}
+    Describe 'when passing a name that does not exist' {
+        $ErrorActionPreference = 'Stop'
+        Clear-Error
 
-Describe 'Get-GitTag when passing a name that does not exist' {
-    Clear-Error
+        $repo = New-GitTestRepo
+        Add-GitTestFile -RepoRoot $repo -Path 'file1'
+        Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file1') -RepoRoot $repo
+        $c1 = Save-GitCommit -RepoRoot $repo -Message 'file1 commit'
 
-    $repo = New-GitTestRepo
-    Add-GitTestFile -RepoRoot $repo -Path 'file1'
-    Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file1') -RepoRoot $repo
-    $c1 = Save-GitCommit -RepoRoot $repo -Message 'file1 commit'
+        Add-GitTestFile -RepoRoot $repo -Path 'file2'
+        Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file2') -RepoRoot $repo
+        $c2 = Save-GitCommit -RepoRoot $repo -Message 'file2 commit'
 
-    Add-GitTestFile -RepoRoot $repo -Path 'file2'
-    Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file2') -RepoRoot $repo
-    $c2 = Save-GitCommit -RepoRoot $repo -Message 'file2 commit'
+        New-GitTag -RepoRoot $repo -Name 'tag1' -Revision $c1.Sha
+        New-GitTag -RepoRoot $repo -Name 'tag2' -Revision $c2.Sha
+        $tags = Get-GitTag -RepoRoot $repo -Name 'tag3'
 
-    New-GitTag -RepoRoot $repo -Name 'tag1' -Revision $c1.Sha
-    New-GitTag -RepoRoot $repo -Name 'tag2' -Revision $c2.Sha
-    $tags = Get-GitTag -RepoRoot $repo -Name 'tag3'
+        It 'should get no tags' {
+            $tags | Should BeNullOrEmpty
+        }
 
-    It 'should get no tags' {
-        $tags | Should BeNullOrEmpty
+        Assert-ThereAreNoErrors
     }
 
-    Assert-ThereAreNoErrors
-}
+    Describe 'when passing a name using wildcards' {
+        Clear-Error
 
-Describe 'Get-GitTag when passing a name using wildcards' {
-    Clear-Error
+        $repo = New-GitTestRepo
+        Add-GitTestFile -RepoRoot $repo -Path 'file1'
+        Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file1') -RepoRoot $repo
+        $c1 = Save-GitCommit -RepoRoot $repo -Message 'file1 commit'
 
-    $repo = New-GitTestRepo
-    Add-GitTestFile -RepoRoot $repo -Path 'file1'
-    Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file1') -RepoRoot $repo
-    $c1 = Save-GitCommit -RepoRoot $repo -Message 'file1 commit'
+        Add-GitTestFile -RepoRoot $repo -Path 'file2'
+        Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file2') -RepoRoot $repo
+        $c2 = Save-GitCommit -RepoRoot $repo -Message 'file2 commit'
 
-    Add-GitTestFile -RepoRoot $repo -Path 'file2'
-    Add-GitItem -Path (Join-Path -Path $repo -ChildPath 'file2') -RepoRoot $repo
-    $c2 = Save-GitCommit -RepoRoot $repo -Message 'file2 commit'
+        New-GitTag -RepoRoot $repo -Name 'tag1' -Revision $c1.Sha
+        New-GitTag -RepoRoot $repo -Name 'tag2' -Revision $c2.Sha
+        New-GitTag -RepoRoot $repo -Name 'anotherTag' -Revision $c1.Sha
+        $tags = Get-GitTag -RepoRoot $repo -Name 'tag*'
 
-    New-GitTag -RepoRoot $repo -Name 'tag1' -Revision $c1.Sha
-    New-GitTag -RepoRoot $repo -Name 'tag2' -Revision $c2.Sha
-    New-GitTag -RepoRoot $repo -Name 'anotherTag' -Revision $c1.Sha
-    $tags = Get-GitTag -RepoRoot $repo -Name 'tag*'
+        It 'should get tags that match wildcard' {
+            $tags.Count | Should -Be 2
+            $tags[0].Name | Should -Be 'tag1'
+            $tags[0].Sha | Should -Be $c1.Sha
+            $tags[1].Name | Should -Be 'tag2'
+            $tags[1].Sha | Should -Be $c2.Sha
+        }
 
-    It 'should get tags that match wildcard' {
-        $tags.Count | Should Be 2
-        $tags[0].Name | Should Be 'tag1'
-        $tags[0].Sha | Should Be $c1.Sha
-        $tags[1].Name | Should Be 'tag2'
-        $tags[1].Sha | Should Be $c2.Sha
+        Assert-ThereAreNoErrors
     }
 
-    Assert-ThereAreNoErrors
-}
+    Describe 'when ran with an invalid git repository' {
+        Clear-Error
 
-Describe 'Get-GitTag when ran with an invalid git repository' {
-    Clear-Error
+        Get-GitTag -RepoRoot 'C:/I/do/not/exist' -Name 'whocares' -ErrorAction SilentlyContinue
 
-    Get-GitTag -RepoRoot 'C:/I/do/not/exist' -Name 'whocares' -ErrorAction SilentlyContinue
-
-    It 'should throw an error' {
-        $Global:Error.Count | Should Be 1
-        $Global:Error | Should Match 'does not exist'
+        It 'should throw an error' {
+            $Global:Error.Count | Should -Be 1
+            $Global:Error | Should Match 'does not exist'
+        }
     }
 }

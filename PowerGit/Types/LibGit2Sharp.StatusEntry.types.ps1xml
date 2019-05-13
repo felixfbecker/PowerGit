@@ -16,6 +16,10 @@ limitations under the License.
     <Type>
         <Name>LibGit2Sharp.StatusEntry</Name>
         <Members>
+            <AliasProperty>
+                <Name>Path</Name>
+                <ReferencedMemberName>FilePath</ReferencedMemberName>
+            </AliasProperty>
             <ScriptProperty>
                 <Name>IsStaged</Name>
                 <GetScriptBlock>

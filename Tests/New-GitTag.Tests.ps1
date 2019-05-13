@@ -21,18 +21,18 @@ Describe 'New-GitTag when creating a new unique tag without passing a target' {
     Save-GitCommit -RepoRoot $repo -Message 'file1 commit'
 
     $tagName = 'TAAAAAGGGGG'
-    Test-GitTag -RepoRoot $repo -Name $tagName | Should Be $false
+    Test-GitTag -RepoRoot $repo -Name $tagName | Should -Be $false
     New-GitTag -RepoRoot $repo -Name $tagName
 
 
     It 'should create the tag' {
-        Test-GitTag -RepoRoot $repo -Name $tagName | Should Be $true
+        Test-GitTag -RepoRoot $repo -Name $tagName | Should -Be $true
     }
 
     It 'should point at the current head' {
         $r = Find-GitRepository -Path $repo
         try {
-            (Get-GitTag -RepoRoot $repo -Name $tagName).Sha | Should Be $r.Head.Tip.Sha
+            (Get-GitTag -RepoRoot $repo -Name $tagName).Sha | Should -Be $r.Head.Tip.Sha
         } finally {
             $r.Dispose()
         }
@@ -54,15 +54,15 @@ Describe 'New-GitTag when creating a new unique tag and passing a revision' {
     Save-GitCommit -RepoRoot $repo -Message 'file2 commit'
 
     $tagName = 'aNOTHER---ONNEEE!!!'
-    Test-GitTag -RepoRoot $repo -Name $tagName | Should Be $false
+    Test-GitTag -RepoRoot $repo -Name $tagName | Should -Be $false
     New-GitTag -RepoRoot $repo -Name $tagName -Revision $c1.Sha
 
     It 'should create the tag' {
-        Test-GitTag -RepoRoot $repo -Name $tagName | Should Be $true
+        Test-GitTag -RepoRoot $repo -Name $tagName | Should -Be $true
     }
 
     It 'should point at the target' {
-        (Get-GitTag -RepoRoot $repo -Name $tagName).Sha | Should Be $c1.Sha
+        (Get-GitTag -RepoRoot $repo -Name $tagName).Sha | Should -Be $c1.Sha
     }
 
     Assert-ThereAreNoErrors
@@ -78,12 +78,12 @@ Describe 'New-GitTag when passing a name of a tag that already exists without us
 
     $tagName = 'duplicate'
     New-GitTag -RepoRoot $repo -Name $tagName
-    Test-GitTag -RepoRoot $repo -Name $tagName | Should Be $true
+    Test-GitTag -RepoRoot $repo -Name $tagName | Should -Be $true
 
     New-GitTag -RepoRoot $repo -Name $tagName -ErrorAction SilentlyContinue
 
     It 'should throw an error' {
-        $Global:Error.Count | Should Be 1
+        $Global:Error.Count | Should -Be 1
         $Global:Error | Should Match 'already exists'
     }
 }
@@ -102,13 +102,13 @@ Describe 'New-GitTag when using the -Force switch to overwrite a tag' {
 
     $tagName = 'tag'
     New-GitTag -RepoRoot $repo -Name $tagName -Revision $c1.Sha
-    Test-GitTag -RepoRoot $repo -Name $tagName | Should Be $true
+    Test-GitTag -RepoRoot $repo -Name $tagName | Should -Be $true
 
     New-GitTag -RepoRoot $repo -Name $tagName -Revision $c2.Sha -Force
 
     It 'should update the tag to the new target' {
-        Test-GitTag -RepoRoot $repo -Name $tagName | Should Be $true
-        (Get-GitTag -RepoRoot $repo -Name $tagName).Sha | Should Be $c2.Sha
+        Test-GitTag -RepoRoot $repo -Name $tagName | Should -Be $true
+        (Get-GitTag -RepoRoot $repo -Name $tagName).Sha | Should -Be $c2.Sha
     }
 
     Assert-ThereAreNoErrors
@@ -132,13 +132,13 @@ Describe 'New-GitTag when creating a new tag for a revision that is already tagg
     New-GitTag -RepoRoot $repo -Name $tag2 -Revision $c1.Sha
 
     It 'should create a new tag pointing at target' {
-        Test-GitTag -RepoRoot $repo -Name $tag2 | Should Be $true
-        (Get-GitTag -RepoRoot $repo -Name $tag2).Sha | Should Be $c1.Sha
+        Test-GitTag -RepoRoot $repo -Name $tag2 | Should -Be $true
+        (Get-GitTag -RepoRoot $repo -Name $tag2).Sha | Should -Be $c1.Sha
     }
 
     It 'should not affect the older tag' {
-        Test-GitTag -RepoRoot $repo -Name $tag1 | Should Be $true
-        (Get-GitTag -RepoRoot $repo -Name $tag1).Sha | Should Be $c1.Sha
+        Test-GitTag -RepoRoot $repo -Name $tag1 | Should -Be $true
+        (Get-GitTag -RepoRoot $repo -Name $tag1).Sha | Should -Be $c1.Sha
     }
 
     Assert-ThereAreNoErrors
@@ -155,7 +155,7 @@ Describe 'New-GitTag when passing an invalid revision' {
     New-GitTag -RepoRoot $repo -Name 'whocares' -Revision 'IdoNotExist' -ErrorAction SilentlyContinue
 
     It 'should throw an error' {
-        $Global:Error.Count | Should Be 1
+        $Global:Error.Count | Should -Be 1
         $Global:Error | Should Match 'No valid git object'
     }
 }
@@ -166,7 +166,7 @@ Describe 'New-GitTag when ran with an invalid git repository' {
     New-GitTag -RepoRoot 'C:/I/do/not/exist' -Name 'whocares' -ErrorAction SilentlyContinue
 
     It 'should throw an error' {
-        $Global:Error.Count | Should Be 1
+        $Global:Error.Count | Should -Be 1
         $Global:Error | Should Match 'does not exist'
     }
 }

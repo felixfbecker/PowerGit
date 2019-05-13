@@ -16,7 +16,7 @@ Set-StrictMode -Version 'Latest'
 
 function GivenRemoteRepository {
     param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]
         $Path
     )
@@ -31,7 +31,7 @@ function GivenRemoteRepository {
 
 function GivenLocalRepositoryTracksRemote {
     param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]
         $Path
     )
@@ -42,7 +42,7 @@ function GivenLocalRepositoryTracksRemote {
 
 function GivenLocalRepositoryWithNoRemote {
     param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]
         $Path
     )
@@ -129,10 +129,10 @@ function ThenRemoteRevision {
     )
 
     $commitExists = Test-GitCommit -RepoRoot $remoteRepoPath -Revision $Revision
-    if ( $Exists ) {
+    if ($Exists) {
         It ('should push refspec to remote') {
             $commitExists | Should -BeTrue
-            if ( $HasSha ) {
+            if ($HasSha) {
                 $commit = Get-GitCommit -RepoRoot $remoteRepoPath -Revision $Revision
                 $commit.Sha | Should -Be $HasSha
             }
@@ -141,16 +141,6 @@ function ThenRemoteRevision {
         It ('should not push refspec to remote') {
             $commitExists | Should -Be $false
         }
-    }
-}
-
-function ThenPushResultIs {
-    param(
-        $PushStatus
-    )
-
-    It ('function returned status of ''{0}''' -f $script:pushResult) {
-        $script:pushResult | Should -Be $PushStatus
     }
 }
 
@@ -163,97 +153,93 @@ function WhenSendingObject {
     )
 
     $Global:Error.Clear()
-    $script:pushResult = $null
 
     $params = @{
         RefSpec = $RefSpec
     }
-    if ( $Tags ) {
+    if ($Tags) {
         $params = @{
             Tags = $true
         }
     }
 
-    $script:pushResult = Send-GitObject -RepoRoot $localRepoPath @params
+    Send-GitObject -RepoRoot $localRepoPath @params
 }
 
-Describe 'Send-GitObject.when pushing changes to a remote repository' {
-    GivenRemoteRepository 'RemoteRepo'
-    GivenLocalRepositoryTracksRemote 'LocalRepo'
-    GivenCommit
-    WhenSendingObject 'refs/heads/master'
-    ThenNoErrorsWereThrown
-    ThenPushResultIs ([PowerGit.PushResult]::Ok)
-    ThenRemoteContainsLocalCommits
-}
+Describe Send-GitObject {
+    Describe 'when pushing changes to a remote repository' {
+        GivenRemoteRepository 'RemoteRepo'
+        GivenLocalRepositoryTracksRemote 'LocalRepo'
+        GivenCommit
+        WhenSendingObject 'refs/heads/master'
+        ThenNoErrorsWereThrown
+        ThenRemoteContainsLocalCommits
+    }
 
-Describe 'Send-GitObject.when there are no local changes to push to remote' {
-    GivenRemoteRepository 'RemoteRepo'
-    GivenLocalRepositoryTracksRemote 'LocalRepo'
-    WhenSendingObject 'refs/heads/master'
-    ThenNoErrorsWereThrown
-    ThenPushResultIs ([PowerGit.PushResult]::Ok)
-}
+    Describe 'when there are no local changes to push to remote' {
+        GivenRemoteRepository 'RemoteRepo'
+        GivenLocalRepositoryTracksRemote 'LocalRepo'
+        WhenSendingObject 'refs/heads/master'
+        ThenNoErrorsWereThrown
+    }
 
-Describe 'Send-GitObject.when remote repository has changes not contained locally' {
-    GivenRemoteRepository 'RemoteRepo'
-    GivenLocalRepositoryTracksRemote 'LocalRepo'
-    GivenRemoteContainsOtherChanges
-    GivenCommit
-    WhenSendingObject 'refs/heads/master' -ErrorAction SilentlyContinue
-    ThenErrorWasThrown 'that you are trying to update on the remote contains commits that are not present locally.'
-    ThenPushResultIs ([PowerGit.PushResult]::Rejected)
-}
+    Describe 'when remote repository has changes not contained locally' {
+        GivenRemoteRepository 'RemoteRepo'
+        GivenLocalRepositoryTracksRemote 'LocalRepo'
+        GivenRemoteContainsOtherChanges
+        GivenCommit
+        WhenSendingObject 'refs/heads/master' -ErrorAction SilentlyContinue
+        ThenErrorWasThrown 'that you are trying to update on the remote contains commits that are not present locally.'
+    }
 
-Describe 'Send-GitObject.when no upstream remote is defined' {
-    GivenLocalRepositoryWithNoRemote 'LocalRepo'
-    GivenCommit
-    WhenSendingObject 'refs/heads/master' -ErrorAction SilentlyContinue
-    ThenErrorWasThrown 'A\ remote\ named\ "origin"\ does\ not\ exist\.'
-    ThenPushResultIs ([PowerGit.PushResult]::Failed)
-}
+    Describe 'when no upstream remote is defined' {
+        GivenLocalRepositoryWithNoRemote 'LocalRepo'
+        GivenCommit
+        WhenSendingObject 'refs/heads/master' -ErrorAction SilentlyContinue
+        ThenErrorWasThrown 'A\ remote\ named\ "origin"\ does\ not\ exist\.'
+    }
 
-Describe 'Send-GitObject.when refspec doesn''t exist' {
-    GivenRemoteRepository 'RemoteRepo'
-    GivenLocalRepositoryTracksRemote 'LocalRepo'
-    WhenSendingObject 'refs/heads/dsfsdaf' -ErrorAction SilentlyContinue
-    ThenErrorWasThrown 'does\ not\ match\ any\ existing\ object'
-    ThenPushResultIs ([PowerGit.PushResult]::Failed)
-}
+    Describe 'when refspec doesn''t exist' {
+        GivenRemoteRepository 'RemoteRepo'
+        GivenLocalRepositoryTracksRemote 'LocalRepo'
+        WhenSendingObject 'refs/heads/dsfsdaf' -ErrorAction SilentlyContinue
+        ThenErrorWasThrown 'does\ not\ match\ any\ existing\ object'
+    }
 
-Describe 'Send-GitObject.when pushing tags' {
-    GivenRemoteRepository 'RemoteRepo'
-    GivenLocalRepositoryTracksRemote 'LocalRepo'
-    GivenTag 'tag1'
-    GivenTag 'tag2'
-    WhenSendingObject 'refs/tags/tag1'
-    ThenRemoteRevision 'tag1' -Exists
-    ThenRemoteRevision 'tag2' -DoesNotExist
-}
+    Describe 'when pushing tags' {
+        GivenRemoteRepository 'RemoteRepo'
+        GivenLocalRepositoryTracksRemote 'LocalRepo'
+        GivenTag 'tag1'
+        GivenTag 'tag2'
+        WhenSendingObject 'refs/tags/tag1'
+        ThenRemoteRevision 'tag1' -Exists
+        ThenRemoteRevision 'tag2' -DoesNotExist
+    }
 
-Describe 'Send-GitObject.when pushing all tags' {
-    GivenRemoteRepository 'RemoteRepo'
-    GivenLocalRepositoryTracksRemote 'LocalRepo'
-    GivenTag 'tag1'
-    GivenTag 'tag2'
-    WhenSendingObject -Tags
-    ThenRemoteRevision 'tag1' -Exists
-    ThenRemoteRevision 'tag2' -Exists
-}
+    Describe 'when pushing all tags' {
+        GivenRemoteRepository 'RemoteRepo'
+        GivenLocalRepositoryTracksRemote 'LocalRepo'
+        GivenTag 'tag1'
+        GivenTag 'tag2'
+        WhenSendingObject -Tags
+        ThenRemoteRevision 'tag1' -Exists
+        ThenRemoteRevision 'tag2' -Exists
+    }
 
-Describe 'Send-GitObject.when tags moved' {
-    GivenRemoteRepository 'RemoteRepo'
-    GivenLocalRepositoryTracksRemote 'LocalRepo'
-    GivenTag 'tag1'
-    GivenTag 'tag2'
-    WhenSendingObject -Tags
-    ThenRemoteRevision 'tag1' -Exists
-    ThenRemoteRevision 'tag2' -Exists
-    $commit = GivenCommit
-    GivenTag 'tag1'
-    GivenTag 'tag2'
-    WhenSendingObject 'refs/heads/master'
-    WhenSendingObject -Tags
-    ThenRemoteRevision 'tag1' -Exists -HasSha $commit.Sha
-    ThenRemoteRevision 'tag2' -Exists -HasSha $commit.Sha
+    Describe 'when tags moved' {
+        GivenRemoteRepository 'RemoteRepo'
+        GivenLocalRepositoryTracksRemote 'LocalRepo'
+        GivenTag 'tag1'
+        GivenTag 'tag2'
+        WhenSendingObject -Tags
+        ThenRemoteRevision 'tag1' -Exists
+        ThenRemoteRevision 'tag2' -Exists
+        $commit = GivenCommit
+        GivenTag 'tag1'
+        GivenTag 'tag2'
+        WhenSendingObject 'refs/heads/master'
+        WhenSendingObject -Tags
+        ThenRemoteRevision 'tag1' -Exists -HasSha $commit.Sha
+        ThenRemoteRevision 'tag2' -Exists -HasSha $commit.Sha
+    }
 }

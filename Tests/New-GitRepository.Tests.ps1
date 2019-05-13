@@ -20,24 +20,22 @@ function Assert-Repository {
     )
 
     It 'should create a repository' {
-        $Repository | Should Not BeNullOrEmpty
-        $Repository | Should BeOfType ([PowerGit.RepositoryInfo])
-        $Repository.WorkingDirectory.TrimEnd([IO.Path]::DirectorySeparatorChar) | Should Be $CreatedAt.TrimEnd([IO.Path]::DirectorySeparatorChar)
-        $Repository.Path | Should Be (Join-Path -Path $CreatedAt -ChildPath '.git\')
+        $Repository | Should -Not -BeNullOrEmpty
+        $Repository | Should -BeOfType ([LibGit2Sharp.Repository])
+        $Repository.Info.WorkingDirectory.TrimEnd([IO.Path]::DirectorySeparatorChar) | Should -Be $CreatedAt.TrimEnd([IO.Path]::DirectorySeparatorChar)
+        $Repository.Info.Path | Should -Be (Join-Path -Path $CreatedAt -ChildPath '.git\')
     }
 }
 
 function ThenDirectory {
     param(
         $Path,
-        [Switch]
-        $Exists,
-        [Switch]
-        $DoesNotExist
+        [switch] $Exists,
+        [switch] $DoesNotExist
     )
 
     $fullPath = Join-Path -Path $TestDrive.Fullname -ChildPath $Path
-    if ( $Exists ) {
+    if ($Exists) {
         It ('should have a "{0}" directory' -f $Path) {
             $fullPath | Should -Exist
         }

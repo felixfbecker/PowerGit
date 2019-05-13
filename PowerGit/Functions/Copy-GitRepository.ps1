@@ -10,6 +10,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+using namespace System.Management.Automation
+
 function Copy-GitRepository {
     <#
     .SYNOPSIS
@@ -24,22 +26,18 @@ function Copy-GitRepository {
     Copy-GitRepository -Uri 'https://github.com/webmd-health-services/PowerGit' -DestinationPath PowerGit
     #>
     param(
-        [Parameter(Mandatory, Position = 0)]
-        [string]
         # The URI or path to the source repository to clone.
-        $Source,
+        [Parameter(Mandatory, Position = 0)]
+        [string] $Source,
 
-        [string]
         # The directory where the repository should be cloned to. Must not exist or be empty.
-        $DestinationPath,
+        [string] $DestinationPath,
 
-        [pscredential]
         # The credentials to use to connect to the source repository.
-        $Credential,
+        [pscredential] $Credential,
 
-        [Switch]
         # Returns a `System.IO.DirectoryInfo` object for the new copy's `.git` directory.
-        $PassThru
+        [Switch] $PassThru
     )
 
     Set-StrictMode -Version 'Latest'
@@ -52,21 +50,48 @@ function Copy-GitRepository {
     $DestinationPath = ConvertTo-GitFullPath -Path $DestinationPath
 
     $options = [libgit2sharp.CloneOptions]::new()
-    if ( $Credential ) {
+    $options.CredentialsProvider = {
+        param([string]$Url, [string]$UsernameForUrl, [LibGit2Sharp.SupportedCredentialTypes]$Types)
+        if (-not $Credential) {
+            $Credential = Get-Credential -Title "Authentication required for $Url"
+        }
         $gitCredential = [LibGit2Sharp.SecureUsernamePasswordCredentials]::new()
         $gitCredential.Username = $Credential.UserName
         $gitCredential.Password = $Credential.Password
-        $options.CredentialsProvider = { return $gitCredential }
+        return $gitCredential
     }
 
-    $cancelClone = $false
+    $cancel = $false
     $options.OnProgress = {
-        param(
-            $Output
-        )
-
-        Write-Verbose -Message $Output
-        return -not $cancelClone
+        param([string] $serverProgressOutput)
+        try {
+            if ($ProgressPreference -ne 'SilentlyContinue') {
+                if ($serverProgressOutput -match '^(.+):\s+(\d+)% \((\d+/\d+)\)') {
+                    # Compressing objects:   0% (1/123)
+                    # Counting objects:   3% (11/550)
+                    if ($ProgressPreference -ne 'SilentlyContinue') {
+                        Write-Progress `
+                            -Activity $Matches[1] `
+                            -PercentComplete $Matches[2] `
+                            -Status $Matches[3]
+                    }
+                } elseif ($serverProgressOutput -match '^(.+)(?::)?\s+(\d+)') {
+                    # Enumerating objects: 576, done.
+                    # Counting objects 4
+                    if ($ProgressPreference -ne 'SilentlyContinue') {
+                        Write-Progress `
+                            -Activity $Matches[1] `
+                            -PercentComplete -1 `
+                            -Status $Matches[2]
+                    }
+                } elseif (-not [string]::IsNullOrWhiteSpace($serverProgressOutput)) {
+                    Write-Information $serverProgressOutput
+                }
+            }
+            return -not $cancel -and -not $PSCmdlet.Stopping
+        } catch [PipelineStoppedException] {
+            return $false
+        }
     }
 
     $lastUpdated = Get-Date
@@ -75,51 +100,52 @@ function Copy-GitRepository {
             [LibGit2Sharp.TransferProgress]
             $TransferProgress
         )
+        try {
 
-        # Only update progress every 1/10th of a second, otherwise updating the progress takes longer than the clone
-        if ( ((Get-Date) - $lastUpdated).TotalMilliseconds -lt 100 ) {
-            return $true
-        }
-
-        if ($ProgressPreference -ne 'SilentlyContinue') {
-            $numBytes = $TransferProgress.ReceivedBytes
-            if ( $numBytes -lt 1kb ) {
-                $unit = 'B'
-            } elseif ( $numBytes -lt 1mb ) {
-                $unit = 'KB'
-                $numBytes = $numBytes / 1kb
-            } elseif ( $numBytes -lt 1gb ) {
-                $unit = 'MB'
-                $numBytes = $numBytes / 1mb
-            } elseif ( $numBytes -lt 1tb ) {
-                $unit = 'GB'
-                $numBytes = $numBytes / 1gb
-            } elseif ( $numBytes -lt 1pb ) {
-                $unit = 'TB'
-                $numBytes = $numBytes / 1tb
-            } else {
-                $unit = 'PB'
-                $numBytes = $numBytes / 1pb
+            # Only update progress every 1/10th of a second, otherwise updating the progress takes longer than the clone
+            if (((Get-Date) - $lastUpdated).TotalMilliseconds -lt 100) {
+                return $true
             }
 
-            Write-Progress -Activity ('Cloning {0} -> {1}' -f $Source, $DestinationPath) `
-                -Status ('{0}/{1} objects, {2:n0} {3}' -f $TransferProgress.ReceivedObjects, $TransferProgress.TotalObjects, $numBytes, $unit) `
-                -PercentComplete (($TransferProgress.ReceivedObjects / $TransferProgress.TotalObjects) * 100)
-            Set-Variable -Name 'lastUpdated' -Value (Get-Date) -Scope 1
+            if ($ProgressPreference -ne 'SilentlyContinue' -and $TransferProgress.TotalObjects -ne 0) {
+                $numBytes = $TransferProgress.ReceivedBytes
+                if ($numBytes -lt 1kb) {
+                    $unit = 'B'
+                } elseif ($numBytes -lt 1mb) {
+                    $unit = 'KB'
+                    $numBytes = $numBytes / 1kb
+                } elseif ($numBytes -lt 1gb) {
+                    $unit = 'MB'
+                    $numBytes = $numBytes / 1mb
+                } elseif ($numBytes -lt 1tb) {
+                    $unit = 'GB'
+                    $numBytes = $numBytes / 1gb
+                } elseif ($numBytes -lt 1pb) {
+                    $unit = 'TB'
+                    $numBytes = $numBytes / 1tb
+                } else {
+                    $unit = 'PB'
+                    $numBytes = $numBytes / 1pb
+                }
+
+                Write-Progress -Activity ('Cloning {0} -> {1}' -f $Source, $DestinationPath) `
+                    -Status ('{0}/{1} objects, {2:n0} {3}' -f $TransferProgress.ReceivedObjects, $TransferProgress.TotalObjects, $numBytes, $unit) `
+                    -PercentComplete (($TransferProgress.ReceivedObjects / $TransferProgress.TotalObjects) * 100)
+                Set-Variable -Name 'lastUpdated' -Value (Get-Date) -Scope 1
+            }
+            return (-not $cancel)
+        } catch [PipelineStoppedException] {
+            return $false
         }
-        return (-not $cancelClone)
     }
 
     try {
-        $cloneCompleted = $false
+        Write-Verbose "Cloning $Source to $DestinationPath"
         $gitPath = [LibGit2Sharp.Repository]::Clone($Source, $DestinationPath, $options)
-        if ( $PassThru -and $gitPath ) {
+        if ($PassThru -and $gitPath) {
             Get-Item -Path $gitPath -Force
         }
-        $cloneCompleted = $true
     } finally {
-        if ( -not $cloneCompleted ) {
-            $cancelClone = $true
-        }
+        $cancel = $true
     }
 }

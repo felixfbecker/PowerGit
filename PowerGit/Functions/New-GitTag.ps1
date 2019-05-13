@@ -46,7 +46,7 @@ function New-GitTag {
         # Specifies which git repository to add the tag to. Defaults to the current directory.
         $RepoRoot = (Get-Location).ProviderPath,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]
         # The name of the tag.
         $Name,
@@ -63,24 +63,24 @@ function New-GitTag {
     Set-StrictMode -Version 'Latest'
 
     $repo = Find-GitRepository -Path $RepoRoot -Verify
-    if ( -not $repo ) {
+    if (-not $repo) {
         return
     }
 
     try {
-        if ( -not $Force -and (Test-GitTag -RepoRoot $RepoRoot -Name $Name) ) {
+        if (-not $Force -and (Test-GitTag -RepoRoot $RepoRoot -Name $Name)) {
             Write-Error ("Tag '{0}' already exists. Please use a different tag name." -f $Name)
             return
         }
 
         $validTarget = $repo.Lookup($Revision)
-        if ( -not $validTarget ) {
+        if (-not $validTarget) {
             Write-Error ("No valid git object identified by '{0}' exists in the repository." -f $Revision)
             return
         }
 
         $allowOverwrite = $false
-        if ( $Force ) {
+        if ($Force) {
             $allowOverwrite = $true
         }
 

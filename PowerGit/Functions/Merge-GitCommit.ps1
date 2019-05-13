@@ -16,7 +16,7 @@ function Merge-GitCommit {
     Merges a commit into the current branch.
 
     .DESCRIPTION
-    The `Merge-GitCommit` function merges a commit into the current branch. The commit can be identified with its ID, by a tag name, or branch name. It returns a `PowerGit.MergeResult` object, which has two properties:
+    The `Merge-GitCommit` function merges a commit into the current branch. The commit can be identified with its ID, by a tag name, or branch name. It returns a `LibGit2Sharp.MergeResult` object, which has two properties:
 
     * `Status`: the status of the merge. It will be one of the following values:
       * `Conflicts`: when there are conflicts with the merge.
@@ -35,59 +35,65 @@ function Merge-GitCommit {
     Demonstrates how to merge a branch into the current branch.
     #>
     [CmdletBinding()]
-    [OutputType([PowerGit.MergeResult])]
+    [OutputType([LibGit2Sharp.MergeResult])]
     param(
-        [string]
-        # The path to the repository where the files should be added. The default is the current directory as returned by Get-Location.
-        $RepoRoot = (Get-Location).ProviderPath,
+        # The path to the repository where the files should be added. The
+        # default is the current directory as returned by Get-Location.
+        [string] $RepoRoot = (Get-Location).ProviderPath,
 
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        # The revision to merge into the current commit (i.e. HEAD). A revision
+        # can be a specific commit ID/sha (short or long), branch name, tag
+        # name, etc. Run git help gitrevisions or go to
+        # https://git-scm.com/docs/gitrevisions for full documentation on Git's
+        # revision syntax.
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Alias('Sha')]
-        [string]
-        # The revision to merge into the current commit (i.e. HEAD). A revision can be a specific commit ID/sha (short or long), branch name, tag name, etc. Run git help gitrevisions or go to https://git-scm.com/docs/gitrevisions for full documentation on Git's revision syntax.
-        $Revision,
+        [string] $Revision,
 
-        [string]
-        [ValidateSet('No', 'Only')]
-        # Controls whether or not to do a fast-forward merge. By default, "Merge-GitCommit" will try to do a fast-forward merge if it can. If it can't it will create a new merge commit. Options are:
+        # Controls whether or not to do a fast-forward merge. By default,
+        # "Merge-GitCommit" will try to do a fast-forward merge if it can. If it
+        # can't it will create a new merge commit. Options are:
         #
-        # * `No`: Don't do a fast-forward merge. Always create a merge commit.
-        # * `Only`: Only do a fast-forward merge. No new merge commit is created.
-        $FastForward,
+        # * `Merge`: Don't do a fast-forward merge. Always create a merge commit.
+        # * `FastForward`: Only do a fast-forward merge. No new merge commit is
+        #   created.
+        [ValidateSet('Merge', 'FastForward')]
+        [string] $MergeStrategy,
 
-        [Switch]
-        # The merge is happening non-interactively. If there are any conflicts, the working directory will be left in the state it was in before the merge, i.e. there will be no conflict markers left in any files.
-        $NonInteractive
+        # The merge is happening non-interactively. If there are any conflicts,
+        # the working directory will be left in the state it was in before the
+        # merge, i.e. there will be no conflict markers left in any files.
+        [Switch] $NonInteractive
     )
 
-    Set-StrictMode -Version 'Latest'
-    Use-CallerPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
+    process {
+        Set-StrictMode -Version 'Latest'
+        Use-CallerPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
 
-    $repo = Get-GitRepository -RepoRoot $RepoRoot
-    if ( -not $repo ) {
-        return
-    }
+        $repo = Get-GitRepository -RepoRoot $RepoRoot
+        if (-not $repo) {
+            return
+        }
 
-    [LibGit2Sharp.MergeOptions]$mergeOptions = New-Object -TypeName 'LibGit2Sharp.MergeOptions'
-    $mergeOptions.CommitOnSuccess = $true
-    $mergeOptions.FailOnConflict = $false
-    if ( $NonInteractive ) {
-        $mergeOptions.FailOnConflict = $true
-    }
-    $mergeOptions.FindRenames = $true
-    if ( $FastForward -eq 'No' ) {
-        $mergeOptions.FastForwardStrategy = [LibGit2Sharp.FastForwardStrategy]::NoFastForward
-    } elseif ( $FastForward -eq 'Only' ) {
-        $mergeOptions.FastForwardStrategy = [LibGit2Sharp.FastForwardStrategy]::FastForwardOnly
-    }
+        $mergeOptions = [LibGit2Sharp.MergeOptions]::new()
+        $mergeOptions.CommitOnSuccess = $true
+        $mergeOptions.FailOnConflict = $false
+        if ($NonInteractive) {
+            $mergeOptions.FailOnConflict = $true
+        }
+        $mergeOptions.FindRenames = $true
 
-    $signature = $repo.Config.BuildSignature((Get-Date))
-    try {
-        $result = $repo.Merge($Revision, $signature, $mergeOptions)
-        [PowerGit.MergeResult]::new($result)
-    } catch {
-        Write-Error -Exception $_.Exception
-    } finally {
-        $repo.Dispose()
+        $mergeOptions.FastForwardStrategy = switch ($MergeStrategy) {
+            'FastForward' { [LibGit2Sharp.FastForwardStrategy]::FastForwardOnly }
+            'Merge' { [LibGit2Sharp.FastForwardStrategy]::NoFastForward }
+            default { [LibGit2Sharp.FastForwardStrategy]::Default }
+        }
+
+        $signature = $repo.Config.BuildSignature((Get-Date))
+        try {
+            $repo.Merge($Revision, $signature, $mergeOptions)
+        } catch {
+            Write-Error -Exception $_.Exception
+        }
     }
 }
