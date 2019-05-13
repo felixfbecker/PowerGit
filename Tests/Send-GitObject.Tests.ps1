@@ -22,6 +22,9 @@ function GivenRemoteRepository {
     )
 
     $script:remoteRepoPath = (Join-Path -Path $TestDrive -ChildPath $Path)
+    if (Test-Path $script:remoteRepoPath) {
+        Remove-Item -Recurse -Force $script:remoteRepoPath
+    }
     New-GitRepository -Path $remoteRepoPath | Out-Null
     Add-GitTestFile -RepoRoot $remoteRepoPath -Path 'InitialCommit.txt'
     Add-GitItem -RepoRoot $remoteRepoPath -Path 'InitialCommit.txt'
@@ -37,6 +40,9 @@ function GivenLocalRepositoryTracksRemote {
     )
 
     $script:localRepoPath = (Join-Path -Path $TestDrive -ChildPath $Path)
+    if (Test-Path $script:localRepoPath) {
+        Remove-Item -Recurse -Force $script:localRepoPath
+    }
     Copy-GitRepository -Source $remoteRepoPath -DestinationPath $localRepoPath
 }
 
