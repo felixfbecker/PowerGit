@@ -17,7 +17,7 @@ phases:
       - powershell: ./build.ps1
         displayName: Build assemblies
       - powershell: |
-          Install-Module -Force -Scope CurrentUser -SkipPublisherCheck Pester
+          Install-Module -Force -Scope CurrentUser -SkipPublisherCheck Pester -RequiredVersion '4.4.3'
           Install-Module -Force -Scope CurrentUser PSCodeCovIo
           $ProgressPreference = "SilentlyContinue"
           $VerbosePreference = "Continue"
