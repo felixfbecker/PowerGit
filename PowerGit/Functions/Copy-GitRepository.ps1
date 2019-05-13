@@ -88,6 +88,7 @@ function Copy-GitRepository {
                     Write-Information $serverProgressOutput
                 }
             }
+            Write-Verbose "OnProgress returning $(-not $cancel -and -not $PSCmdlet.Stopping)"
             return -not $cancel -and -not $PSCmdlet.Stopping
         } catch [PipelineStoppedException] {
             return $false
@@ -96,10 +97,7 @@ function Copy-GitRepository {
 
     $lastUpdated = Get-Date
     $options.OnTransferProgress = {
-        param(
-            [LibGit2Sharp.TransferProgress]
-            $TransferProgress
-        )
+        param([LibGit2Sharp.TransferProgress] $TransferProgress)
         try {
 
             # Only update progress every 1/10th of a second, otherwise updating the progress takes longer than the clone
@@ -132,8 +130,9 @@ function Copy-GitRepository {
                     -Status ('{0}/{1} objects, {2:n0} {3}' -f $TransferProgress.ReceivedObjects, $TransferProgress.TotalObjects, $numBytes, $unit) `
                     -PercentComplete (($TransferProgress.ReceivedObjects / $TransferProgress.TotalObjects) * 100)
                 Set-Variable -Name 'lastUpdated' -Value (Get-Date) -Scope 1
+                Write-Verbose "OnTransferProgress returning $(-not $cancel -and -not $PSCmdlet.Stopping)"
             }
-            return (-not $cancel)
+            return -not $cancel -and -not $PSCmdlet.Stopping
         } catch [PipelineStoppedException] {
             return $false
         }

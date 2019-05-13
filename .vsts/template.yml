@@ -20,6 +20,7 @@ phases:
           Install-Module -Force -Scope CurrentUser -SkipPublisherCheck Pester
           Install-Module -Force -Scope CurrentUser PSCodeCovIo
           $ProgressPreference = "SilentlyContinue"
+          $VerbosePreference = "Continue"
           $res = Invoke-Pester -PassThru -CodeCoverage PowerGit/Functions/*.ps1 -CodeCoverageOutputFile coverage.xml -OutputFile testresults.xml -OutputFormat NUnitXML
           Export-CodeCovIoJson -CodeCoverage $res.CodeCoverage -RepoRoot $pwd -Path coverage.json
           if ($res.FailedCount -gt 0) {
