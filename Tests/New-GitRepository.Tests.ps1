@@ -34,7 +34,7 @@ function ThenDirectory {
         [switch] $DoesNotExist
     )
 
-    $fullPath = Join-Path -Path $global:testDir.Fullname -ChildPath $Path
+    $fullPath = Join-Path -Path $TestDrive.Fullname -ChildPath $Path
     if ($Exists) {
         It ('should have a "{0}" directory' -f $Path) {
             $fullPath | Should -Exist
@@ -52,7 +52,7 @@ function ThenFile {
         $Matches
     )
 
-    $fullPath = Join-Path -Path $global:testDir.FullName -ChildPath $Path
+    $fullPath = Join-Path -Path $TestDrive.FullName -ChildPath $Path
 
     It ('should have a "{0}" file that matches /{1}/' -f $Path, $Matches) {
         Get-Content -Raw -Path $fullPath | Should -Match $Matches
@@ -69,7 +69,7 @@ function WhenCreatingRepo {
         $Bare
     )
 
-    New-GitRepository -Path $global:testDir.FullName -Bare:$Bare
+    New-GitRepository -Path $TestDrive.FullName -Bare:$Bare
 }
 
 Describe 'New-GitRepository when path does not exist' {

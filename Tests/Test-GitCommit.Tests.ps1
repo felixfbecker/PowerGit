@@ -41,7 +41,7 @@ function GivenTag {
 }
 
 function Init {
-    $script:repoRoot = $global:testDir.FullName
+    $script:repoRoot = $TestDrive.FullName
     $script:result = $null
 }
 

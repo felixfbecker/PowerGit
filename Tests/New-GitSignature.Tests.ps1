@@ -21,8 +21,8 @@ function GivenRepositoryConfig {
         $Config
     )
 
-    New-GitRepository -Path $global:testDir.FullName
-    $Config | Set-Content -Path (Join-Path -Path $global:testDir.FullName -ChildPath '.git\config')
+    New-GitRepository -Path $TestDrive.FullName
+    $Config | Set-Content -Path (Join-Path -Path $TestDrive.FullName -ChildPath '.git\config')
 }
 
 function Init {
@@ -117,7 +117,7 @@ Describe 'New-GitSignature.when reading configuration from repository' {
 	name = Repo Repo
     email = repo@example.com
 '
-    WhenCreatingSignature -RepoRoot $global:testDir.FullName
+    WhenCreatingSignature -RepoRoot $TestDrive.FullName
     ThenSignatureIs 'Repo Repo' 'repo@example.com'
 }
 
