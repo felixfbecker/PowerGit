@@ -21,7 +21,7 @@ function GivenRemoteRepository {
         $Path
     )
 
-    $script:remoteRepoPath = (Join-Path -Path $TestDrive -ChildPath $Path)
+    $script:remoteRepoPath = (Join-Path -Path $testDir -ChildPath $Path)
     if (Test-Path $script:remoteRepoPath) {
         Remove-Item -Recurse -Force $script:remoteRepoPath
     }
@@ -39,7 +39,7 @@ function GivenLocalRepositoryTracksRemote {
         $Path
     )
 
-    $script:localRepoPath = (Join-Path -Path $TestDrive -ChildPath $Path)
+    $script:localRepoPath = (Join-Path -Path $testDir -ChildPath $Path)
     if (Test-Path $script:localRepoPath) {
         Remove-Item -Recurse -Force $script:localRepoPath
     }
@@ -53,7 +53,7 @@ function GivenLocalRepositoryWithNoRemote {
         $Path
     )
 
-    $script:localRepoPath = (Join-Path -Path $TestDrive -ChildPath $Path)
+    $script:localRepoPath = (Join-Path -Path $testDir -ChildPath $Path)
     New-GitRepository -Path $localRepoPath | Out-Null
 }
 

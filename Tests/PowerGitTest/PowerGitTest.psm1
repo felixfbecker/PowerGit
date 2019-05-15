@@ -11,7 +11,7 @@
 # limitations under the License.
 
 Import-Module -Force "$PSScriptRoot/../../PowerGit/Functions/Resolve-RealPath.ps1"
-$testDrive = New-Item -ItemType Directory -Path (Join-Path ([IO.Path]::GetTempPath()) ('PowerGitTest-' + [Guid]::NewGuid())) | Resolve-RealPath
+$testDir = New-Item -ItemType Directory -Path (Join-Path ([IO.Path]::GetTempPath()) ('PowerGitTest-' + [Guid]::NewGuid())) | Resolve-RealPath
 
 function Add-GitTestFile {
     [CmdletBinding()]
@@ -55,12 +55,12 @@ function New-GitTestRepo {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     param()
 
-    $testDrive = (Resolve-TestDrivePath)
-    $repoRoot = Join-Path -Path $testDrive -ChildPath ('PowerGit.{0}' -f ([IO.Path]::GetRandomFileName()))
+    $testDir = (Resolve-TestDrivePath)
+    $repoRoot = Join-Path -Path $testDir -ChildPath ('PowerGit.{0}' -f ([IO.Path]::GetRandomFileName()))
     New-GitRepository -Path $repoRoot | Format-List | Out-String | Write-Debug
     return $repoRoot
 }
 
 function Resolve-TestDrivePath {
-    $testDrive
+    $testDir
 }

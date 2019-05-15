@@ -21,7 +21,7 @@ function GivenRemoteRepository {
         $Path
     )
 
-    $script:remoteRepoPath = (Join-Path -Path $TestDrive -ChildPath $Path)
+    $script:remoteRepoPath = (Join-Path -Path $testDir -ChildPath $Path)
     New-GitRepository -Path $remoteRepoPath | Out-Null
     Add-GitTestFile -RepoRoot $remoteRepoPath -Path 'InitialCommit.txt'
     Add-GitItem -RepoRoot $remoteRepoPath -Path 'InitialCommit.txt'
@@ -36,7 +36,7 @@ function GivenLocalRepositoryTracksRemote {
         $Path
     )
 
-    $script:localRepoPath = (Join-Path -Path $TestDrive -ChildPath $Path)
+    $script:localRepoPath = (Join-Path -Path $testDir -ChildPath $Path)
     Copy-GitRepository -Source $remoteRepoPath -DestinationPath $localRepoPath
 }
 
@@ -47,7 +47,7 @@ function GivenLocalRepositoryWithNoRemote {
         $Path
     )
 
-    $script:localRepoPath = (Join-Path -Path $TestDrive -ChildPath $Path)
+    $script:localRepoPath = (Join-Path -Path $testDir -ChildPath $Path)
     New-GitRepository -Path $localRepoPath | Out-Null
 }
 
