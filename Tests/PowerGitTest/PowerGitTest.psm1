@@ -11,7 +11,7 @@
 # limitations under the License.
 
 Import-Module -Force "$PSScriptRoot/../../PowerGit/Functions/Resolve-RealPath.ps1"
-$testDir = New-Item -ItemType Directory -Path (Join-Path ([IO.Path]::GetTempPath()) ('PowerGitTest-' + [Guid]::NewGuid())) | Resolve-RealPath
+$testDir = New-Item -ItemType Directory -Path (Join-Path ([IO.Path]::GetTempPath()) ('PowerGitTest-' + [Guid]::NewGuid())) | Resolve-RealPath | Get-Item
 
 function Add-GitTestFile {
     [CmdletBinding()]
