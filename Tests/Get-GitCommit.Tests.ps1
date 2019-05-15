@@ -22,7 +22,7 @@ function Init {
 }
 
 function GivenRepository {
-    $Script:repoRoot = Join-Path -Path $testDir.FullName -ChildPath 'repo'
+    $Script:repoRoot = Join-Path -Path $global:testDir.FullName -ChildPath 'repo'
     New-GitRepository -Path $repoRoot | Out-Null
 }
 

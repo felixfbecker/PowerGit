@@ -41,7 +41,7 @@ function GivenTag {
 }
 
 function Init {
-    $script:repoRoot = $testDir.FullName
+    $script:repoRoot = $global:testDir.FullName
     $script:result = $null
 }
 

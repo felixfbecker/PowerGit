@@ -15,7 +15,7 @@
 [LibGit2Sharp.MergeResult]$result = $null
 
 function Get-RepoRoot {
-    return Join-Path -Path $testDir.FullName -ChildPath 'repo'
+    return Join-Path -Path $global:testDir.FullName -ChildPath 'repo'
 }
 
 function GivenCurrentHead {

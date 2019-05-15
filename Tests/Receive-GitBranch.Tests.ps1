@@ -92,13 +92,13 @@ function GivenNoUpstreamBranchFor {
 function Init {
     Clear-Error
 
-    $script:serverBareDirectory = Join-Path -Path $testDir.FullName -ChildPath 'Server'
+    $script:serverBareDirectory = Join-Path -Path $global:testDir.FullName -ChildPath 'Server'
     if (Test-Path $script:serverBareDirectory) {
         Remove-Item -Recurse -Force $script:serverBareDirectory
     }
     New-GitRepository -Path $serverBareDirectory -Bare
 
-    $script:serverWorkingDirectory = Join-Path -Path $testDir.FullName -ChildPath 'Server.Working'
+    $script:serverWorkingDirectory = Join-Path -Path $global:testDir.FullName -ChildPath 'Server.Working'
     if (Test-Path $script:serverWorkingDirectory) {
         Remove-Item -Recurse -Force $script:serverWorkingDirectory
     }
@@ -114,7 +114,7 @@ function Init {
         Pop-Location
     }
 
-    $script:clientDirectory = Join-Path -Path $testDir.FullName -ChildPath 'Client'
+    $script:clientDirectory = Join-Path -Path $global:testDir.FullName -ChildPath 'Client'
     if (Test-Path $script:clientDirectory) {
         Remove-Item -Recurse -Force $script:clientDirectory
     }

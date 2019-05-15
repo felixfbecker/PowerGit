@@ -41,7 +41,7 @@ Save-GitCommit -RepoRoot $repoRoot -Message 'Compare-GitTree tests commit'
 }
 
 function GivenARepository {
-    $script:repoRoot = Join-Path -Path $testDir.FullName -ChildPath 'repo'
+    $script:repoRoot = Join-Path -Path $global:testDir.FullName -ChildPath 'repo'
     New-GitRepository -Path $repoRoot | Out-Null
 
 Add-GitTestFile -RepoRoot $repoRoot -Path 'InitialCommit.txt'
