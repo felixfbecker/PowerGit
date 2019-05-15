@@ -94,13 +94,13 @@ function Init {
 
     $script:serverBareDirectory = Join-Path -Path $TestDrive.FullName -ChildPath 'Server'
     if (Test-Path $script:serverBareDirectory) {
-        Remove-Item -Recurse -Force $script:serverBareDirectory
+        Remove-Item -Recurse -Force $script:serverBareDirectory -ErrorAction SilentlyContinue
     }
     New-GitRepository -Path $serverBareDirectory -Bare
 
     $script:serverWorkingDirectory = Join-Path -Path $TestDrive.FullName -ChildPath 'Server.Working'
     if (Test-Path $script:serverWorkingDirectory) {
-        Remove-Item -Recurse -Force $script:serverWorkingDirectory
+        Remove-Item -Recurse -Force $script:serverWorkingDirectory -ErrorAction SilentlyContinue
     }
     Copy-GitRepository -Source $serverBareDirectory -DestinationPath $serverWorkingDirectory
 
@@ -116,7 +116,7 @@ function Init {
 
     $script:clientDirectory = Join-Path -Path $TestDrive.FullName -ChildPath 'Client'
     if (Test-Path $script:clientDirectory) {
-        Remove-Item -Recurse -Force $script:clientDirectory
+        Remove-Item -Recurse -Force $script:clientDirectory -ErrorAction SilentlyContinue
     }
     Copy-GitRepository -Source $serverBareDirectory -DestinationPath $clientDirectory
 }

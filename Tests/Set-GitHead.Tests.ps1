@@ -79,7 +79,7 @@ Describe Set-GitHead {
 
         $localRepoPath = Join-Path -Path (Resolve-TestDrivePath) -ChildPath 'LocalRepo'
         Copy-GitRepository -Source $remoteRepo -DestinationPath $localRepoPath
-        AfterAll { Remove-Item -Recurse -Force -Path $localRepoPath }.GetNewClosure()
+        AfterAll { Remove-Item -Recurse -Force -Path $localRepoPath -ErrorAction SilentlyContinue }.GetNewClosure()
 
         Add-GitTestFile -RepoRoot $remoteRepo -Path 'file2'
         Add-GitItem -Path (Join-Path -Path $remoteRepo -ChildPath 'file2') -RepoRoot $remoteRepo
