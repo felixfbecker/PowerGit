@@ -6,6 +6,14 @@ trigger:
       - renovate/*
 
 jobs:
+  - job: lint
+    pool:
+      vmImage: ubuntu-16.04
+    steps:
+      - powershell: |
+          Install-Module -Force -Scope CurrentUser PSScriptAnalyzer
+          Invoke-ScriptAnalyzer -Path . -Recurse -Settings PSScriptAnalyzerSettings.psd1 | Format-List -Property RuleName,Message,ScriptPath,Line,Column
+        displayName: Run PSScriptAnalyzer
   - template: .vsts/template.yml
     parameters:
       name: test_linux
