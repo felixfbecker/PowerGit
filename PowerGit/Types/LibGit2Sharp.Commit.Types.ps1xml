@@ -16,6 +16,16 @@
                     $this.Repository.RepositoryName
                 </GetScriptBlock>
             </ScriptProperty>
+            <ScriptProperty>
+                <Name>Body</Name>
+                <GetScriptBlock>
+                    $index = $this.Message.IndexOf("`n")
+                    if ($index -eq -1) {
+                        return ""
+                    }
+                    return $this.Message.Substring($index + 1).Trim()
+                </GetScriptBlock>
+            </ScriptProperty>
         </Members>
     </Type>
 </Types>
