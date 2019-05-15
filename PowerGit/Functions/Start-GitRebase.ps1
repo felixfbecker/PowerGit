@@ -31,10 +31,12 @@ function Start-GitRebase {
         if (-not $repo) {
             return
         }
+        $RepoRoot = $repo.Info.Path
         $branchObject = if ($Branch) { Get-GitBranch -Name $Branch } else { $null }
         $upstreamObject = if ($Upstream) { Get-GitBranch -Name $Upstream } else { $null }
         $ontoObject = if ($Onto) { Get-GitBranch -Name $Onto } else { $null }
-        $committer = New-GitSignature -RepoRoot $RepoRooth
+        $signature = New-GitSignature -RepoRoot $RepoRoot
+        $committer = [LibGit2Sharp.Identity]::new($signature.Name, $signature.Email)
         $options = New-LibGit2SharpRebaseOptions
         $options.OnCheckoutNotify = {
             param([string]$Path, [LibGit2Sharp.CheckoutNotifyFlags]$NotifyFlags)

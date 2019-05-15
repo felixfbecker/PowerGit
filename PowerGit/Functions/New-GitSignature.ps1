@@ -35,19 +35,16 @@ function New-GitSignature {
     [CmdletBinding(DefaultParameterSetName = 'FromConfiguration')]
     [OutputType([LibGit2Sharp.Signature])]
     param(
-        [Parameter(Mandatory, ParameterSetName = 'FromParameter')]
-        [string]
         # The author's name, i.e. GivenName Surname.
-        $Name,
-
         [Parameter(Mandatory, ParameterSetName = 'FromParameter')]
-        [string]
+        [string] $Name,
+
         # The author's email address.
-        $EmailAddress,
+        [Parameter(Mandatory, ParameterSetName = 'FromParameter')]
+        [string] $EmailAddress,
 
         [Parameter(Mandatory, ParameterSetName = 'FromRepositoryConfiguration')]
-        [string]
-        $RepoRoot
+        [string] $RepoRoot
     )
 
     Set-StrictMode -Version 'Latest'
@@ -72,7 +69,7 @@ function New-GitSignature {
     }
 
     if ($PSCmdlet.ParameterSetName -eq 'FromRepositoryConfiguration') {
-        $repo = Get-GitRepository -RepoRoot $RepoRoot
+        $repo = Find-GitRepository -Path $RepoRoot -Verify
         if (-not $repo) {
             return
         }
