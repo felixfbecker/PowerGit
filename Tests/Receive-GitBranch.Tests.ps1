@@ -201,7 +201,6 @@ Describe Receive-GitBranch {
         WhenUpdated -RepoRoot $clientDirectory
         ThenStatusIs 'UpToDate'
         ThenHeadIsLastCommit
-        $script:result.Commit.Repository.Dispose()
     }
 
     Describe 'when no new commits local and no new commits on server' {
