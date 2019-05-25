@@ -2,9 +2,10 @@ parameters:
   name: ''
   queue: ''
 
-phases:
-  - phase: ${{ parameters.name }}
-    queue: ${{ parameters.queue }}
+jobs:
+  - job: ${{ parameters.name }}
+    pool:
+      vmImage: ${{ parameters.vmImage }}
     steps:
       - script: |
           git config --global user.name "GIVEN_NAME SURNAME"

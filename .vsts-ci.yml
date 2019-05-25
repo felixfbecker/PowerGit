@@ -20,15 +20,15 @@ jobs:
   - template: .vsts/template.yml
     parameters:
       name: test_linux
-      image: ubuntu-16.04
+      vmImage: ubuntu-16.04
   - template: .vsts/template.yml
     parameters:
       name: test_macos
-      image: macOS-10.14
+      vmImage: macOS-10.14
   - template: .vsts/template.yml
     parameters:
       name: test_windows
-      image: windows-2019
+      vmImage: windows-2019
   - job: release
     pool:
       vmImage: ubuntu-16.04
