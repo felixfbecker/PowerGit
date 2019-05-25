@@ -54,15 +54,11 @@ function Get-GitRepository {
         return
     }
 
-    if ($repos.ContainsKey($RepoRoot)) {
-        $repos[$RepoRoot]
-    } else {
-        try {
-            $repo = [LibGit2Sharp.Repository]::new($RepoRoot)
-            $script:repos.Add($repo)
-            $repo
-        } catch {
-            Write-Error -ErrorRecord $_
-        }
+    try {
+        $repo = [LibGit2Sharp.Repository]::new($RepoRoot)
+        $script:repos.Add($repo)
+        $repo
+    } catch {
+        Write-Error -ErrorRecord $_
     }
 }
