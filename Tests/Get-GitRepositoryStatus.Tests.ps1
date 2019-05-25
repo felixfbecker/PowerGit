@@ -1,4 +1,4 @@
-# Licensed under the Apache License, Version 2.0 (the "License");
+﻿# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -41,7 +41,7 @@ Describe 'Get-GitRepositoryStatus when getting status' {
 
     $status = Get-GitRepositoryStatus -RepoRoot $repoRoot
     It 'should show new files' {
-        $status | Where-Object { $_.FilePath -ne 'untracked' } | Select-Object -ExpandProperty 'State' | ForEach-Object { $_ |  Should -Be ([LibGit2Sharp.FileStatus]::NewInIndex) }
+        $status | Where-Object { $_.FilePath -ne 'untracked' } | Select-Object -ExpandProperty 'State' | ForEach-Object { $_ | Should -Be ([LibGit2Sharp.FileStatus]::NewInIndex) }
     }
 
     Save-GitCommit -Message 'testing status' -RepoRoot $repoRoot

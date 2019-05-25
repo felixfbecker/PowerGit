@@ -1,4 +1,4 @@
-# Licensed under the Apache License, Version 2.0 (the "License");
+﻿# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -96,7 +96,6 @@ function Save-GitCommit {
         }
 
         $repo.Commit($Message, $Signature, $Signature, $commitOptions)
-
     } catch [LibGit2Sharp.EmptyCommitException] {
         $Global:Error.RemoveAt(0)
         Write-Warning -Message ('Nothing to commit. Git only commits changes that are staged. To stage changes, use Add-GitItem.')
