@@ -212,93 +212,93 @@ Describe Receive-GitBranch {
         }
     }
 
-    # Describe 'when no new commits local and no new commits on server' {
-    #     Init
-    #     WhenUpdated -RepoRoot $clientDirectory
-    #     ThenStatusIs 'UpToDate'
-    #     ThenHeadIsLastCommit
-    # }
+    Describe 'when no new commits local and no new commits on server' {
+        Init
+        WhenUpdated -RepoRoot $clientDirectory
+        ThenStatusIs 'UpToDate'
+        ThenHeadIsLastCommit
+    }
 
-    # Describe 'when no new commits local and new commits on server' {
-    #     Init
-    #     GivenNewCommitIn $serverWorkingDirectory -AndPushed
-    #     WhenUpdated -RepoRoot $clientDirectory
-    #     ThenStatusIs 'FastForward'
-    #     ThenHeadIsLastCommit
-    # }
+    Describe 'when no new commits local and new commits on server' {
+        Init
+        GivenNewCommitIn $serverWorkingDirectory -AndPushed
+        WhenUpdated -RepoRoot $clientDirectory
+        ThenStatusIs 'FastForward'
+        ThenHeadIsLastCommit
+    }
 
-    # Describe 'when no new commits local and new commits on server' {
-    #     Init
-    #     GivenNewCommitIn $serverWorkingDirectory -AndPushed
-    #     WhenUpdated -RepoRoot $clientDirectory -AndMergeStrategyIs 'Merge'
-    #     ThenStatusIs 'NonFastForward'
-    #     ThenHeadIsNewCommit
-    # }
+    Describe 'when no new commits local and new commits on server' {
+        Init
+        GivenNewCommitIn $serverWorkingDirectory -AndPushed
+        WhenUpdated -RepoRoot $clientDirectory -AndMergeStrategyIs 'Merge'
+        ThenStatusIs 'NonFastForward'
+        ThenHeadIsNewCommit
+    }
 
-    # Describe 'when new commits local and new commits on server' {
-    #     Init
-    #     GivenNewCommitIn $serverWorkingDirectory -AndPushed
-    #     GivenNewCommitIn $clientDirectory
-    #     WhenUpdated -RepoRoot $clientDirectory
-    #     ThenStatusIs 'NonFastForward'
-    #     ThenHeadIsNewCommit
-    # }
+    Describe 'when new commits local and new commits on server' {
+        Init
+        GivenNewCommitIn $serverWorkingDirectory -AndPushed
+        GivenNewCommitIn $clientDirectory
+        WhenUpdated -RepoRoot $clientDirectory
+        ThenStatusIs 'NonFastForward'
+        ThenHeadIsNewCommit
+    }
 
-    # Describe 'when new commits local and new commits on server and merge must be fast-forwarded' {
-    #     Init
-    #     GivenNewCommitIn $serverWorkingDirectory -AndPushed
-    #     GivenNewCommitIn $clientDirectory
-    #     WhenUpdated -RepoRoot $clientDirectory -AndMergeStrategyIs 'FastForward' -ErrorAction SilentlyContinue
-    #     ThenUpdateFailed
-    #     ThenErrorIs 'Cannot\ perform\ fast-forward\ merge'
-    #     ThenHeadIsLastCommit
-    # }
+    Describe 'when new commits local and new commits on server and merge must be fast-forwarded' {
+        Init
+        GivenNewCommitIn $serverWorkingDirectory -AndPushed
+        GivenNewCommitIn $clientDirectory
+        WhenUpdated -RepoRoot $clientDirectory -AndMergeStrategyIs 'FastForward' -ErrorAction SilentlyContinue
+        ThenUpdateFailed
+        ThenErrorIs 'Cannot\ perform\ fast-forward\ merge'
+        ThenHeadIsLastCommit
+    }
 
-    # Describe 'when no local branch' {
-    #     Init
-    #     GivenNewCommitIn $clientDirectory
-    #     GivenCheckedOut $lastCommit.Sha
-    #     WhenUpdated -RepoRoot $clientDirectory -ErrorAction SilentlyContinue
-    #     ThenUpdateFailed
-    #     ThenErrorIs 'isn''t\ on\ a\ branch'
-    #     ThenHeadIsLastCommit
-    # }
+    Describe 'when no local branch' {
+        Init
+        GivenNewCommitIn $clientDirectory
+        GivenCheckedOut $lastCommit.Sha
+        WhenUpdated -RepoRoot $clientDirectory -ErrorAction SilentlyContinue
+        ThenUpdateFailed
+        ThenErrorIs 'isn''t\ on\ a\ branch'
+        ThenHeadIsLastCommit
+    }
 
-    # Describe 'when no tracking branch and there is a remote equivalent' {
-    #     Init
-    #     GivenNewCommitIn $clientDirectory
-    #     GivenNewCommitIn $serverWorkingDirectory -AndPushed
-    #     GivenNoUpstreamBranchFor 'master'
-    #     WhenUpdated -RepoRoot $clientDirectory
-    #     ThenStatusIs 'NonFastForward'
-    #     ThenHeadIsNewCommit
-    # }
+    Describe 'when no tracking branch and there is a remote equivalent' {
+        Init
+        GivenNewCommitIn $clientDirectory
+        GivenNewCommitIn $serverWorkingDirectory -AndPushed
+        GivenNoUpstreamBranchFor 'master'
+        WhenUpdated -RepoRoot $clientDirectory
+        ThenStatusIs 'NonFastForward'
+        ThenHeadIsNewCommit
+    }
 
-    # Describe 'when no tracking branch and there is no remote equivalent' {
-    #     Init
-    #     GivenBranch 'develop'
-    #     GivenNewCommitIn $clientDirectory
-    #     WhenUpdated -RepoRoot $clientDirectory -ErrorAction SilentlyContinue
-    #     ThenUpdateFailed
-    #     ThenErrorIs 'unable\ to\ find\ a\ remote\ branch\ named\ "develop"'
-    #     ThenHeadIsLastCommit 'develop'
-    # }
+    Describe 'when no tracking branch and there is no remote equivalent' {
+        Init
+        GivenBranch 'develop'
+        GivenNewCommitIn $clientDirectory
+        WhenUpdated -RepoRoot $clientDirectory -ErrorAction SilentlyContinue
+        ThenUpdateFailed
+        ThenErrorIs 'unable\ to\ find\ a\ remote\ branch\ named\ "develop"'
+        ThenHeadIsLastCommit 'develop'
+    }
 
-    # Describe "when the given repo doesn't exist" {
-    #     Clear-Error
+    Describe "when the given repo doesn't exist" {
+        Clear-Error
 
-    #     Receive-GitBranch -RepoRoot 'C:\I\do\not\exist' -ErrorAction SilentlyContinue
-    #     It 'should write an error' {
-    #         $Global:Error.Count | Should -Be 1
-    #         $Global:Error | Should Match 'does not exist'
-    #     }
-    # }
+        Receive-GitBranch -RepoRoot 'C:\I\do\not\exist' -ErrorAction SilentlyContinue
+        It 'should write an error' {
+            $Global:Error.Count | Should -Be 1
+            $Global:Error | Should Match 'does not exist'
+        }
+    }
 
-    # Describe 'when there are conflicts between local and remote' {
-    #     Init
-    #     GivenConflicts
-    #     WhenUpdated -RepoRoot $clientDirectory
-    #     ThenStatusIs 'Conflicts'
-    #     ThenHeadIsLastCommit
-    # }
+    Describe 'when there are conflicts between local and remote' {
+        Init
+        GivenConflicts
+        WhenUpdated -RepoRoot $clientDirectory
+        ThenStatusIs 'Conflicts'
+        ThenHeadIsLastCommit
+    }
 }
