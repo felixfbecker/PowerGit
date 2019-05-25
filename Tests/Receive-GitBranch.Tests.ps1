@@ -196,7 +196,6 @@ Describe Receive-GitBranch {
 
     Describe 'when no new commits on the server' {
         try {
-            $PSVersionTable | Out-String | Write-Warning
             Init
             GivenNewCommitIn $clientDirectory
             WhenUpdated -RepoRoot $clientDirectory
