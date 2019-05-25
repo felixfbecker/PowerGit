@@ -196,12 +196,12 @@ Describe Receive-GitBranch {
 
     Describe 'when no new commits on the server' {
         try {
+            $PSVersionTable | Out-String | Write-Warning
             Init
             GivenNewCommitIn $clientDirectory
             WhenUpdated -RepoRoot $clientDirectory
             ThenStatusIs 'UpToDate'
             ThenHeadIsLastCommit
-            Remove-Alias ls
             Write-Warning "clientDirectory"
             Write-Warning -Message (ls -FlasR $clientDirectory | Out-String)
             Write-Warning "serverBareDirectory"
