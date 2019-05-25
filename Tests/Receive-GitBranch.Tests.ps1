@@ -301,5 +301,6 @@ Describe Receive-GitBranch {
         WhenUpdated -RepoRoot $clientDirectory
         ThenStatusIs 'Conflicts'
         ThenHeadIsLastCommit
+        Clear-GitRepositoryCache
     }
 }
