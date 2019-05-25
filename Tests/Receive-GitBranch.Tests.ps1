@@ -16,6 +16,7 @@ $serverWorkingDirectory = $null
 $serverBareDirectory = $null
 $clientDirectory = $null
 [LibGit2Sharp.Commit]$lastCommit = $null
+[LibGit2Sharp.MergeResult]$result = $null
 
 function GivenBranch {
     param(
@@ -200,6 +201,7 @@ Describe Receive-GitBranch {
         WhenUpdated -RepoRoot $clientDirectory
         ThenStatusIs 'UpToDate'
         ThenHeadIsLastCommit
+        $script:result.Commit.Repository.Dispose()
     }
 
     Describe 'when no new commits local and no new commits on server' {
