@@ -194,7 +194,7 @@ function WhenUpdated {
 
 Describe Receive-GitBranch {
 
-    Describe -Tag Only 'when no new commits on the server' {
+    Describe 'when no new commits on the server' {
         Init
         GivenNewCommitIn $clientDirectory
         WhenUpdated -RepoRoot $clientDirectory
