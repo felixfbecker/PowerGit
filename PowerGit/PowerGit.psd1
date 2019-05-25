@@ -86,6 +86,7 @@
     FunctionsToExport = @(
         'Add-GitItem',
         'Add-GitRemote',
+        'Clear-GitRepositoryCache',
         'Compare-GitTree',
         'ConvertTo-ColoredPatch',
         'Copy-GitRepository',
