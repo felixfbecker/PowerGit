@@ -201,11 +201,11 @@ Describe Receive-GitBranch {
         ThenStatusIs 'UpToDate'
         ThenHeadIsLastCommit
         Write-Warning "clientDirectory"
-        ls -FlasR $clientDirectory | Write-Warning
+        Write-Warning -Message ((ls -FlasR $clientDirectory) -join "`n")
         Write-Warning "serverBareDirectory"
-        ls -FlasR $serverBareDirectory | Write-Warning
+        Write-Warning -Message ((ls -FlasR $serverBareDirectory) -join "`n")
         Write-Warning "serverWorkingDirectory"
-        ls -FlasR $serverWorkingDirectory | Write-Warning
+        Write-Warning -Message ((ls -FlasR $serverWorkingDirectory) -join "`n")
     }
 
     # Describe 'when no new commits local and no new commits on server' {
