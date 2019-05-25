@@ -201,6 +201,7 @@ Describe Receive-GitBranch {
             WhenUpdated -RepoRoot $clientDirectory
             ThenStatusIs 'UpToDate'
             ThenHeadIsLastCommit
+            Remove-Alias ls
             Write-Warning "clientDirectory"
             Write-Warning -Message (ls -FlasR $clientDirectory | Out-String)
             Write-Warning "serverBareDirectory"
