@@ -200,6 +200,12 @@ Describe Receive-GitBranch {
         WhenUpdated -RepoRoot $clientDirectory
         ThenStatusIs 'UpToDate'
         ThenHeadIsLastCommit
+        Write-Warning "clientDirectory"
+        ls -FlasR $clientDirectory
+        Write-Warning "serverBareDirectory"
+        ls -FlasR $serverBareDirectory
+        Write-Warning "serverWorkingDirectory"
+        ls -FlasR $serverWorkingDirectory
     }
 
     # Describe 'when no new commits local and no new commits on server' {
