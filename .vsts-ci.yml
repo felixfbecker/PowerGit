@@ -11,6 +11,7 @@ jobs:
       vmImage: ubuntu-16.04
     steps:
       - powershell: |
+          $ProgressPreference = 'SilentlyContinue'
           Install-Module -Force -Scope CurrentUser PSScriptAnalyzer
           Invoke-ScriptAnalyzer -Path . -Recurse -Settings PSScriptAnalyzerSettings.psd1 | Format-List -Property RuleName,Message,ScriptPath,Line,Column
         displayName: Run PSScriptAnalyzer

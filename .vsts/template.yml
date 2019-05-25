@@ -13,9 +13,9 @@ phases:
       - powershell: ./build.ps1
         displayName: Build assemblies
       - powershell: |
+          $ProgressPreference = "SilentlyContinue"
           Install-Module -Force -Scope CurrentUser -SkipPublisherCheck Pester -RequiredVersion '4.4.3'
           Install-Module -Force -Scope CurrentUser PSCodeCovIo
-          $ProgressPreference = "SilentlyContinue"
           $res = Invoke-Pester -PassThru -CodeCoverage PowerGit/Functions/*.ps1 -CodeCoverageOutputFile coverage.xml -OutputFile testresults.xml -OutputFormat NUnitXML
           Export-CodeCovIoJson -CodeCoverage $res.CodeCoverage -RepoRoot $pwd -Path coverage.json
           if ($res.FailedCount -gt 0) {
