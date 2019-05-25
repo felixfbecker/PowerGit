@@ -100,10 +100,17 @@ function Send-GitObject {
             param([LibGit2Sharp.PushStatusError]$PushStatusError)
             Write-Error -Message "$($PushStatusError.Reference): $($PushStatusError.Message)"
         }
+        $credentialsProviderCalled = $false
         $pushOptions.CredentialsProvider = {
             param([string]$Url, [string]$UsernameForUrl, [LibGit2Sharp.SupportedCredentialTypes]$Types)
-            if (-not $Credential) {
-                $Credential = Get-Credential -Title "Authentication required for $Url"
+            Write-Verbose "Credentials required"
+            if ($credentialsProviderCalled) {
+                $Credential = Get-Credential -Title "Wrong credentials provided for $Url"
+            } else {
+                Set-Variable -Name credentialsProviderCalled -Value $true -Scope 1
+                if (-not $Credential) {
+                    $Credential = Get-Credential -Title "Authentication required for $Url"
+                }
             }
             $gitCredential = [LibGit2Sharp.SecureUsernamePasswordCredentials]::new()
             $gitCredential.Username = $Credential.UserName

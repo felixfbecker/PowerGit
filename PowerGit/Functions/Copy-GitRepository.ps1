@@ -50,8 +50,14 @@ function Copy-GitRepository {
     $DestinationPath = ConvertTo-GitFullPath -Path $DestinationPath
 
     $options = [libgit2sharp.CloneOptions]::new()
+    $credentialsProviderCalled = $false
     $options.CredentialsProvider = {
         param([string]$Url, [string]$UsernameForUrl, [LibGit2Sharp.SupportedCredentialTypes]$Types)
+        Write-Verbose "Credentials required"
+        if ($credentialsProviderCalled) {
+            $Credential = Get-Credential -Title "Wrong credentials provided for $Url"
+        }
+        Set-Variable -Name credentialsProviderCalled -Value $true -Scope 1
         if (-not $Credential) {
             $Credential = Get-Credential -Title "Authentication required for $Url"
         }

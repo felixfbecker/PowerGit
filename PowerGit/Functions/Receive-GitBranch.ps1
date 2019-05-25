@@ -78,102 +78,108 @@ function Receive-GitBranch {
     }
 
     $branch = $repo.Branches | Where-Object { $_.IsCurrentRepositoryHead }
-if (-not $branch) {
-    Write-Error -Message ('Repository in "{0}" isn''t on a branch. Use "Set-GitHead" to update to a branch.' -f $RepoRoot)
-    return
-}
-
-if (-not $branch.IsTracking) {
-    [LibGit2Sharp.Branch]$remoteBranch = $repo.Branches | Where-Object { $_.UpstreamBranchCanonicalName -eq $branch.CanonicalName }
-if (-not $remoteBranch) {
-    Write-Error -Message ('Branch "{0}" in repository "{1}" isn''t tracking a remote branch and we''re unable to find a remote branch named "{0}".' -f $branch.FriendlyName, $RepoRoot)
-    return
-}
-
-[void]$repo.Branches.Update($branch, {
-        param(
-            [LibGit2Sharp.BranchUpdater]
-            $Updater
-        )
-
-        $Updater.TrackedBranch = $remoteBranch.CanonicalName
-    })
-}
-
-$cancel = $false
-
-$fetchOptions = [LibGit2Sharp.FetchOptions]::new()
-$fetchOptions.CredentialsProvider = {
-    param([string]$Url, [string]$UsernameForUrl, [LibGit2Sharp.SupportedCredentialTypes]$Types)
-    if (-not $Credential) {
-        $Credential = Get-Credential -Title "Authentication required for $Url"
+    if (-not $branch) {
+        Write-Error -Message ('Repository in "{0}" isn''t on a branch. Use "Set-GitHead" to update to a branch.' -f $RepoRoot)
+        return
     }
-    $gitCredential = [LibGit2Sharp.SecureUsernamePasswordCredentials]::new()
-    $gitCredential.Username = $Credential.UserName
-    $gitCredential.Password = $Credential.Password
-    return $gitCredential
-}
-if ($PSBoundParameters.ContainsKey('TagFetchMode')) {
-    $fetchOptions.TagFetchMode = $TagFetchMode
-}
-if ($PSBoundParameters.ContainsKey('Prune')) {
-    $fetchOptions.Prune = $Prune
-}
-$fetchOptions.OnProgress = {
-    param([string] $serverProgressOutput)
-    if ($ProgressPreference -ne 'SilentlyContinue') {
-        if ($serverProgressOutput -match '^(.+):\s+(\d+)% \((\d+/\d+)\)') {
-            # Compressing objects:   0% (1/123)
-            # Counting objects:   3% (11/550)
-            if ($ProgressPreference -ne 'SilentlyContinue') {
-                Write-Progress `
-                    -Activity $Matches[1] `
-                    -PercentComplete $Matches[2] `
-                    -Status $Matches[3]
-            }
-        } elseif ($serverProgressOutput -match '^(.+)(?::)?\s+(\d+)') {
-            # Enumerating objects: 576, done.
-            # Counting objects 4
-            if ($ProgressPreference -ne 'SilentlyContinue') {
-                Write-Progress `
-                    -Activity $Matches[1] `
-                    -PercentComplete -1 `
-                    -Status $Matches[2]
-            }
-        } elseif (-not [string]::IsNullOrWhiteSpace($serverProgressOutput)) {
-            Write-Information $serverProgressOutput
+
+    if (-not $branch.IsTracking) {
+        [LibGit2Sharp.Branch]$remoteBranch = $repo.Branches | Where-Object { $_.UpstreamBranchCanonicalName -eq $branch.CanonicalName }
+    if (-not $remoteBranch) {
+        Write-Error -Message ('Branch "{0}" in repository "{1}" isn''t tracking a remote branch and we''re unable to find a remote branch named "{0}".' -f $branch.FriendlyName, $RepoRoot)
+        return
+    }
+
+    [void]$repo.Branches.Update($branch, {
+            param(
+                [LibGit2Sharp.BranchUpdater]
+                $Updater
+            )
+
+            $Updater.TrackedBranch = $remoteBranch.CanonicalName
+        })
+    }
+
+    $cancel = $false
+
+    $fetchOptions = [LibGit2Sharp.FetchOptions]::new()
+    $credentialsProviderCalled = $false
+    $fetchOptions.CredentialsProvider = {
+        param([string]$Url, [string]$UsernameForUrl, [LibGit2Sharp.SupportedCredentialTypes]$Types)
+        Write-Verbose "Credentials required"
+        if ($credentialsProviderCalled) {
+            $Credential = Get-Credential -Title "Wrong credentials provided for $Url"
         }
+        Set-Variable -Name credentialsProviderCalled -Value $true -Scope 1
+        if (-not $Credential) {
+            $Credential = Get-Credential -Title "Authentication required for $Url"
+        }
+        $gitCredential = [LibGit2Sharp.SecureUsernamePasswordCredentials]::new()
+        $gitCredential.Username = $Credential.UserName
+        $gitCredential.Password = $Credential.Password
+        return $gitCredential
     }
-    return -not $cancel -and -not $PSCmdlet.Stopping
-}
-$fetchOptions.OnTransferProgress = {
-    param([LibGit2Sharp.TransferProgress] $progress)
-    if ($ProgressPreference -ne 'SilentlyContinue' -and $progress.TotalObjects -ne 0) {
-        Write-Progress `
-            -Activity "Transferring objects" `
-            -Status "$($progress.ReceivedObjects)/$($progress.TotalObjects), $($progress.ReceivedBytes) bytes" `
-            -PercentComplete (($progress.ReceivedObjects / $progress.TotalObjects) * 100)
+    if ($PSBoundParameters.ContainsKey('TagFetchMode')) {
+        $fetchOptions.TagFetchMode = $TagFetchMode
     }
-    return -not $cancel -and -not $PSCmdlet.Stopping
-}
+    if ($PSBoundParameters.ContainsKey('Prune')) {
+        $fetchOptions.Prune = $Prune
+    }
+    $fetchOptions.OnProgress = {
+        param([string] $serverProgressOutput)
+        if ($ProgressPreference -ne 'SilentlyContinue') {
+            if ($serverProgressOutput -match '^(.+):\s+(\d+)% \((\d+/\d+)\)') {
+                # Compressing objects:   0% (1/123)
+                # Counting objects:   3% (11/550)
+                if ($ProgressPreference -ne 'SilentlyContinue') {
+                    Write-Progress `
+                        -Activity $Matches[1] `
+                        -PercentComplete $Matches[2] `
+                        -Status $Matches[3]
+                }
+            } elseif ($serverProgressOutput -match '^(.+)(?::)?\s+(\d+)') {
+                # Enumerating objects: 576, done.
+                # Counting objects 4
+                if ($ProgressPreference -ne 'SilentlyContinue') {
+                    Write-Progress `
+                        -Activity $Matches[1] `
+                        -PercentComplete -1 `
+                        -Status $Matches[2]
+                }
+            } elseif (-not [string]::IsNullOrWhiteSpace($serverProgressOutput)) {
+                Write-Information $serverProgressOutput
+            }
+        }
+        return -not $cancel -and -not $PSCmdlet.Stopping
+    }
+    $fetchOptions.OnTransferProgress = {
+        param([LibGit2Sharp.TransferProgress] $progress)
+        if ($ProgressPreference -ne 'SilentlyContinue' -and $progress.TotalObjects -ne 0) {
+            Write-Progress `
+                -Activity "Transferring objects" `
+                -Status "$($progress.ReceivedObjects)/$($progress.TotalObjects), $($progress.ReceivedBytes) bytes" `
+                -PercentComplete (($progress.ReceivedObjects / $progress.TotalObjects) * 100)
+        }
+        return -not $cancel -and -not $PSCmdlet.Stopping
+    }
 
-$mergeOptions = [LibGit2Sharp.MergeOptions]::new()
-$mergeOptions.FastForwardStrategy = switch ($MergeStrategy) {
-    'FastForward' { [LibGit2Sharp.FastForwardStrategy]::FastForwardOnly }
-    'Merge' { [LibGit2Sharp.FastForwardStrategy]::NoFastForward }
-    default { [LibGit2Sharp.FastForwardStrategy]::Default }
-}
+    $mergeOptions = [LibGit2Sharp.MergeOptions]::new()
+    $mergeOptions.FastForwardStrategy = switch ($MergeStrategy) {
+        'FastForward' { [LibGit2Sharp.FastForwardStrategy]::FastForwardOnly }
+        'Merge' { [LibGit2Sharp.FastForwardStrategy]::NoFastForward }
+        default { [LibGit2Sharp.FastForwardStrategy]::Default }
+    }
 
-$pullOptions = [LibGit2Sharp.PullOptions]::new()
-$pullOptions.MergeOptions = $mergeOptions
-$pullOptions.FetchOptions = $fetchOptions
+    $pullOptions = [LibGit2Sharp.PullOptions]::new()
+    $pullOptions.MergeOptions = $mergeOptions
+    $pullOptions.FetchOptions = $fetchOptions
 
-$signature = New-GitSignature -RepoRoot $RepoRoot
-try {
-    [LibGit2Sharp.Commands]::Pull($repo, $signature, $pullOptions)
-} catch {
-    Write-Error -ErrorRecord $_
-} finally {
-    $cancel = $true
-}
+    $signature = New-GitSignature -RepoRoot $RepoRoot
+    try {
+        [LibGit2Sharp.Commands]::Pull($repo, $signature, $pullOptions)
+    } catch {
+        Write-Error -ErrorRecord $_
+    } finally {
+        $cancel = $true
+    }
 }

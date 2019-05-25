@@ -96,8 +96,14 @@ function Receive-GitObject {
             }
             return -not $cancel -and -not $PSCmdlet.Stopping
         }
+        $credentialsProviderCalled = $false
         $fetchOptions.CredentialsProvider = {
             param([string]$Url, [string]$UsernameForUrl, [LibGit2Sharp.SupportedCredentialTypes]$Types)
+            Write-Verbose "Credentials required"
+            if ($credentialsProviderCalled) {
+                $Credential = Get-Credential -Title "Wrong credentials provided for $Url"
+            }
+            Set-Variable -Name credentialsProviderCalled -Value $true -Scope 1
             if (-not $Credential) {
                 $Credential = Get-Credential -Title "Authentication required for $Url"
             }
