@@ -16,7 +16,7 @@ phases:
           $ProgressPreference = "SilentlyContinue"
           Install-Module -Force -Scope CurrentUser -SkipPublisherCheck Pester -RequiredVersion '4.4.3'
           Install-Module -Force -Scope CurrentUser PSCodeCovIo
-          $res = Invoke-Pester -PassThru -CodeCoverage PowerGit/Functions/*.ps1 -CodeCoverageOutputFile coverage.xml -OutputFile testresults.xml -Tag Only Tests/Receive-GitBranch.Tests.ps1
+          $res = Invoke-Pester -PassThru -CodeCoverage PowerGit/Functions/*.ps1 -CodeCoverageOutputFile coverage.xml -OutputFile testresults.xml Tests/Receive-GitBranch.Tests.ps1
           Export-CodeCovIoJson -CodeCoverage $res.CodeCoverage -RepoRoot $pwd -Path coverage.json
           if ($res.FailedCount -gt 0) {
             throw "$($res.FailedCount) tests failed."
