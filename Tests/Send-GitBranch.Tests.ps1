@@ -161,6 +161,7 @@ Describe Send-GitBranch {
         WhenSendingBranch 'master'
         ThenNoErrorsWereThrown
         ThenRemoteContainsLocalCommits
+        Clear-GitRepositoryCache
     }
 
     Describe 'when calling without a branch name' {
@@ -170,6 +171,7 @@ Describe Send-GitBranch {
         WhenSendingBranch
         ThenNoErrorsWereThrown
         ThenRemoteContainsLocalCommits
+        Clear-GitRepositoryCache
     }
 
     Describe 'when there are no local changes to push to remote' {
@@ -177,6 +179,7 @@ Describe Send-GitBranch {
         GivenLocalRepositoryTracksRemote 'LocalRepo'
         WhenSendingBranch 'master'
         ThenNoErrorsWereThrown
+        Clear-GitRepositoryCache
     }
 
     Describe 'when remote repository has changes not contained locally' {
@@ -186,6 +189,7 @@ Describe Send-GitBranch {
         GivenCommit
         WhenSendingBranch 'master' -ErrorAction SilentlyContinue
         ThenErrorWasThrown 'that you are trying to update on the remote contains commits that are not present locally.'
+        Clear-GitRepositoryCache
     }
 
     Describe 'when no upstream remote is defined' {
@@ -193,6 +197,7 @@ Describe Send-GitBranch {
         GivenCommit
         WhenSendingBranch 'master' -ErrorAction SilentlyContinue
         ThenErrorWasThrown 'A\ remote\ named\ "origin"\ does\ not\ exist\.'
+        Clear-GitRepositoryCache
     }
 
     Describe "when branch doesn't exist" {
@@ -200,5 +205,6 @@ Describe Send-GitBranch {
         GivenLocalRepositoryTracksRemote 'LocalRepo'
         WhenSendingBranch 'dsfsdaf' -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
         ThenNoErrorsWereThrown
+        Clear-GitRepositoryCache
     }
 }

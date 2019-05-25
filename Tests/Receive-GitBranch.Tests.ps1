@@ -209,6 +209,7 @@ Describe Receive-GitBranch {
         WhenUpdated -RepoRoot $clientDirectory
         ThenStatusIs 'UpToDate'
         ThenHeadIsLastCommit
+        Clear-GitRepositoryCache
     }
 
     Describe 'when no new commits local and new commits on server' {
@@ -217,6 +218,7 @@ Describe Receive-GitBranch {
         WhenUpdated -RepoRoot $clientDirectory
         ThenStatusIs 'FastForward'
         ThenHeadIsLastCommit
+        Clear-GitRepositoryCache
     }
 
     Describe 'when no new commits local and new commits on server' {
@@ -225,6 +227,7 @@ Describe Receive-GitBranch {
         WhenUpdated -RepoRoot $clientDirectory -AndMergeStrategyIs 'Merge'
         ThenStatusIs 'NonFastForward'
         ThenHeadIsNewCommit
+        Clear-GitRepositoryCache
     }
 
     Describe 'when new commits local and new commits on server' {
@@ -234,6 +237,7 @@ Describe Receive-GitBranch {
         WhenUpdated -RepoRoot $clientDirectory
         ThenStatusIs 'NonFastForward'
         ThenHeadIsNewCommit
+        Clear-GitRepositoryCache
     }
 
     Describe 'when new commits local and new commits on server and merge must be fast-forwarded' {
@@ -244,6 +248,7 @@ Describe Receive-GitBranch {
         ThenUpdateFailed
         ThenErrorIs 'Cannot\ perform\ fast-forward\ merge'
         ThenHeadIsLastCommit
+        Clear-GitRepositoryCache
     }
 
     Describe 'when no local branch' {
@@ -254,6 +259,7 @@ Describe Receive-GitBranch {
         ThenUpdateFailed
         ThenErrorIs 'isn''t\ on\ a\ branch'
         ThenHeadIsLastCommit
+        Clear-GitRepositoryCache
     }
 
     Describe 'when no tracking branch and there is a remote equivalent' {
@@ -264,6 +270,7 @@ Describe Receive-GitBranch {
         WhenUpdated -RepoRoot $clientDirectory
         ThenStatusIs 'NonFastForward'
         ThenHeadIsNewCommit
+        Clear-GitRepositoryCache
     }
 
     Describe 'when no tracking branch and there is no remote equivalent' {
@@ -274,6 +281,7 @@ Describe Receive-GitBranch {
         ThenUpdateFailed
         ThenErrorIs 'unable\ to\ find\ a\ remote\ branch\ named\ "develop"'
         ThenHeadIsLastCommit 'develop'
+        Clear-GitRepositoryCache
     }
 
     Describe "when the given repo doesn't exist" {
@@ -284,6 +292,7 @@ Describe Receive-GitBranch {
             $Global:Error.Count | Should -Be 1
             $Global:Error | Should Match 'does not exist'
         }
+        Clear-GitRepositoryCache
     }
 
     Describe 'when there are conflicts between local and remote' {

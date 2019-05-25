@@ -180,6 +180,7 @@ Describe Send-GitObject {
         WhenSendingObject 'refs/heads/master'
         ThenNoErrorsWereThrown
         ThenRemoteContainsLocalCommits
+        Clear-GitRepositoryCache
     }
 
     Describe 'when there are no local changes to push to remote' {
@@ -187,6 +188,7 @@ Describe Send-GitObject {
         GivenLocalRepositoryTracksRemote 'LocalRepo'
         WhenSendingObject 'refs/heads/master'
         ThenNoErrorsWereThrown
+        Clear-GitRepositoryCache
     }
 
     Describe 'when remote repository has changes not contained locally' {
@@ -196,6 +198,7 @@ Describe Send-GitObject {
         GivenCommit
         WhenSendingObject 'refs/heads/master' -ErrorAction SilentlyContinue
         ThenErrorWasThrown 'that you are trying to update on the remote contains commits that are not present locally.'
+        Clear-GitRepositoryCache
     }
 
     Describe 'when no upstream remote is defined' {
@@ -203,6 +206,7 @@ Describe Send-GitObject {
         GivenCommit
         WhenSendingObject 'refs/heads/master' -ErrorAction SilentlyContinue
         ThenErrorWasThrown 'A\ remote\ named\ "origin"\ does\ not\ exist\.'
+        Clear-GitRepositoryCache
     }
 
     Describe 'when refspec doesn''t exist' {
@@ -210,6 +214,7 @@ Describe Send-GitObject {
         GivenLocalRepositoryTracksRemote 'LocalRepo'
         WhenSendingObject 'refs/heads/dsfsdaf' -ErrorAction SilentlyContinue
         ThenErrorWasThrown 'does\ not\ match\ any\ existing\ object'
+        Clear-GitRepositoryCache
     }
 
     Describe 'when pushing tags' {
@@ -220,6 +225,7 @@ Describe Send-GitObject {
         WhenSendingObject 'refs/tags/tag1'
         ThenRemoteRevision 'tag1' -Exists
         ThenRemoteRevision 'tag2' -DoesNotExist
+        Clear-GitRepositoryCache
     }
 
     Describe 'when pushing all tags' {
@@ -230,6 +236,7 @@ Describe Send-GitObject {
         WhenSendingObject -Tags
         ThenRemoteRevision 'tag1' -Exists
         ThenRemoteRevision 'tag2' -Exists
+        Clear-GitRepositoryCache
     }
 
     Describe 'when tags moved' {
@@ -247,5 +254,6 @@ Describe Send-GitObject {
         WhenSendingObject -Tags
         ThenRemoteRevision 'tag1' -Exists -HasSha $commit.Sha
         ThenRemoteRevision 'tag2' -Exists -HasSha $commit.Sha
+        Clear-GitRepositoryCache
     }
 }
