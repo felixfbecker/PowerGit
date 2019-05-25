@@ -13,10 +13,10 @@
 $repos = New-Object System.Collections.Generic.List[LibGit2Sharp.Repository]
 
 function Clear-GitRepositoryCache {
-    foreach ($repo in $repoCache) {
+    foreach ($repo in $repos) {
         $repo.Dispose()
     }
-    $repoCache.Clear()
+    $repos.Clear()
 }
 
 function Get-GitRepository {
