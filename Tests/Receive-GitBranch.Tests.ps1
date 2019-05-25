@@ -201,6 +201,7 @@ Describe Receive-GitBranch {
         WhenUpdated -RepoRoot $clientDirectory
         ThenStatusIs 'UpToDate'
         ThenHeadIsLastCommit
+        Clear-GitRepositoryCache
     }
 
     Describe 'when no new commits local and no new commits on server' {

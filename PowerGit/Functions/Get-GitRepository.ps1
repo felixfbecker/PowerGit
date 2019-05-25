@@ -10,6 +10,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+$repoCache = @{ }
+
+function Clear-GitRepositoryCache {
+    foreach ($repo in $repoCache) {
+        $repo.Value.Dispose()
+    }
+    $repoCache.Clear()
+}
+
 function Get-GitRepository {
     <#
     .SYNOPSIS
@@ -40,14 +49,20 @@ function Get-GitRepository {
     Set-StrictMode -Version 'Latest'
 
     $RepoRoot = Resolve-Path -Path $RepoRoot -ErrorAction Ignore | Select-Object -ExpandProperty 'ProviderPath'
-if (-not $RepoRoot) {
-    Write-Error -Message ('Repository ''{0}'' does not exist.' -f $PSBoundParameters['RepoRoot'])
-    return
-}
+    if (-not $RepoRoot) {
+        Write-Error -Message ('Repository ''{0}'' does not exist.' -f $PSBoundParameters['RepoRoot'])
+        return
+    }
 
-try {
-    [LibGit2Sharp.Repository]::new($RepoRoot)
-} catch {
-    Write-Error -ErrorRecord $_
-}
+    if ($repoCache.ContainsKey($RepoRoot)) {
+        $repoCache[$RepoRoot]
+    } else {
+        try {
+            $repo = [LibGit2Sharp.Repository]::new($RepoRoot)
+            $script:repoCache[$RepoRoot] = $repo
+            $repo
+        } catch {
+            Write-Error -ErrorRecord $_
+        }
+    }
 }
