@@ -18,7 +18,7 @@ jobs:
           $PSVersionTable
           Install-Module -Force -Scope CurrentUser -SkipPublisherCheck Pester -RequiredVersion '4.4.3'
           Install-Module -Force -Scope CurrentUser PSCodeCovIo
-          $res = Invoke-Pester -PassThru -CodeCoverage PowerGit/Functions/*.ps1 -CodeCoverageOutputFile coverage.xml -OutputFile testresults.xml Tests/Receive-GitBranch.Tests.ps1
+          $res = Invoke-Pester -PassThru -CodeCoverage PowerGit/Functions/*.ps1 -CodeCoverageOutputFile coverage.xml -OutputFile testresults.xml
           if ($res.TotalCount -eq 0) {
             throw "No tests"
           }
