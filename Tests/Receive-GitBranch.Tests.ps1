@@ -195,17 +195,21 @@ function WhenUpdated {
 Describe Receive-GitBranch {
 
     Describe 'when no new commits on the server' {
-        Init
-        GivenNewCommitIn $clientDirectory
-        WhenUpdated -RepoRoot $clientDirectory
-        ThenStatusIs 'UpToDate'
-        ThenHeadIsLastCommit
-        Write-Warning "clientDirectory"
-        Write-Warning -Message ((ls -FlasR $clientDirectory) -join "`n")
-        Write-Warning "serverBareDirectory"
-        Write-Warning -Message ((ls -FlasR $serverBareDirectory) -join "`n")
-        Write-Warning "serverWorkingDirectory"
-        Write-Warning -Message ((ls -FlasR $serverWorkingDirectory) -join "`n")
+        try {
+            Init
+            GivenNewCommitIn $clientDirectory
+            WhenUpdated -RepoRoot $clientDirectory
+            ThenStatusIs 'UpToDate'
+            ThenHeadIsLastCommit
+            Write-Warning "clientDirectory"
+            Write-Warning -Message (ls -FlasR $clientDirectory | Out-String)
+            Write-Warning "serverBareDirectory"
+            Write-Warning -Message (ls -FlasR $serverBareDirectory | Out-String)
+            Write-Warning "serverWorkingDirectory"
+            Write-Warning -Message (ls -FlasR $serverWorkingDirectory | Out-String)
+        } catch {
+            Write-Warning -Message ($_ | Out-String)
+        }
     }
 
     # Describe 'when no new commits local and no new commits on server' {
