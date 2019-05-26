@@ -96,8 +96,8 @@ New-GitBranch my-branch | Send-GitBranch
 
 To list all branches, use `Get-GitBranch`. You may supply parameters to filter by name (wildcards supported) or
 remote/local/all branches. The default output table view `Verbose` includes information about the tracking status of the
-branch. To also see names of tracking branches, pipe to `Format-Table -View VeryVerbose` (or `ft -v veryverbose`), which mimics
-`git branch -vv` output.
+branch. To also see names of tracking branches, pipe to `Format-Table -View VeryVerbose` (or `ft -v veryverbose`), which
+mimics `git branch -vv` output.
 
 ![Get-GitBranch VeryVerbose demo](./Screenshots/Get-GitBranch-VeryVerbose.svg)
 
@@ -214,10 +214,10 @@ Reset-GitHead -Hard origin/master
 
 ### Compare
 
-To diff two revisions, run `Compare-GitTree`. The output is a `TreeChanges` object that enumerates all files that were changed.
-The function takes two revisions, `-DifferenceRevision` and `-ReferenceRevision`. `-DifferenceRevision` defaults to the
-current HEAD. `-ReferenceRevision` must be given, or can be supplied from the pipeline (branches, commits or pull
-requests can be piped).
+To diff two revisions, run `Compare-GitTree`. The output is a `TreeChanges` object that enumerates all files that were
+changed. The function takes two revisions, `-DifferenceRevision` and `-ReferenceRevision`. `-DifferenceRevision`
+defaults to the current HEAD. `-ReferenceRevision` must be given, or can be supplied from the pipeline (branches,
+commits or pull requests can be piped).
 
 ```powershell
 Compare-GitTree master
@@ -227,7 +227,8 @@ Get-GitHubPullRequest -Number 1234 | Compare-GitTree -DifferenceRevision master
 
 ### Config
 
-You can change git configuration with `Set-GitConfiguration`. Use the `-Scope` parameter to define if you want to change `Local` (default) or `Global` configuration.
+You can change git configuration with `Set-GitConfiguration`. Use the `-Scope` parameter to define if you want to change
+`Local` (default) or `Global` configuration.
 
 ```powershell
 Set-GitConfiguration -Scope Global -Name 'user.name' -Value 'Felix Becker'
@@ -305,9 +306,7 @@ SVG Screenshots are created with [term2svg](https://github.com/nbedos/termtosvg)
 termtosvg ./Screenshots/frames -s -g 100x12 -t base16_default_dark -c 'pwsh -NoExit -Command clear'
 ```
 
-`-s` outputs still .svg frames.
-Always use the `base16_default_dark` theme for consistency.
-Keep the column width at 100 for best readability in the README (resize your terminal to match the width).
-If 12 is not enough the row height should be matched to the output of the command.
-Execute your command, then execute `exit`.
-Pick the frame that shows the command output but does not show the next prompt.
+`-s` outputs still .svg frames. Always use the `base16_default_dark` theme for consistency. Keep the column width at 100
+for best readability in the README (resize your terminal to match the width). If 12 is not enough the row height should
+be matched to the output of the command. Execute your command, then execute `exit`. Pick the frame that shows the
+command output but does not show the next prompt.
