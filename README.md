@@ -101,12 +101,13 @@ mimics `git branch -vv` output.
 
 ![Get-GitBranch VeryVerbose demo](./Screenshots/Get-GitBranch-VeryVerbose.svg)
 
-Delete branches with the `Remove-GitBranch` command (supports pipeline input, `-WhatIf` and `-Confirm`).
+Delete branches with the `Remove-GitBranch` command (supports pipeline input, autocompletion, `-WhatIf` and `-Confirm`).
 
-The current branch can be retrieved with `Get-GitHead` (which may return a `DetachedHead` object if the HEAD does not
-point to a named branch).
+The current branch can be retrieved with `Get-GitHead` (which may return a `DetachedHead` branch object if the HEAD does
+not point to a named branch).
 
-To checkout a different branch, use `Set-GitHead`.
+To checkout a different branch, use `Set-GitHead`. The parameter for the revision supports autocompletion of branch
+names and tags.
 
 ### Add
 
