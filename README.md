@@ -298,3 +298,13 @@ Or dot-source [Aliases.ps1](./PowerGit/Aliases.ps1), which defines aliases for a
 ## Contributing
 
 SVG Screenshots are created with [term2svg](https://github.com/nbedos/termtosvg)
+
+```
+termtosvg ./Screenshots/frames -s -g 80x12 -t base16_default_dark -c 'pwsh -NoExit -Command clear'
+```
+
+`-s` outputs still .svg frames.
+Always use the `base16_default_dark` theme for consistency.
+Keep the column width at 80 for best readability in the README, the row height should be matched to the output of the command.
+Execute your command, then execute `exit`.
+Pick the frame that shows the command output but does not show the next prompt.

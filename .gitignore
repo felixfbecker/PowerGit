@@ -13,6 +13,8 @@ Output/
 .output
 .vs
 /node_modules/
+/Screenshots/frames/
+.DS_Store
 
 # TODO figure out where these come from
 /PowerGit/Assemblies

@@ -1,203 +1,40 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1680" height="868.4">
-    <rect width="1680" height="868.4" rx="0" ry="0" class="a" />
-    <svg height="868.4" viewBox="0 0 168 86.84" width="1680" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-        <style>.a{fill:#282d35}.e{fill:#b9c0cb}.f{fill:#dbab79}</style>
-        <g font-size="1.67" font-family="Monaco,Consolas,Menlo,'Bitstream Vera Sans Mono','Powerline Symbols',monospace">
-            <defs>
-                <symbol id="a">
-                    <path fill="transparent" d="M0 0h168v40H0z" />
-                </symbol>
-                <symbol id="b">
-                    <path fill="#6f7683" d="M0 0h1.102v2.171H0z" />
-                </symbol>
-            </defs>
-            <path class="a" d="M0 0h168v86.84H0z" />
-            <svg width="168">
-                <svg>
-                    <use xlink:href="#a" />
-                    <use xlink:href="#b" x="40.996" y="84.644" />
-                    <text y="3.841" class="e">Sha</text>
-                    <text x="8.016" y="3.841" class="e">Message</text>
-                    <text y="6.012" class="e">---</text>
-                    <text x="8.016" y="6.012" class="e">-------</text>
-                    <text y="8.183" class="f">be1db11</text>
-                    <text x="8.016" y="8.183" class="e">Fix</text>
-                    <text x="12.024" y="8.183" class="e">README</text>
-                    <text y="10.354" class="f">c9a29a9</text>
-                    <text x="8.016" y="10.354" class="e">Extend</text>
-                    <text x="15.03" y="10.354" class="e">README</text>
-                    <text y="12.525" class="f">037a9d6</text>
-                    <text x="8.016" y="12.525" class="e">Support</text>
-                    <text x="16.032" y="12.525" class="e">pretty</text>
-                    <text x="23.046" y="12.525" class="e">outputs</text>
-                    <text x="31.062" y="12.525" class="e">for</text>
-                    <text x="35.07" y="12.525" class="e">Get-GitCommit</text>
-                    <text x="49.098" y="12.525" class="e">(git</text>
-                    <text x="54.108" y="12.525" class="e">log)</text>
-                    <text y="14.696" class="f">aa0ae31</text>
-                    <text x="8.016" y="14.696" class="e">Make</text>
-                    <text x="13.026" y="14.696" class="e">Add-GitItem</text>
-                    <text x="25.05" y="14.696" class="e">Path</text>
-                    <text x="30.06" y="14.696" class="e">parameter</text>
-                    <text x="40.08" y="14.696" class="e">positional</text>
-                    <text y="16.867" class="f">fef8934</text>
-                    <text x="8.016" y="16.867" class="e">Add</text>
-                    <text x="12.024" y="16.867" class="e">Configuration</text>
-                    <text x="26.052" y="16.867" class="e">parameter</text>
-                    <text x="36.072" y="16.867" class="e">to</text>
-                    <text x="39.078" y="16.867" class="e">build</text>
-                    <text x="45.09" y="16.867" class="e">script</text>
-                    <text y="19.038" class="f">fbd88bb</text>
-                    <text x="8.016" y="19.038" class="e">Make</text>
-                    <text x="13.026" y="19.038" class="e">Copy-GitRepository&apos;s</text>
-                    <text x="34.068" y="19.038" class="e">parameters</text>
-                    <text x="45.09" y="19.038" class="e">like</text>
-                    <text x="50.1" y="19.038" class="e">native</text>
-                    <text x="57.114" y="19.038" class="e">git</text>
-                    <text y="21.209" class="f">1967da7</text>
-                    <text x="8.016" y="21.209" class="e">Update</text>
-                    <text x="15.03" y="21.209" class="e">description</text>
-                    <text y="23.38" class="f">b346c6b</text>
-                    <text x="8.016" y="23.38" class="e">Update</text>
-                    <text x="15.03" y="23.38" class="e">README</text>
-                    <text y="25.551" class="f">d86f71f</text>
-                    <text x="8.016" y="25.551" class="e">Fix</text>
-                    <text x="12.024" y="25.551" class="e">badge</text>
-                    <text x="18.036" y="25.551" class="e">definitionId</text>
-                    <text y="27.722" class="f">ce883ee</text>
-                    <text x="8.016" y="27.722" class="e">Add</text>
-                    <text x="12.024" y="27.722" class="e">displayName</text>
-                    <text x="24.048" y="27.722" class="e">for</text>
-                    <text x="28.056" y="27.722" class="e">PSScriptAnalyzer</text>
-                    <text y="29.893" class="f">7e73cec</text>
-                    <text x="8.016" y="29.893" class="e">Add</text>
-                    <text x="12.024" y="29.893" class="e">build</text>
-                    <text x="18.036" y="29.893" class="e">script</text>
-                    <text y="32.064" class="f">d73f184</text>
-                    <text x="8.016" y="32.064" class="e">Rename</text>
-                    <text x="15.03" y="32.064" class="e">in</text>
-                    <text x="18.036" y="32.064" class="e">gitignore</text>
-                    <text x="28.056" y="32.064" class="e">too</text>
-                    <text y="34.235" class="f">9f9b1ff</text>
-                    <text x="8.016" y="34.235" class="e">Replace</text>
-                    <text x="16.032" y="34.235" class="e">in</text>
-                    <text x="19.038" y="34.235" class="e">dotfiles</text>
-                    <text x="28.056" y="34.235" class="e">too</text>
-                    <text y="36.406" class="f">3d051fa</text>
-                    <text x="8.016" y="36.406" class="e">PSPowerGit</text>
-                    <text x="19.038" y="36.406" class="e">-&gt;</text>
-                    <text x="22.044" y="36.406" class="e">PowerGit</text>
-                    <text y="38.577" class="f">1bc8258</text>
-                    <text x="8.016" y="38.577" class="e">Replace</text>
-                    <text x="16.032" y="38.577" class="e">GitAutomationCore</text>
-                    <text x="34.068" y="38.577" class="e">-&gt;</text>
-                    <text x="37.074" y="38.577" class="e">PowerGit</text>
-                    <text y="40.748" class="f">44abf48</text>
-                    <text x="8.016" y="40.748" class="e">Rename</text>
-                    <text x="15.03" y="40.748" class="e">files</text>
-                    <text x="21.042" y="40.748" class="e">and</text>
-                    <text x="25.05" y="40.748" class="e">folders</text>
-                    <text x="33.066" y="40.748" class="e">GitAutomationCore</text>
-                    <text x="51.102" y="40.748" class="e">-&gt;</text>
-                    <text x="54.108" y="40.748" class="e">PowerGit</text>
-                    <text y="42.919" class="f">9b23896</text>
-                    <text x="8.016" y="42.919" class="e">fix</text>
-                    <text x="12.024" y="42.919" class="e">codecov</text>
-                    <text y="45.09" class="f">6db2708</text>
-                    <text x="8.016" y="45.09" class="e">Improve</text>
-                    <text x="16.032" y="45.09" class="e">codecov</text>
-                    <text x="24.048" y="45.09" class="e">metadata</text>
-                    <text y="47.261" class="f">980e674</text>
-                    <text x="8.016" y="47.261" class="e">Try</text>
-                    <text x="12.024" y="47.261" class="e">env</text>
-                    <text x="16.032" y="47.261" class="e">var</text>
-                    <text x="20.04" y="47.261" class="e">for</text>
-                    <text x="24.048" y="47.261" class="e">pr</text>
-                    <text x="27.054" y="47.261" class="e">number</text>
-                    <text y="49.432" class="f">3fcb153</text>
-                    <text x="8.016" y="49.432" class="e">Fix</text>
-                    <text x="12.024" y="49.432" class="e">yaml</text>
-                    <text y="51.603" class="f">6cc5887</text>
-                    <text x="8.016" y="51.603" class="e">Try</text>
-                    <text x="12.024" y="51.603" class="e">env</text>
-                    <text x="16.032" y="51.603" class="e">to</text>
-                    <text x="19.038" y="51.603" class="e">fix</text>
-                    <text x="23.046" y="51.603" class="e">codecov</text>
-                    <text y="53.774" class="f">37a5b24</text>
-                    <text x="8.016" y="53.774" class="e">Set</text>
-                    <text x="12.024" y="53.774" class="e">CI_JOB_ID</text>
-                    <text y="55.945" class="f">b443b86</text>
-                    <text x="8.016" y="55.945" class="e">Normalize</text>
-                    <text x="18.036" y="55.945" class="e">line</text>
-                    <text x="23.046" y="55.945" class="e">endings</text>
-                    <text y="58.116" class="f">828c186</text>
-                    <text x="8.016" y="58.116" class="e">Fix</text>
-                    <text x="12.024" y="58.116" class="e">Get-GitRepositoryStatus</text>
-                    <text x="36.072" y="58.116" class="e">tests</text>
-                    <text y="60.287" class="f">760308c</text>
-                    <text x="8.016" y="60.287" class="e">Set</text>
-                    <text x="12.024" y="60.287" class="e">codecov</text>
-                    <text x="20.04" y="60.287" class="e">uploader</text>
-                    <text x="29.058" y="60.287" class="e">variables</text>
-                    <text y="62.458" class="f">a92bbac</text>
-                    <text x="8.016" y="62.458" class="e">Fix</text>
-                    <text x="12.024" y="62.458" class="e">Add-GitItem</text>
-                    <text x="24.048" y="62.458" class="e">for</text>
-                    <text x="28.056" y="62.458" class="e">Windows</text>
-                    <text y="64.629" class="f">d5aeb9b</text>
-                    <text x="8.016" y="64.629" class="e">Set</text>
-                    <text x="12.024" y="64.629" class="e">displayName</text>
-                    <text y="66.8" class="f">7258bfb</text>
-                    <text x="8.016" y="66.8" class="e">Try</text>
-                    <text x="12.024" y="66.8" class="e">with</text>
-                    <text x="17.034" y="66.8" class="e">System.DefaultWorkingDirectory</text>
-                    <text y="68.971" class="f">046c597</text>
-                    <text x="8.016" y="68.971" class="e">Fix</text>
-                    <text x="12.024" y="68.971" class="e">windows</text>
-                    <text x="20.04" y="68.971" class="e">detection</text>
-                    <text x="30.06" y="68.971" class="e">in</text>
-                    <text x="33.066" y="68.971" class="e">Resolve-RealPath</text>
-                    <text y="71.142" class="f">2d5a483</text>
-                    <text x="8.016" y="71.142" class="e">Set</text>
-                    <text x="12.024" y="71.142" class="e">codecoverage</text>
-                    <text x="25.05" y="71.142" class="e">to</text>
-                    <text x="28.056" y="71.142" class="e">files</text>
-                    <text x="34.068" y="71.142" class="e">under</text>
-                    <text x="40.08" y="71.142" class="e">test</text>
-                    <text y="73.313" class="f">c62e9f0</text>
-                    <text x="8.016" y="73.313" class="e">Publish</text>
-                    <text x="16.032" y="73.313" class="e">VSTS</text>
-                    <text x="21.042" y="73.313" class="e">coverage</text>
-                    <text y="75.484" class="f">69e5533</text>
-                    <text x="8.016" y="75.484" class="e">Fix</text>
-                    <text x="12.024" y="75.484" class="e">windows</text>
-                    <text x="20.04" y="75.484" class="e">check</text>
-                    <text y="77.655" class="f">56ef6ef</text>
-                    <text x="8.016" y="77.655" class="e">Provide</text>
-                    <text x="16.032" y="77.655" class="e">codecov</text>
-                    <text x="24.048" y="77.655" class="e">token</text>
-                    <text y="79.826" class="f">c7b2652</text>
-                    <text x="8.016" y="79.826" class="e">SkipPublisherCheck</text>
-                    <text x="27.054" y="79.826" class="e">for</text>
-                    <text x="31.062" y="79.826" class="e">Windows</text>
-                    <text y="81.997" class="f">bfc1107</text>
-                    <text x="8.016" y="81.997" class="e">Fix</text>
-                    <text x="12.024" y="81.997" class="e">New-GitSignature</text>
-                    <text y="84.168" class="f">d952aaf</text>
-                    <text x="8.016" y="84.168" class="e">Fix</text>
-                    <text x="12.024" y="84.168" class="e">Set-GitHead</text>
-                    <text x="26.052" y="84.168" class="e">output</text>
-                    <text x="33.066" y="84.168" class="e">type</text>
-                    <text y="86.339" class="e">&lt;SPACE&gt;</text>
-                    <text x="8.016" y="86.339" class="e">next</text>
-                    <text x="13.026" y="86.339" class="e">page;</text>
-                    <text x="19.038" y="86.339" class="e">&lt;CR&gt;</text>
-                    <text x="24.048" y="86.339" class="e">next</text>
-                    <text x="29.058" y="86.339" class="e">line;</text>
-                    <text x="35.07" y="86.339" class="e">Q</text>
-                    <text x="37.074" y="86.339" class="e">quit</text>
-                </svg>
-            </svg>
-        </g>
-    </svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="terminal" baseProfile="full" viewBox="0 0 640 206" width="640" version="1.1">
+    <defs>
+        <termtosvg:template_settings xmlns:termtosvg="https://github.com/nbedos/termtosvg">
+            <termtosvg:screen_geometry columns="80" rows="12"/>
+        </termtosvg:template_settings>
+        <style type="text/css" id="generated-style"><![CDATA[#screen {
+                font-family: 'DejaVu Sans Mono', monospace;
+                font-style: normal;
+                font-size: 14px;
+            }
+
+        text {
+            dominant-baseline: text-before-edge;
+            white-space: pre;
+        }]]></style>
+        <style type="text/css" id="user-style">
+            /* base16-default-dark color theme (source: http://chriskempson.com/projects/base16/) */
+            .foreground {fill: #d8d8d8;}
+            .background {fill: #181818;}
+            .color0 {fill: #181818;}
+            .color1 {fill: #ab4642;}
+            .color2 {fill: #a1b56c;}
+            .color3 {fill: #f7ca88;}
+            .color4 {fill: #7cafc2;}
+            .color5 {fill: #ba8baf;}
+            .color6 {fill: #86c1b9;}
+            .color7 {fill: #d8d8d8;}
+            .color8 {fill: #585858;}
+            .color9 {fill: #ab4642;}
+            .color10 {fill: #a1b56C;}
+            .color11 {fill: #f7ca88;}
+            .color12 {fill: #7cafc2;}
+            .color13 {fill: #ba8baf;}
+            .color14 {fill: #86c1b9;}
+            .color15 {fill: #f8f8f8;}
+        </style>
+    </defs>
+    <svg id="screen" width="640" viewBox="0 0 640 204" preserveAspectRatio="xMidYMin meet">
+        <rect class="background" height="100%" width="100%" x="0" y="0"/><defs><g id="g1"><text class="foreground" textLength="120" x="0">Sha     Message</text></g><g id="g2"><text class="foreground" textLength="120" x="0">---     -------</text></g><g id="g3"><text class="color3" textLength="56" x="0">4eb110e</text><text class="foreground" textLength="144" x="56"> Get rid of all C#</text></g><g id="g4"><text class="color3" textLength="56" x="0">790ba31</text><text class="foreground" textLength="160" x="56"> Stricter lint rules</text></g><g id="g5"><text class="color3" textLength="56" x="0">355a36a</text><text class="foreground" textLength="120" x="56"> Lint all files</text></g><g id="g6"><text class="color3" textLength="56" x="0">9dfb1b4</text><text class="foreground" textLength="88" x="56"> forgot one</text></g><g id="g7"><text class="color3" textLength="56" x="0">68aefaf</text><text class="foreground" textLength="136" x="56"> clear everywhere</text></g><g id="g8"><text class="color3" textLength="56" x="0">cd56a49</text><text class="foreground" textLength="80" x="56"> export fn</text></g><g id="g9"><text class="color3" textLength="56" x="0">5003a92</text><text class="foreground" textLength="160" x="56"> remove cache access</text></g><g id="g10"><text class="color3" textLength="56" x="0">27ab354</text><text class="foreground" textLength="104" x="56"> fix var anem</text></g><g id="g11"><text class="foreground" textLength="328" x="0">&lt;SPACE&gt; next page; &lt;CR&gt; next line; Q quit</text><text class="background" textLength="8" x="328"> </text></g></defs><g><use y="17" xlink:href="#g1"/><use y="34" xlink:href="#g2"/><use y="51" xlink:href="#g3"/><use y="68" xlink:href="#g4"/><use y="85" xlink:href="#g5"/><use y="102" xlink:href="#g6"/><use y="119" xlink:href="#g7"/><use y="136" xlink:href="#g8"/><use y="153" xlink:href="#g9"/><use y="170" xlink:href="#g10"/><rect class="foreground" height="17" width="8" x="328" y="187"/><use y="187" xlink:href="#g11"/></g></svg>
 </svg>
