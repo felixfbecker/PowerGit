@@ -14,7 +14,7 @@ Forked from `GitAutomation` but made to work PSCore (Linux, macOS, Windows) and 
 ## Goals
 
 - Utilize the object pipeline for outputs and inputs
-- Provide beatiful output formatting that matches native `git` output
+- Provide beautiful output formatting that matches native `git` output
 - Autocompletion for parameters and properties
 - Follow PowerShell naming conventions
 - Stay as close as possible to native `git` behaviour
