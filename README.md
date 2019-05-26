@@ -254,9 +254,9 @@ New-GitBranch my-branch | Send-GitObject | New-GitHubPullRequest -Owner upstream
 
 ## Prompt
 
-You can use PowerGit in your `prompt` function to output the current directories' git status like posh-git does. Since
-PowerGit doesn't need to call into external processes, it is much faster than posh-git, which is important for a prompt
-function to not delay the next prompt.
+You can use PowerGit's `Get-GitStatusPrompt` in your `prompt` function to output a colorful summary of the current
+directories' git status like posh-git does. Since PowerGit doesn't need to call into external processes, it is much
+faster than posh-git, which is important for a prompt function to not delay the next prompt.
 
 ## Cheat sheet
 

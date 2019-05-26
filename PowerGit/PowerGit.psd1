@@ -98,6 +98,7 @@
         'Get-GitRemote',
         'Get-GitRepository',
         'Get-GitRepositoryStatus',
+        'Get-GitStatusPrompt',
         'Get-GitTag',
         'Merge-GitCommit',
         'New-GitBranch',
