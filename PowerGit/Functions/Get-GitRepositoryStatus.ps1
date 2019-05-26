@@ -38,24 +38,22 @@ function Get-GitRepositoryStatus {
 
     When displayed in a table (the default), the first column will show characters that indicate the state of each item, e.g.
 
-        State    FilePath
-        -----    --------
-         a       PowerGit\Formats\LibGit2Sharp.StatusEntry.ps1xml
-         a       PowerGit\Functions\Get-GitRepositoryStatus.ps1
-          m      PowerGit\PowerGit.psd1
-         a       PowerGit\Types\LibGit2Sharp.StatusEntry.types.ps1xml
-         a       Tests\Get-GitRepositoryStatus.Tests.ps1
+         A  PowerGit\Formats\LibGit2Sharp.StatusEntry.ps1xml
+         A  PowerGit\Functions\Get-GitRepositoryStatus.ps1
+         M  PowerGit\PowerGit.psd1
+         D  PowerGit\Types\LibGit2Sharp.StatusEntry.types.ps1xml
+         A  Tests\Get-GitRepositoryStatus.Tests.ps1
 
     The state will display:
 
-     * `i` if the item is ignored (i.e. `IsIgnored` returns `$true`)
-     * `a` if the item is untracked or staged for the next commit (i.e. `IsAdded` returns `$true`)
-     * `m` if the item was modified (i.e. `IsModified` returns `$true`)
-     * `d` if the item was deleted (i.e. `IsDeleted` returns `$true`)
-     * `r` if the item was renamed (i.e. `IsRenamed` returns `$true`)
-     * `t` if the item's type was changed (i.e. `IsTypeChanged` returns `$true`)
-     * `?` if the item can't be read (i.e. `IsUnreadable` returns `$true`)
-     * `!` if the item was merged with conflicts (i.e. `IsConflicted` return `$true`)
+     * `I` on grey background if the item is ignored (i.e. `IsIgnored` returns `$true`)
+     * `A` on green background if the item is untracked or staged for the next commit (i.e. `IsAdded` returns `$true`)
+     * `M` on yellow background if the item was modified (i.e. `IsModified` returns `$true`)
+     * `D` on red background if the item was deleted (i.e. `IsDeleted` returns `$true`)
+     * `R` on orange background if the item was renamed (i.e. `IsRenamed` returns `$true`)
+     * `T` on dark-yellow background if the item's type was changed (i.e. `IsTypeChanged` returns `$true`)
+     * `U` on brown background if the item can't be read (i.e. `IsUnreadable` returns `$true`)
+     * `C` on dark-red background if the item was merged with conflicts (i.e. `IsConflicted` return `$true`)
 
     If no state characters are shown, the file is unchanged (i.e. `IsUnchanged` return `$true`).
 
@@ -152,18 +150,15 @@ function Get-GitRepositoryStatus {
                 Write-Information "Nothing to commit, working tree clean"
                 return
             }
-            $status | Where-Object {
-                if ($IncludeIgnored) {
-                    return $true
-                }
-                return -not $_.IsIgnored
-            }
+            $status |
+                Where-Object { $IncludeIgnored -or -not $_.IsIgnored } |
+                Sort-Object -Property @{ Expression = 'IsStaged'; Descending = $true }, 'FilePath'
+        } finally {
+            Pop-Location -StackName 'Get-GitRepositoryStatus' -ErrorAction Ignore
+        }
     } finally {
-        Pop-Location -StackName 'Get-GitRepositoryStatus' -ErrorAction Ignore
+        $repo.Dispose()
     }
-} finally {
-    $repo.Dispose()
-}
 }
 
 Set-Alias -Name Get-GitStatus -Value Get-GitRepositoryStatus

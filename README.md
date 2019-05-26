@@ -122,9 +122,7 @@ Add-GitItem -All
 To check the current repository status, use `Get-GitRepositoryStatus` or `Get-GitStatus`. The output is one status entry
 for each changed file, grouped by changes to the index and changes to the working directory.
 
-```powershell
-Get-GitStatus
-```
+![Get-GitStatus demo](./Screenshots/Get-GitStatus.svg)
 
 ### Commit
 

@@ -63,6 +63,7 @@
     # Type files (.ps1xml) to be loaded when importing this module
     TypesToProcess = @(
         'Types/LibGit2Sharp.Branch.Types.ps1xml',
+        'Types/LibGit2Sharp.ChangeKind.Types.ps1xml',
         'Types/LibGit2Sharp.Commit.Types.ps1xml',
         'Types/LibGit2Sharp.Remote.Types.ps1xml',
         'Types/LibGit2Sharp.Repository.Types.ps1xml',

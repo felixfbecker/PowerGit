@@ -21,16 +21,15 @@ limitations under the License.
                     <CustomEntry>
                         <CustomItem>
                             <Frame>
-                                <LeftIndent>2</LeftIndent>
                                 <CustomItem>
                                     <ExpressionBinding>
                                         <ScriptBlock>
-                                            if ($_.IsStaged) {
-                                                'Staged for Commit'
+                                            $label = if ($_.IsStaged) {
+                                                "Changes to be committed:"
+                                            } else {
+                                                "Changes not staged for commit:"
                                             }
-                                            else {
-                                                'Working Directory'
-                                            }
+                                            "`e[1m`e[4m$label`e[0m"
                                         </ScriptBlock>
                                     </ExpressionBinding>
                                     <NewLine />
@@ -53,10 +52,11 @@ limitations under the License.
                 <CustomControlName>LibGit2SharpStatusEntry-GroupingFormat</CustomControlName>
             </GroupBy>
             <TableControl>
+                <HideTableHeaders></HideTableHeaders>
                 <TableHeaders>
                     <TableColumnHeader>
-                        <Label>State</Label>
-                        <Width>8</Width>
+                        <Label>Change</Label>
+                        <Width>3</Width>
                     </TableColumnHeader>
                     <TableColumnHeader>
                         <Label>FilePath</Label>
@@ -66,49 +66,7 @@ limitations under the License.
                     <TableRowEntry>
                         <TableColumnItems>
                             <TableColumnItem>
-                                <ScriptBlock>
-                                    $ignored = ''
-                                    if ($_.IsIgnored) {
-                                        $ignored = 'I'
-                                    }
-
-                                    $added = ''
-                                    if ($_.IsAdded) {
-                                        $added = "A"
-                                    }
-
-                                    $modified = ''
-                                    if ($_.IsModified) {
-                                        $modified = 'M'
-                                    }
-
-                                    $deleted = ''
-                                    if ($_.IsDeleted) {
-                                        $deleted = 'D'
-                                    }
-
-                                    $renamed = ''
-                                    if ($_.IsRenamed) {
-                                        $renamed = 'R'
-                                    }
-
-                                    $typeChanged = ''
-                                    if ($_.IsTypeChanged) {
-                                        $typeChanged = 'T'
-                                    }
-
-                                    $unreadable = ''
-                                    if ($_.IsUnreadable) {
-                                        $unreadable = '?'
-                                    }
-
-                                    $conflicted = ''
-                                    if ($_.IsConflicted) {
-                                        $conflicted = '!'
-                                    }
-
-                                    '{0,1}{1,1}{2,1}{3,1}{4,1}{5,1}{6,1}{7,1}' -f $ignored, $added, $modified, $deleted, $renamed, $typeChanged, $unreadable, $conflicted
-                                </ScriptBlock>
+                                <ScriptBlock>$_.Change.ToColoredString()</ScriptBlock>
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>FilePath</PropertyName>

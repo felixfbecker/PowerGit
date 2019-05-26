@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<Types>
+    <Type>
+        <Name>LibGit2Sharp.ChangeKind</Name>
+        <Members>
+            <ScriptMethod>
+                <Name>ToColoredString</Name>
+                <Script>
+                    switch ($this) {
+                        ([LibGit2Sharp.ChangeKind]::Added)       { "`e[42m`e[30m A `e[0m" }
+                        ([LibGit2Sharp.ChangeKind]::Modified)    { "`e[43m`e[30m M `e[0m" }
+                        ([LibGit2Sharp.ChangeKind]::Deleted)     { "`e[41m`e[30m D `e[0m" }
+                        ([LibGit2Sharp.ChangeKind]::Renamed)     { "`e[48;5;208m`e[30m M `e[0m" }
+                        ([LibGit2Sharp.ChangeKind]::Copied)      { "`e[46m`e[30m C `e[0m" }
+                        ([LibGit2Sharp.ChangeKind]::Ignored)     { "`e[48;5;247m`e[30m I `e[0m" }
+                        ([LibGit2Sharp.ChangeKind]::Conflicted)  { "`e[48;5;124m`e[30m C `e[0m" }
+                        ([LibGit2Sharp.ChangeKind]::Untracked)   { "`e[48;5;35m`e[30m U `e[0m" }
+                        ([LibGit2Sharp.ChangeKind]::Unreadable)  { "`e[48;5;94m`e[30m U `e[0m" }
+                        ([LibGit2Sharp.ChangeKind]::TypeChanged) { "`e[48;5;220m`e[30m T `e[0m" }
+                        ([LibGit2Sharp.ChangeKind]::Unmodified)  { "`e[47m`e[30m U `e[0m" }
+                    }
+                </Script>
+            </ScriptMethod>
+        </Members>
+    </Type>
+</Types>

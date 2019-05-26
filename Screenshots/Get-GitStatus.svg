@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="terminal" baseProfile="full" viewBox="0 0 800 274" width="800" version="1.1">
+    <defs>
+        <termtosvg:template_settings xmlns:termtosvg="https://github.com/nbedos/termtosvg">
+            <termtosvg:screen_geometry columns="100" rows="16"/>
+        </termtosvg:template_settings>
+        <style type="text/css" id="generated-style"><![CDATA[#screen {
+                font-family: 'DejaVu Sans Mono', monospace;
+                font-style: normal;
+                font-size: 14px;
+            }
+
+        text {
+            dominant-baseline: text-before-edge;
+            white-space: pre;
+        }]]></style>
+        <style type="text/css" id="user-style">
+            /* base16-default-dark color theme (source: http://chriskempson.com/projects/base16/) */
+            .foreground {fill: #d8d8d8;}
+            .background {fill: #181818;}
+            .color0 {fill: #181818;}
+            .color1 {fill: #ab4642;}
+            .color2 {fill: #a1b56c;}
+            .color3 {fill: #f7ca88;}
+            .color4 {fill: #7cafc2;}
+            .color5 {fill: #ba8baf;}
+            .color6 {fill: #86c1b9;}
+            .color7 {fill: #d8d8d8;}
+            .color8 {fill: #585858;}
+            .color9 {fill: #ab4642;}
+            .color10 {fill: #a1b56C;}
+            .color11 {fill: #f7ca88;}
+            .color12 {fill: #7cafc2;}
+            .color13 {fill: #ba8baf;}
+            .color14 {fill: #86c1b9;}
+            .color15 {fill: #f8f8f8;}
+        </style>
+    </defs>
+    <svg id="screen" width="800" viewBox="0 0 800 272" preserveAspectRatio="xMidYMin meet">
+        <rect class="background" height="100%" width="100%" x="0" y="0"/><defs><g id="g1"><text class="foreground" textLength="136" x="0">&#10004; ~/git/PowerGit </text><text class="color3" textLength="8" x="136">[</text><text class="color6" textLength="176" x="144">massive-improvements &#8801;</text><text class="foreground" textLength="8" x="320"> </text><text class="color1" textLength="64" x="328">+1 ~4 -1</text><text class="foreground" textLength="8" x="392"> </text><text class="color3" textLength="8" x="400">|</text><text class="foreground" textLength="8" x="408"> </text><text class="color2" textLength="64" x="416">+0 ~1 -0</text><text class="color3" textLength="8" x="480">]</text></g><g id="g2"><text class="foreground" textLength="16" x="0">&gt; </text><text class="color11" font-weight="bold" textLength="104" x="16">Get-GitStatus</text></g><g id="g3"><text class="foreground" font-weight="bold" text-decoration="underline" textLength="192" x="0">Changes to be committed:</text></g><g id="g4"><text class="color0" textLength="24" x="0"> M </text><text class="foreground" textLength="448" x="24"> PowerGit/Formats/LibGit2Sharp.StatusEntry.Format.ps1xml</text></g><g id="g5"><text class="foreground" font-weight="bold" text-decoration="underline" textLength="240" x="0">Changes not staged for commit:</text></g><g id="g6"><text class="color0" textLength="24" x="0"> D </text><text class="foreground" textLength="80" x="24"> build.ps1</text></g><g id="g7"><text class="color0" textLength="24" x="0"> M </text><text class="foreground" textLength="376" x="24"> PowerGit/Functions/Get-GitRepositoryStatus.ps1</text></g><g id="g8"><text class="color0" textLength="24" x="0"> M </text><text class="foreground" textLength="184" x="24"> PowerGit/PowerGit.psd1</text></g><g id="g9"><text class="color0" textLength="24" x="0"> U </text><text class="foreground" textLength="416" x="24"> PowerGit/Types/LibGit2Sharp.ChangeKind.Types.ps1xml</text></g><g id="g10"><text class="color0" textLength="24" x="0"> M </text><text class="foreground" textLength="424" x="24"> PowerGit/Types/LibGit2Sharp.StatusEntry.Types.ps1xml</text></g><g id="g11"><text class="background" textLength="8" x="0"> </text></g></defs><g><use y="0" xlink:href="#g1"/><use y="17" xlink:href="#g2"/><use y="68" xlink:href="#g3"/><rect class="color3" height="17" width="24" x="0" y="102"/><use y="102" xlink:href="#g4"/><use y="136" xlink:href="#g5"/><rect class="color1" height="17" width="24" x="0" y="170"/><use y="170" xlink:href="#g6"/><rect class="color3" height="17" width="24" x="0" y="187"/><use y="187" xlink:href="#g7"/><rect class="color3" height="17" width="24" x="0" y="204"/><use y="204" xlink:href="#g8"/><rect fill="#00af5f" height="17" width="24" x="0" y="221"/><use y="221" xlink:href="#g9"/><rect class="color3" height="17" width="24" x="0" y="238"/><use y="238" xlink:href="#g10"/><rect class="foreground" height="17" width="8" x="0" y="255"/><use y="255" xlink:href="#g11"/></g></svg>
+</svg>
