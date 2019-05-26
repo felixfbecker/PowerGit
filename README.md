@@ -54,6 +54,12 @@ different servers to pass in the terminal.
 For other applications using the native git client, enable the
 [git credential helper](https://help.github.com/en/articles/caching-your-github-password-in-git).
 
+## Installation
+
+```powershell
+Install-Module PowerGit -Scope CurrentUser
+```
+
 ## How to use
 
 ### Cloning
