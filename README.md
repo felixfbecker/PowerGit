@@ -71,7 +71,7 @@ To page the output, make sure to pipe into `Out-Host -Paging` (short `oh -p`).
 Multiple [git pretty formats](https://git-scm.com/docs/pretty-formats) are supported. The default output mirrors the
 default git `medium` output:
 
-![Get-GitCommit demo](./Screenshots/Get-GitCommit.svg)
+<div style="overflow: hidden"><img alt="Get-GitCommit demo" src="./Screenshots/Get-GitCommit.svg" style="max-width: none"></div>
 
 `short`, `full`, `fuller` and `patch` are supported as alternative list views, e.g.
 `Get-GitCommit | Format-List -View Fuller` (or short `fl -v fuller`).
