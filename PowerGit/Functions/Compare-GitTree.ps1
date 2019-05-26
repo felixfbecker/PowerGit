@@ -10,6 +10,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+$getTreeChanges = [LibGit2Sharp.Diff].GetMethod('Compare', [Type[]]@([LibGit2Sharp.Tree], [LibGit2Sharp.Tree])).MakeGenericMethod([LibGit2Sharp.TreeChanges])
+
 function Compare-GitTree {
     <#
     .SYNOPSIS
@@ -76,5 +78,5 @@ function Compare-GitTree {
     }
 
     # use `,` to prevent unwrapping of enumerable TreeChanges type
-    return , [PowerGit.Diff]::GetTreeChanges($repo, $oldCommit, $newCommit)
+    return , $script:getTreeChanges.Invoke($repo.Diff, @($oldCommit.Tree, $newCommit.Tree))
 }

@@ -161,7 +161,8 @@ limitations under the License.
                                 <Label>Patch</Label>
                                 <ScriptBlock>
                                     $parent = [System.Linq.Enumerable]::FirstOrDefault($_.Parents)
-                                    [PowerGit.Diff]::GetTreePatch($_.Repository, $_, $parent) | ConvertTo-ColoredPatch
+                                    $getPatch = $_.Repository.Diff.GetType().GetMethod('Compare', [Type[]]@([LibGit2Sharp.Tree], [LibGit2Sharp.Tree])).MakeGenericMethod([LibGit2Sharp.Patch])
+                                    $getPatch.Invoke($_.Repository.Diff, @($_.Tree, $parent.Tree)) | ConvertTo-ColoredPatch
                                 </ScriptBlock>
                             </ListItem>
                         </ListItems>
