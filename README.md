@@ -96,8 +96,10 @@ New-GitBranch my-branch | Send-GitBranch
 
 To list all branches, use `Get-GitBranch`. You may supply parameters to filter by name (wildcards supported) or
 remote/local/all branches. The default output table view `Verbose` includes information about the tracking status of the
-branch. To also see names of tracking branches, pipe to `Format-List -View VeryVerbose` (or `fl -v veryv`), which mimics
+branch. To also see names of tracking branches, pipe to `Format-Table -View VeryVerbose` (or `ft -v veryverbose`), which mimics
 `git branch -vv` output.
+
+![Get-GitBranch VeryVerbose demo](./Screenshots/Get-GitBranch-VeryVerbose.svg)
 
 Delete branches with the `Remove-GitBranch` command (supports pipeline input, `-WhatIf` and `-Confirm`).
 
@@ -214,7 +216,7 @@ Reset-GitHead -Hard origin/master
 
 ### Compare
 
-To diff two revisions, run `Compare-GitTree`. The output is a `TreeChanges` object that is formatted as a colored patch.
+To diff two revisions, run `Compare-GitTree`. The output is a `TreeChanges` object that enumerates all files that were changed.
 The function takes two revisions, `-DifferenceRevision` and `-ReferenceRevision`. `-DifferenceRevision` defaults to the
 current HEAD. `-ReferenceRevision` must be given, or can be supplied from the pipeline (branches, commits or pull
 requests can be piped).
@@ -297,9 +299,11 @@ Or dot-source [Aliases.ps1](./PowerGit/Aliases.ps1), which defines aliases for a
 
 ## Contributing
 
+### SVG Screenshots
+
 SVG Screenshots are created with [term2svg](https://github.com/nbedos/termtosvg)
 
-```
+```powershell
 termtosvg ./Screenshots/frames -s -g 100x12 -t base16_default_dark -c 'pwsh -NoExit -Command clear'
 ```
 
@@ -309,3 +313,19 @@ Keep the column width at 100 for best readability in the README.
 If 12 is not enough the row height should be matched to the output of the command.
 Execute your command, then execute `exit`.
 Pick the frame that shows the command output but does not show the next prompt.
+
+To record an animated screenshot (currently only for `Copy-GitRepository` to show the progress) make the recording in multiple steps:
+
+```powershell
+termtosvg record ./Screenshots/Copy-GitRepository.cast -g 100x12 -c 'pwsh -NoLogo -NoExit -Command clear;\ cd\ ~'
+```
+
+You can then open the `.cast` file in an editor to remove frames at the end and beginning.
+After removing frames from the beginning, adjust the timestamps of all frames so the first frame is at timestamp 0 again:
+```powershell
+$frames = Get-Content ./Screenshots/Copy-GitRepository.cast | ConvertFrom-Json
+$frames |
+  Select-Object -Skip 1 |
+  ForEach-Object { $_[0] -= $frames[1][0]; $_ | ConvertTo-Json -Compress } |
+  Set-Content ./Screenshots/Copy-GitRepository.cast
+```
