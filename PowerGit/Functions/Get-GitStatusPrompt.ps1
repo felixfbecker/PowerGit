@@ -1,4 +1,4 @@
-function Get-GitStatusPrompt {
+﻿function Get-GitStatusPrompt {
     <#
     .SYNOPSIS
     Returns a git prompt.
