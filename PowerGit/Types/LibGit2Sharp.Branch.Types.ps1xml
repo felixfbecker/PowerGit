@@ -42,6 +42,10 @@
                 <ReferencedMemberName>FriendlyName</ReferencedMemberName>
             </AliasProperty>
             <AliasProperty>
+                <Name>IsHead</Name>
+                <ReferencedMemberName>IsCurrentRepositoryHead</ReferencedMemberName>
+            </AliasProperty>
+            <AliasProperty>
                 <Name>Status</Name>
                 <ReferencedMemberName>TrackingDetails</ReferencedMemberName>
             </AliasProperty>
