@@ -309,23 +309,7 @@ termtosvg ./Screenshots/frames -s -g 100x12 -t base16_default_dark -c 'pwsh -NoE
 
 `-s` outputs still .svg frames.
 Always use the `base16_default_dark` theme for consistency.
-Keep the column width at 100 for best readability in the README.
+Keep the column width at 100 for best readability in the README (resize your terminal to match the width).
 If 12 is not enough the row height should be matched to the output of the command.
 Execute your command, then execute `exit`.
 Pick the frame that shows the command output but does not show the next prompt.
-
-To record an animated screenshot (currently only for `Copy-GitRepository` to show the progress) make the recording in multiple steps:
-
-```powershell
-termtosvg record ./Screenshots/Copy-GitRepository.cast -g 100x12 -c 'pwsh -NoLogo -NoExit -Command clear;\ cd\ ~'
-```
-
-You can then open the `.cast` file in an editor to remove frames at the end and beginning.
-After removing frames from the beginning, adjust the timestamps of all frames so the first frame is at timestamp 0 again:
-```powershell
-$frames = Get-Content ./Screenshots/Copy-GitRepository.cast | ConvertFrom-Json
-$frames |
-  Select-Object -Skip 1 |
-  ForEach-Object { $_[0] -= $frames[1][0]; $_ | ConvertTo-Json -Compress } |
-  Set-Content ./Screenshots/Copy-GitRepository.cast
-```
