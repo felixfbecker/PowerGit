@@ -1,5 +1,10 @@
 @{
-    ExcludeRules = @('PSUseShouldProcessForStateChangingFunctions') # TODO: implement ShouldProcess
+    Severity = 'Error', 'Warning'
+    ExcludeRules = @(
+        'PSUseShouldProcessForStateChangingFunctions', # TODO: implement ShouldProcess
+        'PSUseConsistentIndentation',
+        'PSUseBOMForUnicodeEncodedFile'
+    )
     Rules = @{
         PSPlaceOpenBrace = @{
             Enable = $true

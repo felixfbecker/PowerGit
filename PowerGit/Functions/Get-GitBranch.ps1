@@ -32,34 +32,43 @@ function Get-GitBranch {
 
    Returns objects for all the branches in the current directory.
    #>
-    [CmdletBinding()]
-    [OutputType([PowerGit.BranchInfo])]
+    [CmdletBinding(DefaultParameterSetName = 'Local')]
+    [OutputType([LibGit2Sharp.Branch])]
     param(
-        [string]
         # Specifies which git repository to check. Defaults to the current directory.
-        $RepoRoot = (Get-Location).ProviderPath,
+        [string] $RepoRoot = (Get-Location).ProviderPath,
 
-        [Switch]
+        # The name of the branch. Supports wildcards.
+        [Parameter(Position = 0)]
+        [string] $Name,
+
         # Get the current branch only. Otherwise all branches are returned.
-        $Current
+        [Parameter(Mandatory, ParameterSetName = 'Current')]
+        [switch] $Current,
+
+        # Get remote branches only
+        [Parameter(Mandatory, ParameterSetName = 'Remote')]
+        [switch] $Remote,
+
+        # Get all branches including remote
+        [Parameter(Mandatory, ParameterSetName = 'All')]
+        [switch] $All
     )
 
     Set-StrictMode -Version 'Latest'
 
     $repo = Find-GitRepository -Path $RepoRoot -Verify
-    if ( -not $repo ) {
+    if (-not $repo) {
         return
     }
 
-    try {
-        if ( $Current ) {
-            New-Object PowerGit.BranchInfo $repo.Head
-            return
-        } else {
-            $repo.Branches | ForEach-Object { New-Object PowerGit.BranchInfo $_ }
-            return
+    if ($Current) {
+        $repo.Head
+    } elseif ($Name -and -not [WildcardPattern]::ContainsWildcardCharacters($Name)) {
+        $repo.Branches[$Name]
+    } else {
+        $repo.Branches | Where-Object {
+            ($All -or ($Remote -eq $_.IsRemote)) -and (-not $Name -or $_.FriendlyName -like $Name)
         }
-    } finally {
-        $repo.Dispose()
     }
 }

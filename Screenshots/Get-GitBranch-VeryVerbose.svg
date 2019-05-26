@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="terminal" baseProfile="full" viewBox="0 0 800 206" width="800" version="1.1">
+    <defs>
+        <termtosvg:template_settings xmlns:termtosvg="https://github.com/nbedos/termtosvg">
+            <termtosvg:screen_geometry columns="100" rows="12"/>
+        </termtosvg:template_settings>
+        <style type="text/css" id="generated-style"><![CDATA[#screen {
+                font-family: 'DejaVu Sans Mono', monospace;
+                font-style: normal;
+                font-size: 14px;
+            }
+
+        text {
+            dominant-baseline: text-before-edge;
+            white-space: pre;
+        }]]></style>
+        <style type="text/css" id="user-style">
+            /* base16-default-dark color theme (source: http://chriskempson.com/projects/base16/) */
+            .foreground {fill: #d8d8d8;}
+            .background {fill: #181818;}
+            .color0 {fill: #181818;}
+            .color1 {fill: #ab4642;}
+            .color2 {fill: #a1b56c;}
+            .color3 {fill: #f7ca88;}
+            .color4 {fill: #7cafc2;}
+            .color5 {fill: #ba8baf;}
+            .color6 {fill: #86c1b9;}
+            .color7 {fill: #d8d8d8;}
+            .color8 {fill: #585858;}
+            .color9 {fill: #ab4642;}
+            .color10 {fill: #a1b56C;}
+            .color11 {fill: #f7ca88;}
+            .color12 {fill: #7cafc2;}
+            .color13 {fill: #ba8baf;}
+            .color14 {fill: #86c1b9;}
+            .color15 {fill: #f8f8f8;}
+        </style>
+    </defs>
+    <svg id="screen" width="800" viewBox="0 0 800 204" preserveAspectRatio="xMidYMin meet">
+        <rect class="background" height="100%" width="100%" x="0" y="0"/><defs><g id="g1"><text class="foreground" textLength="136" x="0">&#10004; ~/git/PowerGit </text><text class="color3" textLength="8" x="136">[</text><text class="color2" textLength="184" x="144">massive-improvements &#8593;1</text><text class="color3" textLength="8" x="328">]</text></g><g id="g2"><text class="foreground" textLength="16" x="0">&gt; </text><text class="color11" font-weight="bold" textLength="104" x="16">Get-GitBranch</text><text class="color15" font-weight="bold" textLength="24" x="120"> | </text><text class="color11" font-weight="bold" textLength="16" x="144">ft</text><text class="color15" font-weight="bold" textLength="8" x="160"> </text><text class="color8" font-weight="bold" textLength="16" x="168">-v</text><text class="color15" font-weight="bold" textLength="96" x="184"> VeryVerbose</text></g><g id="g3"><text class="foreground" textLength="664" x="0">IsHead Name                 Sha     TrackedBranch               Status MessageShort</text></g><g id="g4"><text class="foreground" textLength="664" x="0">------ ----                 ---     -------------               ------ ------------</text></g><g id="g5"><text class="background" textLength="8" x="0"> </text></g><g id="g6"><text class="foreground" textLength="288" x="0">       ci-fix               8de82d4 </text><text class="color4" text-decoration=" line-through" textLength="104" x="288">origin/ci-fix</text><text class="foreground" textLength="136" x="392">                 </text><text class="color1" textLength="8" x="528">&#215;</text><text class="foreground" textLength="136" x="536">    correct image</text></g><g id="g7"><text class="foreground" textLength="56" x="0">     * </text><text class="color2" textLength="160" x="56">massive-improvements</text><text class="foreground" textLength="72" x="216"> 5f780c5 </text><text class="color4" textLength="216" x="288">origin/massive-improvements</text><text class="foreground" textLength="24" x="504">   </text><text class="color2" textLength="16" x="528">&#8593;1</text><text class="foreground" textLength="56" x="544">   test</text></g><g id="g8"><text class="foreground" textLength="288" x="0">       master               e8091b5 </text><text class="color4" textLength="104" x="288">origin/master</text><text class="foreground" textLength="136" x="392">                 </text><text class="color6" textLength="8" x="528">&#8801;</text><text class="foreground" textLength="256" x="536">    chore(deps): lock file main&#8230;</text></g></defs><g><use y="0" xlink:href="#g1"/><use y="17" xlink:href="#g2"/><use y="51" xlink:href="#g3"/><use y="68" xlink:href="#g4"/><rect class="foreground" height="17" width="8" x="0" y="153"/><use y="153" xlink:href="#g5"/><use y="85" xlink:href="#g6"/><use y="102" xlink:href="#g7"/><use y="119" xlink:href="#g8"/></g></svg>
+</svg>

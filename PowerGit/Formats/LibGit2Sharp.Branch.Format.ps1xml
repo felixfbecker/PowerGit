@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+    <ViewDefinitions>
+        <View>
+            <!-- equivalent to `git branch -v` -->
+            <Name>Verbose</Name>
+            <ViewSelectedBy>
+                <TypeName>LibGit2Sharp.Branch</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+                <!-- <HideTableHeaders /> -->
+                <AutoSize />
+                <TableHeaders>
+                    <TableColumnHeader>
+                        <Label>IsHead</Label>
+                        <Width>1</Width>
+                        <Alignment>Right</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Name</Label>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Sha</Label>
+                        <Width>7</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Status</Label>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>MessageShort</Label>
+                    </TableColumnHeader>
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem>
+                                <ScriptBlock>if ($_.IsCurrentRepositoryHead) { '*' } else { ' ' }</ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    $text = $_.FriendlyName
+                                    if ($_.IsCurrentRepositoryHead) {
+                                        $text = "`e[32m$text`e[0m" # green
+                                    } elseif ($_.IsRemote) {
+                                        $text = "`e[31m$text`e[0m" # red
+                                    }
+                                    return $text
+                                </ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>$_.Tip.Sha.Substring(0, 7)</ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    $d = $_.TrackingDetails
+                                    if (-not $d) {
+                                        return ""
+                                    }
+                                    $text = ""
+                                    if ($null -ne $_.TrackedBranch -and $_.TrackedBranch.IsGone) {
+                                        $text = "×"
+                                    } else {
+                                        if ($d.AheadBy) {
+                                            $text += "↑" + $d.AheadBy
+                                        }
+                                        if ($d.BehindBy) {
+                                            $text = ($text + " ↓" + $d.BehindBy).Trim()
+                                        }
+                                        if (-not $d.AheadBy -and -not $d.BehindBy) {
+                                            $text = "≡"
+                                        }
+                                    }
+                                    $color = if ($d.AheadBy -and $d.BehindBy) {
+                                        "`e[33m"
+                                    } elseif ($d.AheadBy) {
+                                        "`e[32m"
+                                    } elseif ($d.BehindBy) {
+                                        "`e[31m"
+                                    } else {
+                                        "`e[36m"
+                                    }
+                                    $color + $text + "`e[0m"
+                                </ScriptBlock>
+                                <Alignment>Center</Alignment>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>$_.Tip.MessageShort</ScriptBlock>
+                            </TableColumnItem>
+                        </TableColumnItems>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+        <View>
+            <!-- equivalent to `git branch -vv` -->
+            <Name>VeryVerbose</Name>
+            <ViewSelectedBy>
+                <TypeName>LibGit2Sharp.Branch</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+                <!-- <HideTableHeaders /> -->
+                <AutoSize />
+                <TableHeaders>
+                    <TableColumnHeader>
+                        <Label>IsHead</Label>
+                        <Width>1</Width>
+                        <Alignment>Right</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Name</Label>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Sha</Label>
+                        <Width>7</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>TrackedBranch</Label>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Status</Label>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>MessageShort</Label>
+                    </TableColumnHeader>
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem>
+                                <ScriptBlock>if ($_.IsCurrentRepositoryHead) { '*' } else { ' ' }</ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    $text = $_.FriendlyName
+                                    if ($_.IsCurrentRepositoryHead) {
+                                        $text = "`e[32m$text`e[0m" # green
+                                    } elseif ($_.IsRemote) {
+                                        $text = "`e[31m$text`e[0m" # red
+                                    }
+                                    return $text
+                                </ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>$_.Tip.Sha.Substring(0, 7)</ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    if ($null -ne $_.TrackedBranch) {
+                                        $text = "`e[34m$($_.TrackedBranch.FriendlyName)`e[0m"
+                                        if ($_.TrackedBranch.IsGone) {
+                                            $text = "`e[9m$text"
+                                        }
+                                        $text
+                                    }
+                                </ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    $d = $_.TrackingDetails
+                                    if (-not $d) {
+                                        return ""
+                                    }
+                                    $isGone = $null -ne $_.TrackedBranch -and $_.TrackedBranch.IsGone
+                                    $text = ""
+                                    if ($isGone) {
+                                        $text = "×"
+                                    } else {
+                                        if ($d.AheadBy) {
+                                            $text += "↑" + $d.AheadBy
+                                        }
+                                        if ($d.BehindBy) {
+                                            $text = ($text + " ↓" + $d.BehindBy).Trim()
+                                        }
+                                        if (-not $d.AheadBy -and -not $d.BehindBy) {
+                                            $text = "≡"
+                                        }
+                                    }
+                                    $color = if ($d.AheadBy -and $d.BehindBy) {
+                                        "`e[33m"
+                                    } elseif ($d.AheadBy) {
+                                        "`e[32m"
+                                    } elseif ($d.BehindBy -or $isGone) {
+                                        "`e[31m"
+                                    } else {
+                                        "`e[36m"
+                                    }
+                                    $color + $text + "`e[0m"
+                                </ScriptBlock>
+                                <Alignment>Center</Alignment>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>$_.Tip.MessageShort</ScriptBlock>
+                            </TableColumnItem>
+                        </TableColumnItems>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+    </ViewDefinitions>
+</Configuration>

@@ -62,14 +62,22 @@
 
     # Type files (.ps1xml) to be loaded when importing this module
     TypesToProcess = @(
-        'Types\LibGit2Sharp.StatusEntry.types.ps1xml'
+        'Types/LibGit2Sharp.Branch.Types.ps1xml',
+        'Types/LibGit2Sharp.ChangeKind.Types.ps1xml',
+        'Types/LibGit2Sharp.Commit.Types.ps1xml',
+        'Types/LibGit2Sharp.Remote.Types.ps1xml',
+        'Types/LibGit2Sharp.Repository.Types.ps1xml',
+        'Types/LibGit2Sharp.StatusEntry.Types.ps1xml',
+        'Types/LibGit2Sharp.Tag.Types.ps1xml'
     )
 
     # Format files (.ps1xml) to be loaded when importing this module
     FormatsToProcess = @(
-        'Formats\PowerGit.CommitInfo.formats.ps1xml',
-        'Formats\LibGit2Sharp.Patch.formats.ps1xml',
-        'Formats\LibGit2Sharp.StatusEntry.formats.ps1xml'
+        'Formats/LibGit2Sharp.Branch.Format.ps1xml',
+        'Formats/LibGit2Sharp.Patch.Format.ps1xml',
+        'Formats/LibGit2Sharp.MergeResult.Format.ps1xml',
+        'Formats/LibGit2Sharp.Commit.Format.ps1xml',
+        'Formats/LibGit2Sharp.StatusEntry.Format.ps1xml'
     )
 
     # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
@@ -78,12 +86,16 @@
     # Functions to export from this module
     FunctionsToExport = @(
         'Add-GitItem',
+        'Add-GitRemote',
+        'Clear-GitRepositoryCache',
         'Compare-GitTree',
         'ConvertTo-ColoredPatch',
         'Copy-GitRepository',
         'Find-GitRepository',
         'Get-GitBranch',
         'Get-GitCommit',
+        'Get-GitHead',
+        'Get-GitRemote',
         'Get-GitRepository',
         'Get-GitRepositoryStatus',
         'Get-GitTag',
@@ -92,20 +104,27 @@
         'New-GitRepository',
         'New-GitSignature',
         'New-GitTag',
-        'Receive-GitCommit',
+        'Receive-GitBranch',
+        'Receive-GitObject',
+        'Remove-GitBranch',
         'Remove-GitItem',
+        'Remove-GitRemote',
+        'Rename-GitRemote',
+        'Reset-GitHead',
+        'Resume-GitRebase',
         'Save-GitCommit',
         'Send-GitBranch',
-        'Send-GitCommit',
         'Send-GitObject',
         'Set-GitConfiguration',
-        'Sync-GitBranch',
+        'Set-GitHead',
+        'Start-GitRebase',
+        'Stop-GitRebase',
         'Test-GitBranch',
         'Test-GitCommit',
         'Test-GitRemoteUri',
         'Test-GitTag',
         'Test-GitUncommittedChange',
-        'Update-GitRepository'
+        'Update-GitRemote'
     )
 
     # Cmdlets to export from this module
@@ -115,7 +134,9 @@
     #VariablesToExport = '*'
 
     # Aliases to export from this module
-    #AliasesToExport = '*'
+    AliasesToExport = @(
+        'Get-GitStatus'
+    )
 
     # DSC resources to export from this module
     # DscResourcesToExport = @()

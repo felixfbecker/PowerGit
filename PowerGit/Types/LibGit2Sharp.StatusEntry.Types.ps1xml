@@ -16,6 +16,36 @@ limitations under the License.
     <Type>
         <Name>LibGit2Sharp.StatusEntry</Name>
         <Members>
+            <AliasProperty>
+                <Name>Path</Name>
+                <ReferencedMemberName>FilePath</ReferencedMemberName>
+            </AliasProperty>
+            <ScriptProperty>
+                <Name>Change</Name>
+                <GetScriptBlock>
+                    if ($this.IsUntracked) {
+                        [LibGit2Sharp.ChangeKind]::Untracked
+                    } elseif ($this.IsConflicted) {
+                        [LibGit2Sharp.ChangeKind]::Conflicted
+                    } elseif ($this.IsIgnored) {
+                        [LibGit2Sharp.ChangeKind]::Ignored
+                    } elseif ($this.IsUnreadable) {
+                        [LibGit2Sharp.ChangeKind]::Unreadable
+                    } elseif ($this.IsModified) {
+                        [LibGit2Sharp.ChangeKind]::Modified
+                    } elseif ($this.IsAdded) {
+                        [LibGit2Sharp.ChangeKind]::Added
+                    } elseif ($this.IsDeleted) {
+                        [LibGit2Sharp.ChangeKind]::Deleted
+                    } elseif ($this.IsRenamed) {
+                        [LibGit2Sharp.ChangeKind]::Renamed
+                    } elseif ($this.IsTypeChanged) {
+                        [LibGit2Sharp.ChangeKind]::TypeChanged
+                    } elseif ($this.IsUnchanged) {
+                        [LibGit2Sharp.ChangeKind]::Unchanged
+                    }
+                </GetScriptBlock>
+            </ScriptProperty>
             <ScriptProperty>
                 <Name>IsStaged</Name>
                 <GetScriptBlock>

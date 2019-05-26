@@ -11,7 +11,7 @@
 # limitations under the License.
 
 Import-Module -Force "$PSScriptRoot/../../PowerGit/Functions/Resolve-RealPath.ps1"
-$testDrive = New-Item -ItemType Directory -Path (Join-Path ([IO.Path]::GetTempPath()) ('PowerGitTest-' + [Guid]::NewGuid())) | Resolve-RealPath
+$TestDrive = New-Item -ItemType Directory -Path (Join-Path ([IO.Path]::GetTempPath()) ('PowerGitTest-' + [Guid]::NewGuid())) | Resolve-RealPath | Get-Item
 
 function Add-GitTestFile {
     [CmdletBinding()]
@@ -26,7 +26,7 @@ function Add-GitTestFile {
     Push-Location $RepoRoot
     try {
         foreach ( $filePath in $Path ) {
-            if ( (Test-Path -Path $filePath -PathType Leaf) ) {
+            if ((Test-Path -Path $filePath -PathType Leaf)) {
                 continue
             }
 
@@ -40,7 +40,10 @@ function Add-GitTestFile {
 
 function Assert-ThereAreNoErrors {
     It 'should write no errors' {
-        $Global:Error.Count | Should Be 0
+        if ($Global:Error) {
+            $Global:Error | Out-String | Write-Warning
+        }
+        $Global:Error | Should -BeNullOrEmpty
     }
 }
 
@@ -52,12 +55,11 @@ function New-GitTestRepo {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     param()
 
-    $testDrive = (Resolve-TestDrivePath)
-    $repoRoot = Join-Path -Path $testDrive -ChildPath ('PowerGit.{0}' -f ([IO.Path]::GetRandomFileName()))
+    $repoRoot = Join-Path -Path $TestDrive -ChildPath ('PowerGit.{0}' -f ([IO.Path]::GetRandomFileName()))
     New-GitRepository -Path $repoRoot | Format-List | Out-String | Write-Debug
     return $repoRoot
 }
 
 function Resolve-TestDrivePath {
-    $testDrive
+    $TestDrive
 }

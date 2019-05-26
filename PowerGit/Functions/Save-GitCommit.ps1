@@ -1,4 +1,4 @@
-# Licensed under the Apache License, Version 2.0 (the "License");
+﻿# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -23,7 +23,7 @@ function Save-GitCommit {
     Implements the `git commit` command.
 
     .OUTPUTS
-    PowerGit.CommitInfo
+    LibGit2Sharp.Commit
 
     .LINK
     Add-GitItem
@@ -43,39 +43,44 @@ function Save-GitCommit {
 
     Demonstrates how to set custom author metadata. In this case, the commit will be from user "Name" whose email address is "email@example.com".
     #>
-    [CmdletBinding()]
-    [OutputType([PowerGit.CommitInfo])]
+    [CmdletBinding(DefaultParameterSetName = 'New')]
+    [OutputType([LibGit2Sharp.Commit])]
     param(
-        [Parameter(Mandatory = $true)]
-        [string]
         # The commit message.
-        $Message,
+        # Can be omitted if -Amend is passed, otherwise mandatory.
+        [Parameter(Mandatory, ParameterSetName = 'New')]
+        [Parameter(ParameterSetName = 'Amend')]
+        [string] $Message,
 
-        [string]
         # The repository where to commit staged changes. Defaults to the current directory.
-        $RepoRoot = (Get-Location).ProviderPath,
+        [string] $RepoRoot = (Get-Location).ProviderPath,
 
-        [LibGit2Sharp.Signature]
         # Author metadata. If not provided, it is pulled from configuration. To create an author/signature object,
         #
         #     New-GitSignature -name 'Name' -EmailAddress 'email@example.com'
         #
-        $Signature
+        [LibGit2Sharp.Signature] $Signature,
+
+        [Parameter(Mandatory, ParameterSetName = 'Amend')]
+        [switch] $Amend,
+
+        [switch] $AllowEmpty
     )
 
     Set-StrictMode -Version 'Latest'
 
     $repo = Find-GitRepository -Path $RepoRoot -Verify
-    if ( -not $repo ) {
+    if (-not $repo) {
         return
     }
 
     try {
-        $commitOptions = New-Object 'LibGit2Sharp.CommitOptions'
-        $commitOptions.AllowEmptyCommit = $false
-        if ( -not $Signature ) {
+        $commitOptions = [LibGit2Sharp.CommitOptions]::new()
+        $commitOptions.AmendPreviousCommit = $Amend
+        $commitOptions.AllowEmptyCommit = $AllowEmpty
+        if (-not $Signature) {
             $Signature = New-GitSignature -RepoRoot $RepoRoot -ErrorAction Ignore
-            if ( -not $Signature ) {
+            if (-not $Signature) {
                 Write-Error -Message ('Failed to build author signature from Git configuration files. Pass an author signature to the "Signature" parameter (use the "New-GitSignature" function to create an author signature) or set author information in Git''s user-level configuration files by running these commands:
 
     git config --global user.name "GIVEN_NAME SURNAME"
@@ -85,14 +90,16 @@ function Save-GitCommit {
             }
         }
 
-        $repo.Commit( $Message, $Signature, $Signature, $commitOptions ) |
-            ForEach-Object { New-Object 'PowerGit.CommitInfo' $_ }
+        if (-not $PSBoundParameters.ContainsKey('Message') -and $Amend) {
+            # Implied --no-edit
+            $Message = (Get-GitCommit HEAD).Message
+        }
+
+        $repo.Commit($Message, $Signature, $Signature, $commitOptions)
     } catch [LibGit2Sharp.EmptyCommitException] {
         $Global:Error.RemoveAt(0)
-        Write-Warning -Message ('Nothing to commit. Git only commits changes that are staged. To stage changes, use the Add-GitItem function or the `git add` command.')
+        Write-Warning -Message ('Nothing to commit. Git only commits changes that are staged. To stage changes, use Add-GitItem.')
     } catch {
         Write-Error -ErrorRecord $_
-    } finally {
-        $repo.Dispose()
     }
 }

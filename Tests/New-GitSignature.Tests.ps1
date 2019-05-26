@@ -1,4 +1,4 @@
-# Licensed under the Apache License, Version 2.0 (the "License");
+﻿# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -57,15 +57,15 @@ function WhenCreatingSignature {
     )
 
     $parameters = @{ }
-    if ( $Name ) {
+    if ($Name) {
         $parameters['Name'] = $Name
     }
 
-    if ( $Email ) {
+    if ($Email) {
         $parameters['Email'] = $Email
     }
 
-    if ( $RepoRoot ) {
+    if ($RepoRoot) {
         $parameters['RepoRoot'] = $RepoRoot
     }
 
@@ -84,14 +84,14 @@ Describe 'New-GitSignature.when reading configuration from global files' {
     $config = [LibGit2Sharp.Configuration]::BuildFrom($blankGitConfigPath)
     $name = $config | Where-Object { $_.Key -eq 'user.name' } | Select-Object -ExpandProperty 'Value'
     $clearName = $false
-    if ( -not $name ) {
+    if (-not $name) {
         $name = 'name name'
         $config.Set('user.name', $name, [LibGit2Sharp.ConfigurationLevel]::Global)
         $clearName = $true
     }
     $email = $config | Where-Object { $_.Key -eq 'user.email' } | Select-Object -ExpandProperty 'Value'
     $clearEmail = $false
-    if ( -not $email ) {
+    if (-not $email) {
         $email = 'email@example.com'
         $config.Set('user.email', $email, [LibGit2Sharp.ConfigurationLevel]::Global)
         $clearEmail = $true
@@ -101,10 +101,10 @@ Describe 'New-GitSignature.when reading configuration from global files' {
         WhenCreatingSignature
         ThenSignatureIs $name $email
     } finally {
-        if ( $clearName ) {
+        if ($clearName) {
             $config.Unset('user.name', [LibGit2Sharp.ConfigurationLevel]::Global)
         }
-        if ( $clearEmail ) {
+        if ($clearEmail) {
             $config.Unset('user.email', [LibGit2Sharp.ConfigurationLevel]::Global)
         }
         $config.Dispose()
@@ -137,7 +137,7 @@ Describe 'New-GitSignature.when configuration is missing' {
         }
 
         It ('should write error') {
-            $Global:Error |  Should -Match 'Failed\ to\ build\ author\ signature'
+            $Global:Error | Should -Match 'Failed\ to\ build\ author\ signature'
         }
 
         WhenCreatingSignature -ErrorAction Ignore
@@ -145,10 +145,10 @@ Describe 'New-GitSignature.when configuration is missing' {
             $Global:Error.Count | Should -Be 0
         }
     } finally {
-        if ( $name ) {
+        if ($name) {
             $config.Set('user.name', $name, 'Global')
         }
-        if ( $email ) {
+        if ($email) {
             $config.Set('user.email', $email, 'Global')
         }
         $config.Dispose()

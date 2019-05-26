@@ -38,35 +38,26 @@ function Get-GitTag {
 
 
     [CmdletBinding()]
-    [OutputType([PowerGit.TagInfo])]
+    [OutputType([LibGit2Sharp.Tag])]
     param(
-        [string]
         # Specifies which git repository to check. Defaults to the current directory.
-        $RepoRoot = (Get-Location).ProviderPath,
+        [Parameter()]
+        [string] $RepoRoot = (Get-Location).ProviderPath,
 
-        [string]
         # The name of the tag to return. Wildcards accepted.
-        $Name
+        [Parameter(Position = 0)]
+        [string] $Name
     )
 
     Set-StrictMode -Version 'Latest'
 
     $repo = Find-GitRepository -Path $RepoRoot -Verify
-    if ( -not $repo ) {
+    if (-not $repo) {
         return
     }
-
-    try {
-        $repo.Tags | ForEach-Object {
-            New-Object PowerGit.TagInfo $_
-        } |
-            Where-Object {
-            if ( $PSBoundParameters.ContainsKey('Name') ) {
-                return $_.Name -like $Name
-            }
-            return $true
-        }
-    } finally {
-        $repo.Dispose()
-    }
+    if ($Name -and -not [WildcardPattern]::ContainsWildcardCharacters($Name)) {
+        $repo.Tags[$Name]
+    } else {
+        $repo.Tags | Where-Object { -not $Name -or $_.FriendlyName -like $Name }
+}
 }

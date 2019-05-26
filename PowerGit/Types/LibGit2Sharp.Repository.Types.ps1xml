@@ -1,0 +1,21 @@
+<Types>
+    <Type>
+        <Name>LibGit2Sharp.Repository</Name>
+        <Members>
+            <ScriptProperty>
+                <!-- The second-last part of the URL path -->
+                <Name>Owner</Name>
+                <GetScriptBlock>
+                    $this.Head.Owner
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <!-- The last path part of the URL path, without the .git extension -->
+                <Name>RepositoryName</Name>
+                <GetScriptBlock>
+                    $this.Head.RepositoryName
+                </GetScriptBlock>
+            </ScriptProperty>
+        </Members>
+    </Type>
+</Types>

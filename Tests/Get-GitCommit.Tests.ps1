@@ -53,7 +53,7 @@ function GivenHeadIs {
         $Revision
     )
 
-    Update-GitRepository -RepoRoot $repoRoot -Revision $Revision
+    Set-GitHead -RepoRoot $repoRoot -Revision $Revision
 }
 
 function AddMerge {
@@ -145,9 +145,9 @@ function ThenNumberCommitsReturnedIs {
 
 function ThenReturned {
     param(
-        [Parameter(Mandatory = $true, ParameterSetName = 'Type')]
+        [Parameter(Mandatory, ParameterSetName = 'Type')]
         $Type,
-        [Parameter(Mandatory = $true, ParameterSetName = 'Nothing')]
+        [Parameter(Mandatory, ParameterSetName = 'Nothing')]
         [switch]
         $Nothing
     )
@@ -184,7 +184,7 @@ Describe 'Get-GitCommit.when no parameters specified' {
     GivenRepository
     GivenCommit -NumberOfCommits 2
     WhenGettingCommit
-    ThenReturned -Type [PowerGit.CommitInfo]
+    ThenReturned -Type [LibGit2Sharp.Commit]
     ThenNumberCommitsReturnedIs 2
     ThenNoErrorMessages
 }
@@ -200,7 +200,7 @@ Describe 'Get-GitCommit.when getting all commits' {
     GivenBranch 'someotherbranch'
     GivenCommit -NumberOfCommits 5
     WhenGettingCommit -All
-    ThenReturned -Type [PowerGit.CommitInfo]
+    ThenReturned -Type [LibGit2Sharp.Commit]
     ThenNumberCommitsReturnedIs 15
     ThenNoErrorMessages
 }
@@ -210,7 +210,7 @@ Describe 'Get-GitCommit.when getting specifically the current HEAD commit' {
     GivenRepository
     GivenCommit -NumberOfCommits 3
     WhenGettingCommit -Revision 'HEAD'
-    ThenReturned -Type [PowerGit.CommitInfo]
+    ThenReturned -Type [LibGit2Sharp.Commit]
     ThenNumberCommitsReturnedIs 1
     ThenCommitIsHeadCommit
     ThenNoErrorMessages
@@ -251,7 +251,7 @@ Describe 'Get-GitCommit.when getting all commits until a specific commit' {
     AddTag '1.0'
     GivenCommit -NumberOfCommits 3
     WhenGettingCommit -Until '1.0'
-    ThenReturned -Type [PowerGit.CommitInfo]
+    ThenReturned -Type [LibGit2Sharp.Commit]
     ThenNumberCommitsReturnedIs 3
     ThenNoErrorMessages
 }
@@ -266,7 +266,7 @@ Describe 'Get-GitCommit.when getting list of commits between two specific commit
     AddTag '2.0'
     GivenCommit -NumberOfCommits 1
     WhenGettingCommit -Since '2.0' -Until '1.0'
-    ThenReturned -Type [PowerGit.CommitInfo]
+    ThenReturned -Type [LibGit2Sharp.Commit]
     ThenNumberCommitsReturnedIs 4
     ThenNoErrorMessages
 }
@@ -281,7 +281,7 @@ Describe 'Get-GitCommit.when getting list of commits with excluding merge commit
     AddTag '2.0'
     GivenCommit -NumberOfCommits 1
     WhenGettingCommit -Since '2.0' -Until '1.0' -NoMerges
-    ThenReturned -Type [PowerGit.CommitInfo]
+    ThenReturned -Type [LibGit2Sharp.Commit]
     ThenNumberCommitsReturnedIs 3
     ThenNoErrorMessages
 }

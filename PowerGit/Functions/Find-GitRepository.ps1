@@ -38,39 +38,37 @@ function Find-GitRepository {
     [CmdletBinding()]
     [OutputType([LibGit2Sharp.Repository])]
     param(
-        [string]
         # The path to start searching.
-        $Path = (Get-Location).ProviderPath,
+        [string] $Path = (Get-Location).ProviderPath,
 
-        [Switch]
         # Write an error if a repository isn't found. Usually, no error is written and nothing is returned when a repository isn't found.
-        $Verify
+        [Switch] $Verify
     )
 
     Set-StrictMode -Version 'Latest'
 
-    if ( -not $Path ) {
+    if (-not $Path) {
         $Path = (Get-Location).ProviderPath
     }
 
     $Path = Resolve-Path -Path $Path -ErrorAction Ignore | Select-Object -ExpandProperty 'ProviderPath'
-    if ( -not $Path ) {
-        Write-Error -Message ('Can''t find a repository in ''{0}'' because it does not exist.' -f $PSBoundParameters['Path'])
-        return
+if (-not $Path) {
+    Write-Error -Message ('Can''t find a repository in ''{0}'' because it does not exist.' -f $PSBoundParameters['Path'])
+    return
+}
+
+$startedAt = $Path
+
+while ($Path -and -not [LibGit2Sharp.Repository]::IsValid($Path)) {
+    $Path = Split-Path -Parent -Path $Path
+}
+
+if (-not $Path) {
+    if ($Verify) {
+        Write-Error -Message ('Path ''{0}'' not in a Git repository.' -f $startedAt)
     }
+    return
+}
 
-    $startedAt = $Path
-
-    while ( $Path -and -not [LibGit2Sharp.Repository]::IsValid($Path) ) {
-        $Path = Split-Path -Parent -Path $Path
-    }
-
-    if ( -not $Path ) {
-        if ( $Verify ) {
-            Write-Error -Message ('Path ''{0}'' not in a Git repository.' -f $startedAt)
-        }
-        return
-    }
-
-    return Get-GitRepository -RepoRoot $Path
+return Get-GitRepository -RepoRoot $Path
 }

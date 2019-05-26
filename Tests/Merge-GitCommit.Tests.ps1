@@ -12,7 +12,7 @@
 
 & (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-PowerGitTest.ps1' -Resolve)
 
-[PowerGit.MergeResult]$result = $null
+[LibGit2Sharp.MergeResult]$result = $null
 
 function Get-RepoRoot {
     return Join-Path -Path $TestDrive.FullName -ChildPath 'repo'
@@ -23,7 +23,7 @@ function GivenCurrentHead {
         $Revision
     )
 
-    Update-GitRepository -RepoRoot (Get-RepoRoot) -Revision $Revision
+    Set-GitHead -RepoRoot (Get-RepoRoot) -Revision $Revision
 }
 
 function GivenFile {
@@ -139,9 +139,10 @@ function ThenCreatedMergeCommit {
     It ('should create a merge commit') {
         $lastCommit = Get-GitCommit -RepoRoot $repoRoot -Revision 'HEAD'
         $lastCommit.Message | Should -BeLike 'Merge commit *'
-        $lastCommit.Parents.Count | Should -Be 2
-        $lastCommit.Parents[0].Sha | Should -Be $parent1.Sha
-        $lastCommit.Parents[1].Sha | Should -Be $parent2.Sha
+        [LibGit2Sharp.Commit[]]$parents = $lastCommit.Parents
+        $parents | Should -HaveCount 2
+        $parents[0].Sha | Should -Be $parent1.Sha
+        $parents[1].Sha | Should -Be $parent2.Sha
     }
 }
 
@@ -163,7 +164,7 @@ function ThenMergeStatus {
         $IsNull
     )
 
-    if ( $IsNull ) {
+    if ($IsNull) {
         It ('should not return a merge result') {
             $result | Should -BeNullOrEmpty
         }
@@ -192,159 +193,162 @@ function WhenMerging {
     param(
         $Revision,
 
-        $FastForward,
+        $MergeStrategy,
 
         [Switch]
         $NonInteractive
     )
 
     $optionalParams = @{ }
-    if ( $FastForward ) {
-        $optionalParams['FastForward'] = $FastForward
+    if ($MergeStrategy) {
+        $optionalParams['MergeStrategy'] = $MergeStrategy
     }
 
-    if ( $NonInteractive ) {
+    if ($NonInteractive) {
         $optionalParams['NonInteractive'] = $NonInteractive
     }
 
     $Global:Error.Clear()
     $myResult = Merge-GitCommit -RepoRoot (Get-RepoRoot) -Revision $Revision @optionalParams
-    if ( $myResult ) {
+    if ($myResult) {
         $script:result = $myResult
     }
 }
 
-Describe 'Merge-GitCommit.when merging one branch into another and can fast forward' {
-    Init
-    GivenGitRepository
-    GivenGitBranch 'develop'
-    GivenFile 'develop'
-    GivenCurrentHead 'master'
-    WhenMerging 'develop'
-    ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::FastForward)
-    ThenFileExists 'develop'
-    ThenFastForwarded 'master' 'develop'
-}
+Describe Merge-GitCommit {
 
-Describe 'Merge-GitCommit.when merging one branch into another and can''t fast forward' {
-    Init
-    GivenGitRepository
-    GivenGitBranch 'develop'
-    GivenFile 'develop'
-    GivenCurrentHead 'master'
-    GivenFile 'master.2'
-    WhenMerging 'develop'
-    ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::NonFastForward)
-    ThenFileExists 'develop'
-    ThenCreatedMergeCommit 'master^1' 'develop'
-}
+    Describe 'when merging one branch into another and can fast forward' {
+        Init
+        GivenGitRepository
+        GivenGitBranch 'develop'
+        GivenFile 'develop'
+        GivenCurrentHead 'master'
+        WhenMerging 'develop'
+        ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::FastForward)
+        ThenFileExists 'develop'
+        ThenFastForwarded 'master' 'develop'
+    }
 
-Describe 'Merge-GitCommit.when merging one branch into another and user doesn''t want to fast forward' {
-    Init
-    GivenGitRepository
-    GivenGitBranch 'develop'
-    GivenFile 'develop'
-    GivenCurrentHead 'master'
-    WhenMerging 'develop' -FastForward 'No'
-    ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::NonFastForward)
-    ThenFileExists 'develop'
-    ThenCreatedMergeCommit 'master^1' 'develop'
-}
+    Describe 'when merging one branch into another and can''t fast forward' {
+        Init
+        GivenGitRepository
+        GivenGitBranch 'develop'
+        GivenFile 'develop'
+        GivenCurrentHead 'master'
+        GivenFile 'master.2'
+        WhenMerging 'develop'
+        ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::NonFastForward)
+        ThenFileExists 'develop'
+        ThenCreatedMergeCommit 'master^1' 'develop'
+    }
 
-Describe 'Merge-GitCommit.when merging one branch into another and user only wants to fast forward' {
-    Init
-    GivenGitRepository
-    GivenGitBranch 'develop'
-    GivenFile 'develop'
-    GivenCurrentHead 'master'
-    WhenMerging 'develop' -FastForward 'Only'
-    ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::FastForward)
-    ThenFileExists 'develop'
-    ThenFastForwarded 'develop' 'master'
-}
+    Describe "when merging one branch into another and user doesn't want to fast forward" {
+        Init
+        GivenGitRepository
+        GivenGitBranch 'develop'
+        GivenFile 'develop'
+        GivenCurrentHead 'master'
+        WhenMerging 'develop' -MergeStrategy Merge
+        ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::NonFastForward)
+        ThenFileExists 'develop'
+        ThenCreatedMergeCommit 'master^1' 'develop'
+    }
 
-Describe 'Merge-GitCommit.when merging one branch into another and user only wants to fast forward but can''t fast forward' {
-    Init
-    GivenGitRepository
-    GivenGitBranch 'develop'
-    GivenFile 'develop'
-    GivenCurrentHead 'master'
-    GivenFile 'master.2'
-    WhenMerging 'develop' -FastForward 'Only' -ErrorAction SilentlyContinue
-    ThenMergeStatus -IsNull
-    ThenFileDoesNotExist 'develop'
-    ThenCommitCountIs 3
-    ThenErrorIs 'Cannot\ perform\ fast-forward\ merge'
-}
+    Describe 'when merging one branch into another and user only wants to fast forward' {
+        Init
+        GivenGitRepository
+        GivenGitBranch 'develop'
+        GivenFile 'develop'
+        GivenCurrentHead 'master'
+        WhenMerging 'develop' -MergeStrategy FastForward
+        ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::FastForward)
+        ThenFileExists 'develop'
+        ThenFastForwarded 'develop' 'master'
+    }
 
-Describe 'Merge-GitCommit.when there are conflicts' {
-    Init
-    GivenGitRepository
-    GivenGitBranch 'develop'
-    GivenFile 'conflict' 'develop'
-    GivenCurrentHead 'master'
-    GivenFile 'conflict' 'master'
-    WhenMerging 'develop'
-    ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::Conflicts)
-    ThenFileContentIs 'conflict' ("<<<<<<< HEAD`nmaster`n=======`ndevelop`n>>>>>>> {0}`n" -f (Get-GitCommit -RepoRoot (Get-RepoRoot) -Revision 'develop').Sha)
-    ThenCommitCountIs 3
-}
+    Describe "when merging one branch into another and user only wants to fast forward but can't fast forward" {
+        Init
+        GivenGitRepository
+        GivenGitBranch 'develop'
+        GivenFile 'develop'
+        GivenCurrentHead 'master'
+        GivenFile 'master.2'
+        WhenMerging 'develop' -MergeStrategy FastForward -ErrorAction SilentlyContinue
+        ThenMergeStatus -IsNull
+        ThenFileDoesNotExist 'develop'
+        ThenCommitCountIs 3
+        ThenErrorIs 'Cannot\ perform\ fast-forward\ merge'
+    }
 
-Describe 'Merge-GitCommit.when there are conflicts and merging non-interactively' {
-    Init
-    GivenGitRepository
-    GivenGitBranch 'develop'
-    GivenFile 'conflict' 'develop'
-    GivenCurrentHead 'master'
-    GivenFile 'conflict' 'master'
-    WhenMerging 'develop' -NonInteractive
-    ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::Conflicts)
-    ThenFileContentIs 'conflict' "master"
-    ThenCommitCountIs 3
-}
+    Describe 'when there are conflicts' {
+        Init
+        GivenGitRepository
+        GivenGitBranch 'develop'
+        GivenFile 'conflict' 'develop'
+        GivenCurrentHead 'master'
+        GivenFile 'conflict' 'master'
+        WhenMerging 'develop'
+        ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::Conflicts)
+        ThenFileContentIs 'conflict' ("<<<<<<< HEAD`nmaster`n=======`ndevelop`n>>>>>>> {0}`n" -f (Get-GitCommit -RepoRoot (Get-RepoRoot) -Revision 'develop').Sha)
+        ThenCommitCountIs 3
+    }
 
-Describe 'Merge-GitCommit.when already merged' {
-    Init
-    GivenGitRepository
-    GivenGitBranch 'develop'
-    GivenFile 'develop'
-    GivenCurrentHead 'master'
-    WhenMerging 'develop'
-    ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::FastForward)
-    ThenFileExists 'develop'
-    ThenFastForwarded 'master' 'develop'
-    WhenMerging 'develop'
-    ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::UpToDate)
-    ThenFileExists 'develop'
-    ThenFastForwarded 'master' 'develop'
-}
+    Describe 'when there are conflicts and merging non-interactively' {
+        Init
+        GivenGitRepository
+        GivenGitBranch 'develop'
+        GivenFile 'conflict' 'develop'
+        GivenCurrentHead 'master'
+        GivenFile 'conflict' 'master'
+        WhenMerging 'develop' -NonInteractive
+        ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::Conflicts)
+        ThenFileContentIs 'conflict' "master"
+        ThenCommitCountIs 3
+    }
 
-Describe 'Merge-GitCommit.when merging a tag' {
-    Init
-    GivenGitRepository
-    GivenGitBranch 'develop'
-    GivenFile 'develop'
-    GivenTag 'fubar'
-    GivenCurrentHead 'master'
-    GivenFile 'master.2'
-    WhenMerging 'fubar'
-    ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::NonFastForward)
-    ThenFileExists 'develop'
-    ThenCreatedMergeCommit -Parent1Revision 'HEAD~1' -Parent2Revision 'fubar'
-    ThenNotMerged 'master' 'develop'
-}
+    Describe 'when already merged' {
+        Init
+        GivenGitRepository
+        GivenGitBranch 'develop'
+        GivenFile 'develop'
+        GivenCurrentHead 'master'
+        WhenMerging 'develop'
+        ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::FastForward)
+        ThenFileExists 'develop'
+        ThenFastForwarded 'master' 'develop'
+        WhenMerging 'develop'
+        ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::UpToDate)
+        ThenFileExists 'develop'
+        ThenFastForwarded 'master' 'develop'
+    }
 
-Describe 'Merge-GitCommit.when merging a specific commit' {
-    Init
-    GivenGitRepository
-    GivenGitBranch 'develop'
-    GivenFile 'develop'
-    GivenCurrentHead 'master'
-    GivenFile 'master.2'
-    $commit = Get-GitCommit -RepoRoot (Get-RepoRoot) -Revision 'develop'
-    WhenMerging $commit.Sha
-    ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::NonFastForward)
-    ThenFileExists 'develop'
-    ThenCreatedMergeCommit 'HEAD^1' $commit.Sha
-    ThenNotMerged 'master' 'develop'
+    Describe 'when merging a tag' {
+        Init
+        GivenGitRepository
+        GivenGitBranch 'develop'
+        GivenFile 'develop'
+        GivenTag 'fubar'
+        GivenCurrentHead 'master'
+        GivenFile 'master.2'
+        WhenMerging 'fubar'
+        ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::NonFastForward)
+        ThenFileExists 'develop'
+        ThenCreatedMergeCommit -Parent1Revision 'HEAD~1' -Parent2Revision 'fubar'
+        ThenNotMerged 'master' 'develop'
+    }
+
+    Describe 'when merging a specific commit' {
+        Init
+        GivenGitRepository
+        GivenGitBranch 'develop'
+        GivenFile 'develop'
+        GivenCurrentHead 'master'
+        GivenFile 'master.2'
+        $commit = Get-GitCommit -RepoRoot (Get-RepoRoot) -Revision 'develop'
+        WhenMerging $commit.Sha
+        ThenMergeStatus -Is ([LibGit2Sharp.MergeStatus]::NonFastForward)
+        ThenFileExists 'develop'
+        ThenCreatedMergeCommit 'HEAD^1' $commit.Sha
+        ThenNotMerged 'master' 'develop'
+    }
 }

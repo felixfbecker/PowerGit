@@ -35,19 +35,16 @@ function New-GitSignature {
     [CmdletBinding(DefaultParameterSetName = 'FromConfiguration')]
     [OutputType([LibGit2Sharp.Signature])]
     param(
-        [Parameter(Mandatory = $true, ParameterSetName = 'FromParameter')]
-        [string]
         # The author's name, i.e. GivenName Surname.
-        $Name,
+        [Parameter(Mandatory, ParameterSetName = 'FromParameter')]
+        [string] $Name,
 
-        [Parameter(Mandatory = $true, ParameterSetName = 'FromParameter')]
-        [string]
         # The author's email address.
-        $EmailAddress,
+        [Parameter(Mandatory, ParameterSetName = 'FromParameter')]
+        [string] $EmailAddress,
 
-        [Parameter(Mandatory = $true, ParameterSetName = 'FromRepositoryConfiguration')]
-        [string]
-        $RepoRoot
+        [Parameter(Mandatory, ParameterSetName = 'FromRepositoryConfiguration')]
+        [string] $RepoRoot
     )
 
     Set-StrictMode -Version 'Latest'
@@ -60,7 +57,7 @@ function New-GitSignature {
         )
 
         $signature = $Configuration.BuildSignature([DateTimeOffset]::Now)
-        if ( -not $signature ) {
+        if (-not $signature) {
             Write-Error -Message ('Failed to build author signature from Git configuration files. Please pass custom author information to the "Name" and "EmailAddress" parameters or set author information in Git''s user-level configuration files by running these commands:
 
     git config --global user.name "GIVEN_NAME SURNAME"
@@ -71,9 +68,9 @@ function New-GitSignature {
         return $signature
     }
 
-    if ( $PSCmdlet.ParameterSetName -eq 'FromRepositoryConfiguration' ) {
-        $repo = Get-GitRepository -RepoRoot $RepoRoot
-        if ( -not $repo ) {
+    if ($PSCmdlet.ParameterSetName -eq 'FromRepositoryConfiguration') {
+        $repo = Find-GitRepository -Path $RepoRoot -Verify
+        if (-not $repo) {
             return
         }
 
@@ -84,7 +81,7 @@ function New-GitSignature {
         }
     }
 
-    if ( $PSCmdlet.ParameterSetName -eq 'FromConfiguration' ) {
+    if ($PSCmdlet.ParameterSetName -eq 'FromConfiguration') {
         $blankGitConfigPath = Join-Path -Path $PSScriptRoot -ChildPath '../gitconfig' -Resolve
         [LibGit2Sharp.Configuration]$config = [LibGit2Sharp.Configuration]::BuildFrom($blankGitConfigPath)
 

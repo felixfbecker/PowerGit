@@ -37,21 +37,21 @@ function ThenRepositoryWasClonedTo {
     )
 
     It 'should succeed' {
-        $Global:Error.Count | Should Be 0
+        $Global:Error | Should -HaveCount 0
     }
     It 'should clone the repository' {
-        git -C $Destination status --porcelain 2>&1 | Should BeNullOrEmpty
-        $LASTEXITCODE | Should Be 0
+        git -C $Destination status --porcelain 2>&1 | Should -BeNullOrEmpty
+        $LASTEXITCODE | Should -Be 0
     }
 
-    if ( $WithNoOutput ) {
+    if ($WithNoOutput) {
         It 'should return no output' {
             $output | Should BeNullOrEmpty
         }
     } else {
         It 'should return [IO.DirectoryInfo] for repository' {
             $output | Should BeOfType ([IO.DirectoryInfo])
-            $output.FullName | Should Be (Join-Path -Path $Destination -ChildPath '.git\')
+            $output.FullName | Should -Be (Join-Path -Path $Destination -ChildPath '.git\')
         }
     }
 }

@@ -30,7 +30,7 @@ function Remove-GitItem {
     #>
 
     param(
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(Mandatory, ValueFromPipeline = $true)]
         [String[]]
         # The paths to the files/directories to remove in the next commit.
         $Path,
@@ -45,12 +45,12 @@ function Remove-GitItem {
 
     $repo = Find-GitRepository -Path $RepoRoot -Verify
 
-    if ( -not $repo ) {
+    if (-not $repo) {
         return
     }
 
     foreach ( $pathItem in $Path ) {
-        if ( -not [IO.Path]::IsPathRooted($pathItem) ) {
+        if (-not [IO.Path]::IsPathRooted($pathItem)) {
             $pathItem = Join-Path -Path $repo.Info.WorkingDirectory -ChildPath $pathItem
         }
         [LibGit2Sharp.Commands]::Remove($repo, $pathItem, $true)

@@ -1,4 +1,4 @@
-# Licensed under the Apache License, Version 2.0 (the "License");
+﻿# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -43,37 +43,32 @@ function Set-GitConfiguration {
     #>
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory = $true, Position = 0)]
-        [string]
         # The name of the configuration variable to set.
-        $Name,
+        [Parameter(Mandatory, Position = 0)]
+        [string] $Name,
 
-        [Parameter(Mandatory = $true, Position = 1)]
-        [string]
         # The value of the configuration variable.
-        $Value,
+        [Parameter(Mandatory, Position = 1)]
+        [string] $Value,
 
-        [Parameter(ParameterSetName = 'ByScope')]
-        [LibGit2Sharp.ConfigurationLevel]
         # Where to set the configuration value. Local means the value will be set for a specific repository. Global means set for the current user. System means set for all users on the current computer. The default is `Local`.
-        $Scope = ([LibGit2Sharp.ConfigurationLevel]::Local),
-
-        [Parameter(Mandatory = $true, ParameterSetName = 'ByPath')]
-        [string]
-        # The path to a specific file whose configuration to update.
-        $Path,
-
         [Parameter(ParameterSetName = 'ByScope')]
-        [string]
+        [LibGit2Sharp.ConfigurationLevel] $Scope = ([LibGit2Sharp.ConfigurationLevel]::Local),
+
+        # The path to a specific file whose configuration to update.
+        [Parameter(Mandatory, ParameterSetName = 'ByPath')]
+        [string] $Path,
+
         # The path to the repository whose configuration variables to set. Defaults to the repository the current directory is in.
-        $RepoRoot
+        [Parameter(ParameterSetName = 'ByScope')]
+        [string] $RepoRoot
     )
 
     Set-StrictMode -Version 'Latest'
     Use-CallerPreference -Cmdlet $PSCmdlet -Session $ExecutionContext.SessionState
 
-    if ( $PSCmdlet.ParameterSetName -eq 'ByPath' ) {
-        if ( -not (Test-Path -Path $Path -PathType Leaf) ) {
+    if ($PSCmdlet.ParameterSetName -eq 'ByPath') {
+        if (-not (Test-Path -Path $Path -PathType Leaf)) {
             New-Item -Path $Path -ItemType 'File' -Force | Write-Verbose
         }
 
@@ -88,14 +83,14 @@ function Set-GitConfiguration {
         return
     }
 
-    $pathParam = @{}
-    if ( $RepoRoot ) {
+    $pathParam = @{ }
+    if ($RepoRoot) {
         $pathParam['Path'] = $RepoRoot
     }
 
-    if ( $Scope -eq [LibGit2Sharp.ConfigurationLevel]::Local ) {
+    if ($Scope -eq [LibGit2Sharp.ConfigurationLevel]::Local) {
         $repo = Find-GitRepository @pathParam -Verify
-        if ( -not $repo ) {
+        if (-not $repo) {
             return
         }
 
@@ -110,7 +105,7 @@ function Set-GitConfiguration {
         # LibGit2 only creates config files explicitly.
         [string[]]$searchPaths = [LibGit2Sharp.GlobalSettings]::GetConfigSearchPaths($Scope) | Join-Path -ChildPath '.gitconfig'
         $scopeConfigFiles = $searchPaths | Where-Object { Test-Path -Path $_ -PathType Leaf }
-        if ( -not $scopeConfigFiles ) {
+        if (-not $scopeConfigFiles) {
             New-Item -Path $searchPaths[0] -ItemType 'File' -Force | Write-Verbose
         }
 

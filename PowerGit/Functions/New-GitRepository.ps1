@@ -22,9 +22,6 @@ function New-GitRepository {
 
     This function implements the `git init` command.
 
-    .OUTPUTS
-    PowerGit.RepositoryInfo.
-
     .EXAMPLE
     New-GitRepository -Path 'C:\Projects\MyCoolNewRepo'
 
@@ -35,35 +32,28 @@ function New-GitRepository {
 
     Demonstrates how to create a repository that doesn't have a working directory. Git calls these "Bare" repositories.
     #>
-    [CmdletBinding(SupportsShouldProcess = $true)]
-    [OutputType([PowerGit.RepositoryInfo])]
+    [CmdletBinding(SupportsShouldProcess)]
+    [OutputType([LibGit2Sharp.Repository])]
     param(
-        [Parameter()]
-        [string]
         # The path to the repository to create.
-        $Path = '.',
+        [Parameter()]
+        [string] $Path = '.',
 
-        [Switch]
-        $Bare
+        [Switch] $Bare
     )
 
     Set-StrictMode -Version 'Latest'
 
-    if ( -not [IO.Path]::IsPathRooted($Path) ) {
+    if (-not [IO.Path]::IsPathRooted($Path)) {
         $Path = Join-Path -Path (Get-Location).ProviderPath -ChildPath $Path
         $Path = [IO.Path]::GetFullPath($Path)
     }
 
-    $whatIfMessage = 'create Git repository at ''{0}''' -f $Path
-    if ( -not $PSCmdlet.ShouldProcess($whatIfMessage, $whatIfMessage, 'New-GitRepository' ) ) {
+    $whatIfMessage = "Create git repository at '$Path'"
+    if (-not $PSCmdlet.ShouldProcess($whatIfMessage, $whatIfMessage, 'New-GitRepository')) {
         return
     }
 
-    $repoPath = [LibGit2Sharp.Repository]::Init($Path, $Bare.IsPresent)
-    $repo = [LibGit2Sharp.Repository]::new($repoPath)
-    try {
-        return [PowerGit.RepositoryInfo]::new($repo.Info)
-    } finally {
-        $repo.Dispose()
-    }
+    $repoPath = [LibGit2Sharp.Repository]::Init($Path, [bool]$Bare)
+    [LibGit2Sharp.Repository]::new($repoPath)
 }

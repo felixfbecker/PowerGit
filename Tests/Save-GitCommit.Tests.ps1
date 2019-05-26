@@ -35,7 +35,7 @@ Describe 'Save-GitCommit when committing changes' {
     Add-GitItem -Path 'file1' -RepoRoot $repoRoot
     $commit = Save-GitCommit -Message 'fubar' -RepoRoot $repoRoot -Signature $signature
     It 'should return a commit object' {
-        $commit.pstypenames | Where-Object { $_ -eq 'PowerGit.CommitInfo' } | Should Not BeNullOrEmpty
+        $commit.pstypenames | Where-Object { $_ -eq 'LibGit2Sharp.Commit' } | Should Not BeNullOrEmpty
     }
     It 'should commit everything' {
         git -C $repoRoot status --porcelain | Should BeNullOrEmpty
@@ -47,23 +47,23 @@ Describe 'Save-GitCommit when committing changes' {
             $commit.Author.Email | Should -Be $signature.Email
             $commit.Author.Name | Should -Be $signature.Name
             $commit.Committer | Should Not BeNullOrEmpty
-            $commit.Committer | Should Be $commit.Author
+            $commit.Committer | Should -Be $commit.Author
         }
         It 'should have a message' {
             $commit.Message | Should Not BeNullOrEmpty
             $commit.MessageShort | Should Not BeNullOrEmpty
-            $commit.Message | Should Be "fubar`n"
-            $commit.MessageShort | Should Be 'fubar'
+            $commit.Message | Should -Be "fubar`n"
+            $commit.MessageShort | Should -Be 'fubar'
         }
 
         It 'should have an ID' {
             $commit.Id | Should Not BeNullOrEmpty
             $commit.Sha | Should Not BeNullOrEmpty
-            $commit.Id | Should Be $commit.Sha
+            $commit.Id | Should -Be $commit.Sha
         }
 
         It 'should have an encoding' {
-            $commit.Encoding | Should Be 'UTF-8'
+            $commit.Encoding | Should -Be 'UTF-8'
         }
     }
 }
@@ -73,7 +73,7 @@ Describe 'Save-GitCommit when nothing to commit' {
     GivenRepository
     GivenSignature
     Save-GitCommit -Message 'fubar' -RepoRoot $repoRoot -Signature $signature
-    $commit = Save-GitCommit -Message 'fubar' -RepoRoot $repoRoot
+    $commit = Save-GitCommit -Message 'fubar' -RepoRoot $repoRoot -WarningAction SilentlyContinue
     It 'should commit nothing' {
         $commit | Should BeNullOrEmpty
     }

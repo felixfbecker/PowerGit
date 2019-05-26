@@ -37,18 +37,12 @@ function Test-GitBranch {
         # Specifies which git repository to check. Defaults to the current directory.
         $RepoRoot = (Get-Location).ProviderPath,
 
-        [Parameter(Mandatory = $true)]
-        [string]
         # The name of the branch.
-        $Name
+        [Parameter(Mandatory)]
+        [string] $Name
     )
 
     Set-StrictMode -Version 'Latest'
 
-    $branch = Get-GitBranch -RepoRoot $RepoRoot | Where-Object { $_.Name -ceq $Name }
-    if ( $branch ) {
-        return $true
-    } else {
-        return $false
-    }
+    return [bool](Get-GitBranch -RepoRoot $RepoRoot | Where-Object { $_.FriendlyName -ceq $Name })
 }

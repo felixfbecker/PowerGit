@@ -10,13 +10,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-function Update-GitRepository {
+function Set-GitHead {
     <#
     .SYNOPSIS
     Updates the working directory of a Git repository to a specific commit.
 
     .DESCRIPTION
-    The `Update-GitRepository` function updates a Git repository to a specific commit, i.e. it checks out a specific commit.
+    The `Set-GitHead` function updates a Git repository to a specific commit, i.e. it checks out a specific commit.
 
     The default target is "HEAD". Use the `Revision` parameter to specifiy a different branch, tag, commit, etc. If you specify a branch name, and there isn't a local branch by that name, but there is a remote branch, this function creates a new local branch that tracks the remote branch.
 
@@ -26,18 +26,21 @@ function Update-GitRepository {
 
     This function implements the `git checkout <target>` command.
 
+    .INPUTS
+    PSGitHub.PullRequest. You can pipe in the output of PSGitHub's Get-GitHubPullRequest.
+
     .EXAMPLE
-    Update-GitRepository -RepoRoot 'C:\Projects\PowerGit' -Revision 'feature/ticket'
+    Set-GitHead -RepoRoot 'C:\Projects\PowerGit' -Revision 'feature/ticket'
 
     Demonstrates how to checkout the 'feature/ticket' branch of the given repository.
 
     .EXAMPLE
-    Update-GitRepository -RepoRoot 'C:\Projects\PowerGit' -Revision 'refs/tags/tag1'
+    Set-GitHead -RepoRoot 'C:\Projects\PowerGit' -Revision 'refs/tags/tag1'
 
     Demonstrates how to create a detached head at the tag 'tag1'.
 
     .EXAMPLE
-    Update-GitRepository -RepoRoot 'C:\Projects\PowerGit' -Revision 'develop' -Force
+    Set-GitHead -RepoRoot 'C:\Projects\PowerGit' -Revision 'develop' -Force
 
     Demonstrates how to remove any uncommitted changes during the checkout by using the `Force` switch.
     #>
@@ -45,50 +48,71 @@ function Update-GitRepository {
     [CmdletBinding()]
     [OutputType([LibGit2Sharp.Branch])]
     param(
-        [string]
         # Specifies which git repository to update. Defaults to the current directory.
-        $RepoRoot = (Get-Location).ProviderPath,
+        [string] $RepoRoot = (Get-Location).ProviderPath,
 
-        [string]
-        # The revision checkout, i.e. update the repository to. A revision can be a specific commit ID/sha (short or long), branch name, tag name, etc. Run git help gitrevisions or go to https://git-scm.com/docs/gitrevisions for full documentation on Git's revision syntax.
-        $Revision = "HEAD",
+        # The revision checkout, i.e. update the repository HEAD to.
+        # A revision can be a specific commit ID/sha (short or long), branch name, tag name, etc.
+        # Run git help gitrevisions or go to https://git-scm.com/docs/gitrevisions for full documentation on Git's revision syntax.
+        [Parameter(Position = 0, Mandatory, ValueFromPipelineByPropertyName)]
+        [Alias('FriendlyName')]
+        [Alias('HeadRef')] # PSGitHub.PullRequest
+        [string] $Revision,
 
-        [Switch]
         # Remove any uncommitted changes when checking out/updating to `Revision`.
-        $Force
+        [Switch] $Force
     )
 
     Set-StrictMode -Version 'Latest'
 
     $repo = Find-GitRepository -Path $RepoRoot -Verify
-    if ( -not $repo ) {
+    if (-not $repo) {
         return
     }
 
+    $cancel = $false
     try {
-        $checkoutOptions = New-Object -TypeName 'LibGit2Sharp.CheckoutOptions'
-        if ( $Force ) {
+        $checkoutOptions = [LibGit2Sharp.CheckoutOptions]::new()
+        $checkoutOptions.OnCheckoutNotify = {
+            param([string]$Path, [LibGit2Sharp.CheckoutNotifyFlags]$NotifyFlags)
+            Write-Information "$($NotifyFlags): $Path"
+            return -not $cancel -and -not $PSCmdlet.Stopping
+        }
+        $checkoutOptions.OnCheckoutProgress = {
+            param([string]$Path, [int]$CompletedSteps, [int]$TotalSteps)
+            if ($ProgressPreference -ne 'SilentlyContinue' -and $TotalSteps -ne 0) {
+                $progressParams = @{
+                    Activity = 'Checking files out'
+                }
+                if ($TotalSteps -ne 0) {
+                    $progressParams.PercentComplete = (($CompletedSteps / $TotalSteps) * 100)
+                }
+                if ($Path) {
+                    $progressParams.Status = $Path
+                }
+                Write-Progress @progressParams
+            }
+        }
+        if ($Force) {
             $checkoutOptions.CheckoutModifiers = [LibGit2Sharp.CheckoutModifiers]::Force
         }
 
         $branch = $repo.Branches[$Revision]
-        if ( -not $branch ) {
+        if (-not $branch) {
             [LibGit2Sharp.Branch]$remoteBranch = $repo.Branches | Where-Object { $_.UpstreamBranchCanonicalName -eq ('refs/heads/{0}' -f $Revision) }
-            if ( $remoteBranch ) {
+            if ($remoteBranch) {
                 $branch = $repo.Branches.Add($Revision, $remoteBranch.Tip.Sha)
                 $repo.Branches.Update($branch, {
-                        param(
-                            [LibGit2Sharp.BranchUpdater]
-                            $Updater
-                        )
+                    param([LibGit2Sharp.BranchUpdater] $Updater)
 
-                        $Updater.TrackedBranch = $remoteBranch.CanonicalName
-                    })
+                    $Updater.TrackedBranch = $remoteBranch.CanonicalName
+                }) | Out-Null
             }
         }
 
         [LibGit2Sharp.Commands]::Checkout($repo, $Revision, $checkoutOptions)
     } finally {
+        $cancel = $true
         $repo.Dispose()
     }
 }

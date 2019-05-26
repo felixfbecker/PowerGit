@@ -10,350 +10,201 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+Set-StrictMode -Version 'Latest'
+
 & (Join-Path -Path $PSScriptRoot -ChildPath 'Initialize-PowerGitTest.ps1' -Resolve)
 
-$serverWorkingDirectory = $null
-$serverBareDirectory = $null
-$clientDirectory = $null
-[PowerGit.CommitInfo]$lastCommit = $null
-[PowerGit.SendBranchResult]$result = $null
-
-function GivenBranch {
+function GivenRemoteRepository {
     param(
-        $BranchName
+        [Parameter(Mandatory)]
+        [string]
+        $Path
     )
 
-    New-GitBranch -RepoRoot $clientDirectory -Name $BranchName
+    $script:remoteRepoPath = (Join-Path -Path $TestDrive -ChildPath $Path)
+    New-GitRepository -Path $remoteRepoPath | Out-Null
+    Add-GitTestFile -RepoRoot $remoteRepoPath -Path 'InitialCommit.txt'
+    Add-GitItem -RepoRoot $remoteRepoPath -Path 'InitialCommit.txt'
+    Save-GitCommit -RepoRoot $remoteRepoPath -Message 'Initial Commit'
+    Set-GitConfiguration -Name 'core.bare' -Value 'true' -RepoRoot $remoteRepoPath
 }
 
-function GivenCheckedOut {
+function GivenLocalRepositoryTracksRemote {
     param(
-        $Revision
+        [Parameter(Mandatory)]
+        [string]
+        $Path
     )
 
-    Update-GitRepository -RepoRoot $clientDirectory -Revision $Revision
+    $script:localRepoPath = (Join-Path -Path $TestDrive -ChildPath $Path)
+    Copy-GitRepository -Source $remoteRepoPath -DestinationPath $localRepoPath
 }
 
-function GivenConflicts {
-    foreach ( $dir in @( $serverWorkingDirectory, $clientDirectory ) ) {
-        $filePath = Join-Path -Path $dir -ChildPath 'first'
-        [Guid]::NewGuid() | Set-Content -Path $filePath
-        Add-GitItem -Path $filePath -RepoRoot $dir
-        $script:lastCommit = Save-GitCommit -RepoRoot $dir -Message 'conflict first'
-    }
-
-    Send-GitCommit -RepoRoot $serverWorkingDirectory
-}
-
-function GivenNewCommitIn {
+function GivenLocalRepositoryWithNoRemote {
     param(
-        $Directory,
-        [Switch]
-        $AndPushed
+        [Parameter(Mandatory)]
+        [string]
+        $Path
     )
 
-    Push-Location -Path $Directory
-    try {
-        $filePath = [IO.Path]::GetRandomFileName()
-        New-Item -Path $filePath -ItemType 'File'
-        Add-GitItem -Path $filePath
-        $script:lastCommit = Save-GitCommit -Message $filePath
-
-        if ( $AndPushed ) {
-            Send-GitCommit
-        }
-    } finally {
-        Pop-Location
-    }
+    $script:localRepoPath = (Join-Path -Path $TestDrive -ChildPath $Path)
+    New-GitRepository -Path $localRepoPath | Out-Null
 }
 
-function GivenNoUpstreamBranchFor {
+function GivenTag {
     param(
-        $BranchName
+        $Name
     )
 
-    $repo = Get-GitRepository -RepoRoot $clientDirectory
-    try {
-        $branch = $repo.Branches | Where-Object { $_.FriendlyName -eq $BranchName }
-        $repo.Branches.Update($branch, {
-                param(
-                    [LibGit2Sharp.BranchUpdater]
-                    $Updater
-                )
+    New-GitTag -RepoRoot $localRepoPath -Name $Name -Force
+}
 
-                $Updater.TrackedBranch = ''
-                $Updater.Remote = ''
-                $Updater.UpstreamBranch = ''
-            })
-    } finally {
-        $repo.Dispose()
+function GivenCommit {
+    $fileName = [IO.Path]::GetRandomFileName()
+    Add-GitTestFile -RepoRoot $localRepoPath -Path $fileName | Out-Null
+    Add-GitItem -RepoRoot $localRepoPath -Path $fileName
+    Save-GitCommit -RepoRoot $localRepoPath -Message $fileName
+}
+
+function GivenRemoteContainsOtherChanges {
+    Set-GitConfiguration -Name 'core.bare' -Value 'false' -RepoRoot $remoteRepoPath
+    Add-GitTestFile -RepoRoot $remoteRepoPath -Path 'RemoteTestFile.txt'
+    Add-GitItem -RepoRoot $remoteRepoPath -Path 'RemoteTestFile.txt'
+    Save-GitCommit -RepoRoot $remoteRepoPath -Message 'Adding remote test file to remote repo'
+    Set-GitConfiguration -Name 'core.bare' -Value 'true' -RepoRoot $remoteRepoPath
+}
+
+function ThenNoErrorsWereThrown {
+    It 'should not throw any errors' {
+        $Global:Error | Should -BeNullOrEmpty
     }
 }
 
-function Init {
-    Clear-Error
-
-    $script:serverBareDirectory = Join-Path -Path $TestDrive.FullName -ChildPath 'Server'
-    New-GitRepository -Path $serverBareDirectory -Bare
-
-    $script:serverWorkingDirectory = Join-Path -Path $TestDrive.FullName -ChildPath 'Server.Working'
-    Copy-GitRepository -Source $serverBareDirectory -DestinationPath $serverWorkingDirectory
-
-    Push-Location -Path $serverWorkingDirectory
-    try {
-        '' | Set-Content -Path 'master'
-        Add-GitItem 'master'
-        $script:lastCommit = Save-GitCommit -Message 'first'
-        Send-GitCommit
-    } finally {
-        Pop-Location
-    }
-
-    $script:clientDirectory = Join-Path -Path $TestDrive.FullName -ChildPath 'Client'
-    Copy-GitRepository -Source $serverBareDirectory -DestinationPath $clientDirectory
-}
-
-function ThenErrorIs {
+function ThenErrorWasThrown {
     param(
-        $Pattern
+        [string]
+        $ErrorMessage
     )
 
-    It ('should write an error') {
-        $Global:Error | Should -Match $Pattern
+    It ('should throw an error: ''{0}''' -f $ErrorMessage) {
+        $Global:Error | Should -Match $ErrorMessage
     }
 }
 
-function ThenHeadIsLastCommit {
-    param(
-        $BranchName = 'master'
-    )
-
-    $repo = Get-GitRepository -RepoRoot $clientDirectory
-    try {
-        It ('should not create new commit') {
-            $repo.Branches[$BranchName].Tip.Sha | Should -Be $lastCommit.Sha
-        }
-    } finally {
-        $repo.Dispose()
+function ThenRemoteContainsLocalCommits {
+    It 'local repository should not have any unstaged changes' {
+        Test-GitUncommittedChange -RepoRoot $localRepoPath | Should -BeFalse
     }
-}
 
-function ThenHeadIsNewCommit {
-    $repo = Get-GitRepository -RepoRoot $clientDirectory
-    try {
-        It ('should create new commit') {
-            $head = $repo.Branches['master'].Tip
-            $head.Sha | Should -Not -Be $lastCommit.Sha
-            $head.Parents | Where-Object { $_.Sha -eq $lastCommit.Sha } | Should -Not -BeNullOrEmpty
-        }
-    } finally {
-        $repo.Dispose()
-    }
-}
-
-function ThenHeadsDifferent {
-    param(
-        $BranchName = 'master'
-    )
-
-    It ('should not push changes to remote repository') {
-        $serverRepo = Get-GitRepository $serverBareDirectory
-        $clientRepo = Get-GitRepository $clientDirectory
+    It 'local repository should not have any outgoing commits' {
+        $repo = Get-GitRepository -RepoRoot $localRepoPath
         try {
-            $serverRepo.Branches[$BranchName].Tip.Sha | Should -Not -Be $clientRepo.Branches[$BranchName].Tip.Sha
+            $localBranch = $repo.Branches | Where-Object { $_.IsCurrentRepositoryHead -and -not $_.IsRemote }
+            $remoteBranch = $repo.Branches | Where-Object { $_.IsRemote -and $_.CanonicalName -eq $localBranch.TrackedBranch }
+            $localBranch | Should -Not -BeNullOrEmpty
+            $remoteBranch | Should -Not -BeNullOrEmpty
+            $remoteBranch.Tip | Should -Be $localBranch.Tip
         } finally {
-            $clientRepo.Dispose()
-            $serverRepo.Dispose()
+            $repo.Dispose()
         }
     }
-}
 
-function ThenHeadsSame {
-    param(
-        $BranchName = 'master'
-    )
-
-    It ('should push changes to remote repository') {
-        $serverRepo = Get-GitRepository $serverBareDirectory
-        $clientRepo = Get-GitRepository $clientDirectory
-        try {
-            $serverRepo.Branches[$BranchName].Tip.Sha | Should -Be $clientRepo.Branches[$BranchName].Tip.Sha
-        } finally {
-            $clientRepo.Dispose()
-            $serverRepo.Dispose()
-        }
+    It 'the HEAD commit of the local repository should match the remote repository' {
+        (Get-GitCommit -RepoRoot $remoteRepoPath -Revision HEAD).Sha | Should -Be (Get-GitCommit -RepoRoot $localRepoPath -Revision HEAD).Sha
     }
 }
 
-function ThenMergeStatusIs {
+function ThenRemoteRevision {
     param(
-        [LibGit2Sharp.MergeStatus]
-        $ExpectedStatus
-    )
+        [Parameter(Position = 0)]
+        $Revision,
 
-    It ('should result in "{0}" merge' -f $ExpectedStatus) {
-        $result.LastMergeResult.Status | Should -Be $ExpectedStatus
-    }
-}
-
-function ThenPushStatus {
-    param(
-        [Parameter(Mandatory = $true, ParameterSetName = 'Is')]
-        [PowerGit.PushResult]
-        $Is,
-
-        [Parameter(Mandatory = $true, ParameterSetName = 'IsNull')]
         [Switch]
-        $IsNull
+        $Exists,
+
+        [Switch]
+        $DoesNotExist,
+
+        $HasSha
     )
 
-    if ( $PSCmdlet.ParameterSetName -eq 'Is' ) {
-        It ('should result in "{0}" push' -f $Is) {
-            $result.LastPushResult | Should -Be $Is
+    $commitExists = Test-GitCommit -RepoRoot $remoteRepoPath -Revision $Revision
+    if ($Exists) {
+        It ('should push refspec to remote') {
+            $commitExists | Should -BeTrue
+            if ($HasSha) {
+                $commit = Get-GitCommit -RepoRoot $remoteRepoPath -Revision $Revision
+                $commit.Sha | Should -Be $HasSha
+            }
         }
     } else {
-        It ('should not push') {
-            $result.LastPushResult | Should -BeNullOrEmpty
+        It ('should not push refspec to remote') {
+            $commitExists | Should -Be $false
         }
     }
 }
 
-function ThenUpdateFailed {
-    It ('should fail the update') {
-        $result | Should -BeNullOrEmpty
-        $Global:Error | Should -Not -BeNullOrEmpty
-    }
-}
-
-function WhenUpdated {
+function WhenSendingBranch {
     [CmdletBinding()]
-    param(
-        $RepoRoot,
-        $AndMergeStrategyIs
-    )
+    param([string] $Name)
 
-    $mergeStrategyArg = @{}
-    if ( $AndMergeStrategyIs ) {
-        $mergeStrategyArg['MergeStrategy'] = $AndMergeStrategyIs
+    $Global:Error.Clear()
+
+    Send-GitBranch -RepoRoot $localRepoPath -Name $Name
+}
+
+Describe Send-GitBranch {
+    Describe 'when pushing changes to a remote repository' {
+        GivenRemoteRepository 'RemoteRepo'
+        GivenLocalRepositoryTracksRemote 'LocalRepo'
+        GivenCommit
+        WhenSendingBranch 'master'
+        ThenNoErrorsWereThrown
+        ThenRemoteContainsLocalCommits
+        Clear-GitRepositoryCache
     }
 
-    $script:result = Send-GitBranch -RepoRoot $RepoRoot @mergeStrategyArg
-}
-
-Describe 'Send-GitBranch.when no new commits on the server' {
-    Init
-    GivenNewCommitIn $clientDirectory
-    WhenUpdated -RepoRoot $clientDirectory
-    ThenMergeStatusIs 'UpToDate'
-    ThenPushStatus -Is Ok
-    ThenHeadIsLastCommit
-    ThenHeadsSame
-}
-
-Describe 'Send-GitBranch.when no new commits local and no new commits on server' {
-    Init
-    WhenUpdated -RepoRoot $clientDirectory
-    ThenMergeStatusIs 'UpToDate'
-    ThenPushStatus -Is Ok
-    ThenHeadIsLastCommit
-    ThenHeadsSame
-}
-
-Describe 'Send-GitBranch.when no new commits local and new commits on server and fast forwarding' {
-    Init
-    GivenNewCommitIn $serverWorkingDirectory -AndPushed
-    WhenUpdated -RepoRoot $clientDirectory
-    ThenMergeStatusIs 'FastForward'
-    ThenPushStatus -Is Ok
-    ThenHeadIsLastCommit
-    ThenHeadsSame
-}
-
-Describe 'Send-GitBranch.when no new commits local and new commits on server and merging' {
-    Init
-    GivenNewCommitIn $serverWorkingDirectory -AndPushed
-    WhenUpdated -RepoRoot $clientDirectory -AndMergeStrategyIs 'Merge'
-    ThenMergeStatusIs 'NonFastForward'
-    ThenPushStatus -Is Ok
-    ThenHeadIsNewCommit
-    ThenHeadsSame
-}
-
-Describe 'Send-GitBranch.when new commits local and new commits on server' {
-    Init
-    GivenNewCommitIn $serverWorkingDirectory -AndPushed
-    GivenNewCommitIn $clientDirectory
-    WhenUpdated -RepoRoot $clientDirectory
-    ThenMergeStatusIs 'NonFastForward'
-    ThenPushStatus -Is Ok
-    ThenHeadIsNewCommit
-    ThenHeadsSame
-}
-
-Describe 'Send-GitBranch.when new commits local and new commits on server and merge must be fast-forwarded' {
-    Init
-    GivenNewCommitIn $serverWorkingDirectory -AndPushed
-    GivenNewCommitIn $clientDirectory
-    WhenUpdated -RepoRoot $clientDirectory -AndMergeStrategyIs 'FastForward' -ErrorAction SilentlyContinue
-    ThenPushStatus -IsNull
-    ThenUpdateFailed
-    ThenErrorIs 'Cannot\ perform\ fast-forward\ merge'
-    ThenHeadIsLastCommit
-    ThenHeadsDifferent
-}
-
-Describe 'Send-GitBranch.when no local branch' {
-    Init
-    GivenNewCommitIn $clientDirectory
-    GivenCheckedOut $lastCommit.Sha
-    WhenUpdated -RepoRoot $clientDirectory -ErrorAction SilentlyContinue
-    ThenPushStatus -IsNull
-    ThenUpdateFailed
-    ThenErrorIs 'isn''t\ on\ a\ branch'
-    ThenHeadIsLastCommit
-    ThenHeadsDifferent
-}
-
-Describe 'Send-GitBranch.when no tracking branch and there is a remote equivalent' {
-    Init
-    GivenNewCommitIn $clientDirectory
-    GivenNewCommitIn $serverWorkingDirectory -AndPushed
-    GivenNoUpstreamBranchFor 'master'
-    WhenUpdated -RepoRoot $clientDirectory
-    ThenMergeStatusIs 'NonFastForward'
-    ThenPushStatus -Is Ok
-    ThenHeadIsNewCommit
-    ThenHeadsSame
-}
-
-Describe 'Send-GitBranch.when no tracking branch and there is no remote equivalent' {
-    Init
-    GivenBranch 'develop'
-    GivenNewCommitIn $clientDirectory
-    WhenUpdated -RepoRoot $clientDirectory -ErrorAction SilentlyContinue
-    ThenPushStatus -IsNull
-    ThenUpdateFailed
-    ThenErrorIs 'unable\ to\ find\ a\ remote\ branch\ named\ "develop"'
-    ThenHeadIsLastCommit 'develop'
-    ThenHeadsDifferent 'develop'
-}
-
-Describe 'Send-GitBranch.when the given repo doesn''t exist' {
-    Clear-Error
-
-    Send-GitBranch -RepoRoot 'C:\I\do\not\exist' -ErrorAction SilentlyContinue
-    It 'should write an error' {
-        $Global:Error.Count | Should Be 1
-        $Global:Error | Should Match 'does not exist'
+    Describe 'when calling without a branch name' {
+        GivenRemoteRepository 'RemoteRepo'
+        GivenLocalRepositoryTracksRemote 'LocalRepo'
+        GivenCommit
+        WhenSendingBranch
+        ThenNoErrorsWereThrown
+        ThenRemoteContainsLocalCommits
+        Clear-GitRepositoryCache
     }
-}
 
-Describe 'Send-GitBranch.when there are conflicts between local and remote' {
-    Init
-    GivenConflicts
-    WhenUpdated -RepoRoot $clientDirectory -ErrorAction SilentlyContinue
-    ThenPushStatus -IsNull
-    ThenMergeStatusIs 'Conflicts'
-    ThenHeadIsLastCommit
-    ThenHeadsDifferent
+    Describe 'when there are no local changes to push to remote' {
+        GivenRemoteRepository 'RemoteRepo'
+        GivenLocalRepositoryTracksRemote 'LocalRepo'
+        WhenSendingBranch 'master'
+        ThenNoErrorsWereThrown
+        Clear-GitRepositoryCache
+    }
+
+    Describe 'when remote repository has changes not contained locally' {
+        GivenRemoteRepository 'RemoteRepo'
+        GivenLocalRepositoryTracksRemote 'LocalRepo'
+        GivenRemoteContainsOtherChanges
+        GivenCommit
+        WhenSendingBranch 'master' -ErrorAction SilentlyContinue
+        ThenErrorWasThrown 'that you are trying to update on the remote contains commits that are not present locally.'
+        Clear-GitRepositoryCache
+    }
+
+    Describe 'when no upstream remote is defined' {
+        GivenLocalRepositoryWithNoRemote 'LocalRepo'
+        GivenCommit
+        WhenSendingBranch 'master' -ErrorAction SilentlyContinue
+        ThenErrorWasThrown 'A\ remote\ named\ "origin"\ does\ not\ exist\.'
+        Clear-GitRepositoryCache
+    }
+
+    Describe "when branch doesn't exist" {
+        GivenRemoteRepository 'RemoteRepo'
+        GivenLocalRepositoryTracksRemote 'LocalRepo'
+        WhenSendingBranch 'dsfsdaf' -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+        ThenNoErrorsWereThrown
+        Clear-GitRepositoryCache
+    }
 }

@@ -1,4 +1,4 @@
-# Licensed under the Apache License, Version 2.0 (the "License");
+﻿# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -20,11 +20,11 @@ Describe 'Test-GitRemoteUri' {
         Find-GitRepository -Path $localRepoPath
 
         $configPath = Join-Path $localRepoPath .git/config
-        $url = Get-Content $configPath | Where-Object { $_ -match 'url = .*' } | ForEach-Object { $_.ToString().Remove(0, 7)}
-        Test-GitRemoteUri -Uri $url | Should Be $true
+        $url = Get-Content $configPath | Where-Object { $_ -match 'url = .*' } | ForEach-Object { $_.ToString().Remove(0, 7) }
+        Test-GitRemoteUri -Uri $url | Should -Be $true
     }
 
     It 'should return false for an invalid uri' {
-        Test-GitRemoteUri -Uri 'ssh://git@stash.portal.webmd.com:7999/whs/bleeeh.git' | Should Be $false
+        Test-GitRemoteUri -Uri 'ssh://git@stash.portal.webmd.com:7999/whs/bleeeh.git' | Should -Be $false
     }
 }

@@ -20,11 +20,11 @@ function Update-GitConfigurationSearchPath {
 
     Set-StrictMode -Version 'Latest'
 
-    if ( $Scope -ne [LibGit2Sharp.ConfigurationLevel]::Global ) {
+    if ($Scope -ne [LibGit2Sharp.ConfigurationLevel]::Global) {
         return
     }
 
-    if ( -not (Test-Path -Path 'env:HOME') ) {
+    if (-not (Test-Path -Path 'env:HOME')) {
         return
     }
 
@@ -32,7 +32,7 @@ function Update-GitConfigurationSearchPath {
     $homePath = $homePath -replace '\\', '/'
 
     [string[]]$searchPaths = [LibGit2Sharp.GlobalSettings]::GetConfigSearchPaths($Scope)
-    if ( $searchPaths[0] -eq $homePath ) {
+    if ($searchPaths[0] -eq $homePath) {
         return
     }
 

@@ -1,0 +1,36 @@
+<Types>
+    <Type>
+        <Name>LibGit2Sharp.Remote</Name>
+        <Members>
+            <ScriptProperty>
+                <!-- The second-last part of the URL path -->
+                <Name>Owner</Name>
+                <GetScriptBlock>
+                    $this.Url -match '([^/:]+)/[^/]+$' | Out-Null
+                    return $Matches[1]
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <!-- The last path part of the URL path, without the .git extension -->
+                <Name>RepositoryName</Name>
+                <GetScriptBlock>
+                    $this.Url -match '/([^/]+?)(\.git)?$' | Out-Null
+                    return $Matches[1]
+                </GetScriptBlock>
+            </ScriptProperty>
+            <MemberSet>
+                <Name>PSStandardMembers</Name>
+                <Members>
+                    <PropertySet>
+                        <Name>DefaultDisplayPropertySet</Name>
+                        <ReferencedProperties>
+                            <Name>Name</Name>
+                            <Name>Url</Name>
+                            <Name>TagFetchMode</Name>
+                        </ReferencedProperties>
+                    </PropertySet>
+                </Members>
+            </MemberSet>
+        </Members>
+    </Type>
+</Types>

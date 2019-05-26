@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ limitations under the License.
         <View>
             <Name>Medium</Name>
             <ViewSelectedBy>
-                <TypeName>PowerGit.CommitInfo</TypeName>
+                <TypeName>LibGit2Sharp.Commit</TypeName>
             </ViewSelectedBy>
             <ListControl>
                 <ListEntries>
@@ -39,14 +39,9 @@ limitations under the License.
                             </ListItem>
                             <ListItem>
                                 <Label>Message</Label>
-                                <PropertyName>Message</PropertyName>
-                            </ListItem>
-                            <ListItem>
-                                <Label>Patch</Label>
-                                <ScriptBlock>$_.Patch | ConvertTo-ColoredPatch</ScriptBlock>
-                                <ItemSelectionCondition>
-                                    <PropertyName>Patch</PropertyName>
-                                </ItemSelectionCondition>
+                                <ScriptBlock>
+                                    $_.Message.Trim()
+                                </ScriptBlock>
                             </ListItem>
                         </ListItems>
                     </ListEntry>
@@ -57,7 +52,7 @@ limitations under the License.
         <View>
             <Name>Full</Name>
             <ViewSelectedBy>
-                <TypeName>PowerGit.CommitInfo</TypeName>
+                <TypeName>LibGit2Sharp.Commit</TypeName>
             </ViewSelectedBy>
             <ListControl>
                 <ListEntries>
@@ -78,14 +73,7 @@ limitations under the License.
                             </ListItem>
                             <ListItem>
                                 <Label>Message</Label>
-                                <PropertyName>Message</PropertyName>
-                            </ListItem>
-                            <ListItem>
-                                <Label>Patch</Label>
-                                <ScriptBlock>$_.Patch | ConvertTo-ColoredPatch</ScriptBlock>
-                                <ItemSelectionCondition>
-                                    <PropertyName>Patch</PropertyName>
-                                </ItemSelectionCondition>
+                                <ScriptBlock>$_.Message.Trim()</ScriptBlock>
                             </ListItem>
                         </ListItems>
                     </ListEntry>
@@ -96,7 +84,7 @@ limitations under the License.
         <View>
             <Name>Fuller</Name>
             <ViewSelectedBy>
-                <TypeName>PowerGit.CommitInfo</TypeName>
+                <TypeName>LibGit2Sharp.Commit</TypeName>
             </ViewSelectedBy>
             <ListControl>
                 <ListEntries>
@@ -125,14 +113,57 @@ limitations under the License.
                             </ListItem>
                             <ListItem>
                                 <Label>Message</Label>
-                                <PropertyName>Message</PropertyName>
+                                <ScriptBlock>$_.Message.Trim()</ScriptBlock>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+        <!-- Resembles the default git log output with format=fuller and patch -->
+        <View>
+            <Name>Patch</Name>
+            <ViewSelectedBy>
+                <TypeName>LibGit2Sharp.Commit</TypeName>
+            </ViewSelectedBy>
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <!-- Yellow -->
+                                <Label>&#27;[33mSha</Label>
+                                <ScriptBlock>"$($_.Sha)`e[0m"</ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Author</Label>
+                                <PropertyName>Author</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>AuthorDate</Label>
+                                <ScriptBlock>$_.Author.When</ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Committer</Label>
+                                <PropertyName>Committer</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>CommitterDate</Label>
+                                <ScriptBlock>$_.Committer.When</ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Message</Label>
+                                <ScriptBlock>
+                                    $_.Message.Trim()
+                                </ScriptBlock>
                             </ListItem>
                             <ListItem>
                                 <Label>Patch</Label>
-                                <ScriptBlock>$_.Patch | ConvertTo-ColoredPatch</ScriptBlock>
-                                <ItemSelectionCondition>
-                                    <PropertyName>Patch</PropertyName>
-                                </ItemSelectionCondition>
+                                <ScriptBlock>
+                                    $parent = [System.Linq.Enumerable]::FirstOrDefault($_.Parents)
+                                    $getPatch = $_.Repository.Diff.GetType().GetMethod('Compare', [Type[]]@([LibGit2Sharp.Tree], [LibGit2Sharp.Tree])).MakeGenericMethod([LibGit2Sharp.Patch])
+                                    $getPatch.Invoke($_.Repository.Diff, @($_.Tree, $parent.Tree)) | ConvertTo-ColoredPatch
+                                </ScriptBlock>
                             </ListItem>
                         </ListItems>
                     </ListEntry>
@@ -143,10 +174,10 @@ limitations under the License.
         <View>
             <Name>Oneline</Name>
             <ViewSelectedBy>
-                <TypeName>PowerGit.CommitInfo</TypeName>
+                <TypeName>LibGit2Sharp.Commit</TypeName>
             </ViewSelectedBy>
             <TableControl>
-                <AutoSize/>
+                <AutoSize />
                 <TableHeaders>
                     <TableColumnHeader>
                         <Label>Sha</Label>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Types>
+    <Type>
+        <Name>LibGit2Sharp.Branch</Name>
+        <Members>
+            <ScriptProperty>
+                <!-- The second-last part of the URL path -->
+                <Name>Owner</Name>
+                <GetScriptBlock>
+                    if ($this.RemoteName) {
+                        $this.Repository.Network.Remotes[$this.RemoteName].Owner
+                    }
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <!-- The last path part of the URL path, without the .git extension -->
+                <Name>RepositoryName</Name>
+                <GetScriptBlock>
+                    if ($this.RemoteName) {
+                        $this.Repository.Network.Remotes[$this.RemoteName].RepositoryName
+                    }
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <!-- Makes it easier to detect and delete branches deleted on the remote -->
+                <Name>IsGone</Name>
+                <GetScriptBlock>
+                    $null -eq $this.Tip
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <!-- For pull request titles -->
+                <Name>Title</Name>
+                <GetScriptBlock>
+                    [System.Globalization.CultureInfo]::CurrentCulture.TextInfo.ToTitleCase(
+                        ($this.FriendlyName -replace '[-_]+', ' ')
+                    )
+                </GetScriptBlock>
+            </ScriptProperty>
+            <AliasProperty>
+                <Name>Name</Name>
+                <ReferencedMemberName>FriendlyName</ReferencedMemberName>
+            </AliasProperty>
+            <AliasProperty>
+                <Name>Status</Name>
+                <ReferencedMemberName>TrackingDetails</ReferencedMemberName>
+            </AliasProperty>
+        </Members>
+    </Type>
+</Types>

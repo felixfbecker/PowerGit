@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+    <ViewDefinitions>
+        <View>
+            <Name>PowerGitMergeResult</Name>
+            <ViewSelectedBy>
+                <TypeName>LibGit2Sharp.MergeResult</TypeName>
+            </ViewSelectedBy>
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <Label>Status</Label>
+                                <ScriptBlock>
+                                    $icon = switch ($_.Status) {
+                                        ([LibGit2Sharp.MergeStatus]::FastForward) { "⏩" }
+                                        ([LibGit2Sharp.MergeStatus]::NonFastForward) { "⤵️" }
+                                        ([LibGit2Sharp.MergeStatus]::Conflicts) { "️⚠️" }
+                                        ([LibGit2Sharp.MergeStatus]::UpToDate) { "️️✅" }
+                                    }
+                                    "$icon  `e[37;1m$($_.Status)`e[0m"
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Commit</Label>
+                                <ItemSelectionCondition>
+                                    <PropertyName>Commit</PropertyName>
+                                </ItemSelectionCondition>
+                                <ScriptBlock>$_.Commit.Sha</ScriptBlock>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+    </ViewDefinitions>
+</Configuration>

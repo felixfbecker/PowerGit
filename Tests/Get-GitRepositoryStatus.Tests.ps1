@@ -1,4 +1,4 @@
-# Licensed under the Apache License, Version 2.0 (the "License");
+﻿# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -31,7 +31,7 @@ Describe 'Get-GitRepositoryStatus when getting status' {
 
     $status = Get-GitRepositoryStatus -RepoRoot $repoRoot
     It 'should show untracked files' {
-        $status | Select-Object -ExpandProperty 'State' | ForEach-Object { $_ | Should Be ([LibGit2Sharp.FileStatus]::NewInWorkdir) }
+        $status | Select-Object -ExpandProperty 'State' | ForEach-Object { $_ | Should -Be ([LibGit2Sharp.FileStatus]::NewInWorkdir) }
     }
 
     Add-GitItem -Path $modifiedPath -RepoRoot $repoRoot
@@ -41,7 +41,7 @@ Describe 'Get-GitRepositoryStatus when getting status' {
 
     $status = Get-GitRepositoryStatus -RepoRoot $repoRoot
     It 'should show new files' {
-        $status | Where-Object { $_.FilePath -ne 'untracked' } | Select-Object -ExpandProperty 'State' | ForEach-Object { $_ |  Should Be ([LibGit2Sharp.FileStatus]::NewInIndex) }
+        $status | Where-Object { $_.FilePath -ne 'untracked' } | Select-Object -ExpandProperty 'State' | ForEach-Object { $_ | Should -Be ([LibGit2Sharp.FileStatus]::NewInIndex) }
     }
 
     Save-GitCommit -Message 'testing status' -RepoRoot $repoRoot
@@ -49,29 +49,29 @@ Describe 'Get-GitRepositoryStatus when getting status' {
     'modified' | Set-Content -Path $modifiedPath
 
     It 'should show files modified in the working directory' {
-        Get-GitRepositoryStatus -RepoRoot $repoRoot | Where-Object { $_.FilePath -eq 'modified' } | Select-Object -ExpandProperty 'State' | Should Be ([LibGit2Sharp.FileStatus]::ModifiedInWorkdir)
+        Get-GitRepositoryStatus -RepoRoot $repoRoot | Where-Object { $_.FilePath -eq 'modified' } | Select-Object -ExpandProperty 'State' | Should -Be ([LibGit2Sharp.FileStatus]::ModifiedInWorkdir)
     }
 
     Add-GitItem -Path $modifiedPath -RepoRoot $repoRoot
     It 'should show staged files' {
-        Get-GitRepositoryStatus -RepoRoot $repoRoot | Where-Object { $_.FilePath -eq 'modified' } | Select-Object -ExpandProperty 'State' | Should Be ([LibGit2Sharp.FileStatus]::ModifiedInIndex)
+        Get-GitRepositoryStatus -RepoRoot $repoRoot | Where-Object { $_.FilePath -eq 'modified' } | Select-Object -ExpandProperty 'State' | Should -Be ([LibGit2Sharp.FileStatus]::ModifiedInIndex)
     }
 
     git -C $repoRoot rm $removedPath
     It 'should show removed files' {
-        Get-GitRepositoryStatus -RepoRoot $repoRoot | Where-Object { $_.FilePath -eq 'removed' } | Select-Object -ExpandProperty 'State' | Should Be ([LibGit2Sharp.FileStatus]::DeletedFromIndex)
+        Get-GitRepositoryStatus -RepoRoot $repoRoot | Where-Object { $_.FilePath -eq 'removed' } | Select-Object -ExpandProperty 'State' | Should -Be ([LibGit2Sharp.FileStatus]::DeletedFromIndex)
     }
 
     Remove-Item -Path $missingPath
     It 'should show missing files' {
-        Get-GitRepositoryStatus -RepoRoot $repoRoot | Where-Object { $_.FilePath -eq 'missing' } | Select-Object -ExpandProperty 'State' | Should Be ([LibGit2Sharp.FileStatus]::DeletedFromWorkdir)
+        Get-GitRepositoryStatus -RepoRoot $repoRoot | Where-Object { $_.FilePath -eq 'missing' } | Select-Object -ExpandProperty 'State' | Should -Be ([LibGit2Sharp.FileStatus]::DeletedFromWorkdir)
     }
 
     git -C $repoRoot mv $renamedPath (Join-Path -Path $repoRoot -ChildPath 'renamed2')
     It 'should show renamed files' {
         $status = Get-GitRepositoryStatus -RepoRoot $repoRoot
-        $status | Where-Object { $_.FilePath -eq 'renamed' } | Select-Object -ExpandProperty 'State' | Should Be ([LibGit2Sharp.FileStatus]::DeletedFromIndex)
-        $status | Where-Object { $_.FilePath -eq 'renamed2' } | Select-Object -ExpandProperty 'State' | Should Be ([LibGit2Sharp.FileStatus]::RenamedInIndex)
+        $status | Where-Object { $_.FilePath -eq 'renamed' } | Select-Object -ExpandProperty 'State' | Should -Be ([LibGit2Sharp.FileStatus]::DeletedFromIndex)
+        $status | Where-Object { $_.FilePath -eq 'renamed2' } | Select-Object -ExpandProperty 'State' | Should -Be ([LibGit2Sharp.FileStatus]::RenamedInIndex)
     }
 }
 
@@ -86,7 +86,7 @@ Describe 'Get-GitRepositoryStatus when items are ignored' {
 
     Context 'IncludeIgnored switch isn''t used' {
         It 'should not show ignored files' {
-            Get-GitRepositoryStatus -RepoRoot $repoRoot | Select-Object -ExpandProperty 'FilePath' | Should Be '.gitignore'
+            Get-GitRepositoryStatus -RepoRoot $repoRoot | Select-Object -ExpandProperty 'FilePath' | Should -Be '.gitignore'
         }
     }
 
@@ -130,7 +130,7 @@ Describe 'Get-GitRepositoryStatus when getting status of explicit paths' {
 
     Context 'Path parameter contains absolute paths' {
         It 'should get only paths specified' {
-            Get-GitRepositoryStatus -RepoRoot $repoRoot -Path $file1Path | Select-Object -ExpandProperty 'FilePath' | Should Be 'file1'
+            Get-GitRepositoryStatus -RepoRoot $repoRoot -Path $file1Path | Select-Object -ExpandProperty 'FilePath' | Should -Be 'file1'
         }
     }
 
@@ -139,7 +139,7 @@ Describe 'Get-GitRepositoryStatus when getting status of explicit paths' {
     try {
         Context 'Path parameter is single path' {
             It 'should get only a specific path' {
-                Get-GitRepositoryStatus -Path 'file1' | Select-Object -ExpandProperty 'FilePath' | Should Be 'file1'
+                Get-GitRepositoryStatus -Path 'file1' | Select-Object -ExpandProperty 'FilePath' | Should -Be 'file1'
             }
         }
 
@@ -151,7 +151,7 @@ Describe 'Get-GitRepositoryStatus when getting status of explicit paths' {
 
         Context 'Path parameter contains wildcard paths' {
             It 'should get only paths specified' {
-                Get-GitRepositoryStatus -Path '*1' | Select-Object -ExpandProperty 'FilePath' | Should Be 'file1'
+                Get-GitRepositoryStatus -Path '*1' | Select-Object -ExpandProperty 'FilePath' | Should -Be 'file1'
             }
         }
 
@@ -162,7 +162,7 @@ Describe 'Get-GitRepositoryStatus when getting status of explicit paths' {
             try {
                 '' | Set-Content -Path 'file4'
                 It 'should only get paths under that directory' {
-                    Get-GitRepositoryStatus '.' | Select-Object -ExpandProperty 'FilePath' | Should Be 'dir1/file4' # Expect forward slashes from LibGit2Sharp
+                    Get-GitRepositoryStatus '.' | Select-Object -ExpandProperty 'FilePath' | Should -Be 'dir1/file4' # Expect forward slashes from LibGit2Sharp
                 }
 
                 It 'should get paths under parent directory' {
@@ -186,7 +186,7 @@ Describe 'Get-GitRepositoryStatus when getting status of explicit paths' {
         $dir1Path = Join-Path -Path $repoRoot -ChildPath 'dir1'
         '' | Set-Content -Path (Join-Path -Path $dir1Path -ChildPath 'file4')
         It 'should only get paths under that directory' {
-            Get-GitRepositoryStatus 'dir1' -RepoRoot $repoRoot | Select-Object -ExpandProperty 'FilePath' | Should Be 'dir1/file4' # Expect forward slashes from LibGit2Sharp
+            Get-GitRepositoryStatus 'dir1' -RepoRoot $repoRoot | Select-Object -ExpandProperty 'FilePath' | Should -Be 'dir1/file4' # Expect forward slashes from LibGit2Sharp
         }
     }
 }

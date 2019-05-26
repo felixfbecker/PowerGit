@@ -23,107 +23,84 @@ function Get-GitCommit {
     To get the commit of the current checkout, pass `HEAD` to the `Revision` parameter.
     #>
     [CmdletBinding(DefaultParameterSetName = 'CommitFilter')]
-    [OutputType([PowerGit.CommitInfo])]
+    [OutputType([LibGit2Sharp.Commit])]
     param(
-        [Parameter(ParameterSetName = 'All')]
-        [switch]
         # Get all the commits in the repository.
-        $All,
+        [Parameter(ParameterSetName = 'All')]
+        [switch] $All,
 
-        [Parameter(Mandatory, Position = 0, ParameterSetName = 'Lookup')]
-        [string]
         # A named revision to get, e.g. `HEAD`, a branch name, tag name, etc.
         # To get the commit of the current checkout, pass `HEAD`.
-        $Revision,
+        [Parameter(Mandatory, Position = 0, ParameterSetName = 'Lookup')]
+        [string] $Revision,
 
-        [Parameter(ParameterSetName = 'CommitFilter')]
-        [string]
         # The starting commit from which to generate a list of commits. Defaults to `HEAD`.
-        $Since = 'HEAD',
-
         [Parameter(ParameterSetName = 'CommitFilter')]
-        [string]
+        [string] $Since = 'HEAD',
+
         # The commit and its ancestors which will be` excluded from the returned commit list which starts at `Since`.
-        $Until,
-
         [Parameter(ParameterSetName = 'CommitFilter')]
-        [switch]
+        [string] $Until,
+
         # Do not include any merge commits in the generated commit list.
-        $NoMerges,
+        [Parameter(ParameterSetName = 'CommitFilter')]
+        [switch] $NoMerges,
 
-        [switch]
-        # Include the patch for each commit.
-        $Patch,
-
-        [string]
         # The path to the repository. Defaults to the current directory.
-        $RepoRoot
+        [string] $RepoRoot
     )
 
     Set-StrictMode -Version 'Latest'
     Use-CallerPreference -Cmdlet $PSCmdlet -Session $ExecutionContext.SessionState
 
     $repo = Find-GitRepository -Path $RepoRoot
-    if ( -not $repo ) {
+    if (-not $repo) {
         return
     }
 
-    try {
-        $commits = if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
-            $filter = New-Object -TypeName 'LibGit2Sharp.CommitFilter'
-            $filter.IncludeReachableFrom = $repo.Refs
-            $repo.Commits.QueryBy($filter)
-        } elseif ( $PSCmdlet.ParameterSetName -eq 'Lookup' ) {
-            $change = $repo.Lookup($Revision)
-            if ( $change ) {
-                $change
-            } else {
-                Write-Error -Message ('Commit ''{0}'' not found in repository ''{1}''.' -f $Revision, $repo.Info.WorkingDirectory) -ErrorAction $ErrorActionPreference
+    $commits = if ($PSCmdlet.ParameterSetName -eq 'All') {
+        $filter = New-Object -TypeName 'LibGit2Sharp.CommitFilter'
+        $filter.IncludeReachableFrom = $repo.Refs
+        $repo.Commits.QueryBy($filter)
+    } elseif ($PSCmdlet.ParameterSetName -eq 'Lookup') {
+        $change = $repo.Lookup($Revision)
+        if ($change) {
+            $change
+        } else {
+            Write-Error -Message ('Commit ''{0}'' not found in repository ''{1}''.' -f $Revision, $repo.Info.WorkingDirectory) -ErrorAction $ErrorActionPreference
+            return
+        }
+    } elseif ( $PSCmdlet.ParameterSetName -eq 'CommitFilter') {
+        $IncludeFromCommit = $repo.Lookup($Since)
+
+        if (-not $IncludeFromCommit) {
+            Write-Error -Message ('Commit ''{0}'' not found in repository ''{1}''.' -f $Since, $repo.Info.WorkingDirectory) -ErrorAction $ErrorActionPreference
+            return
+        }
+
+        $CommitFilter = [LibGit2Sharp.CommitFilter]::new()
+        $CommitFilter.IncludeReachableFrom = $IncludeFromCommit.Sha
+
+        if ($Until) {
+            $ExcludeFromCommit = $repo.Lookup($Until)
+            if (-not $ExcludeFromCommit) {
+                Write-Error -Message ('Commit ''{0}'' not found in repository ''{1}''.' -f $Until, $repo.Info.WorkingDirectory) -ErrorAction $ErrorActionPreference
                 return
             }
-        } elseif ( $PSCmdlet.ParameterSetName -eq 'CommitFilter') {
-            $IncludeFromCommit = $repo.Lookup($Since)
-
-            if (-not $IncludeFromCommit) {
-                Write-Error -Message ('Commit ''{0}'' not found in repository ''{1}''.' -f $Since, $repo.Info.WorkingDirectory) -ErrorAction $ErrorActionPreference
+            if ($IncludeFromCommit.Sha -eq $ExcludeFromCommit.Sha) {
+                Write-Error -Message ('Commit reference ''{0}'' and ''{1}'' refer to the same commit with hash ''{2}''.' -f $Since, $Until, $IncludeFromCommit.Sha)
                 return
             }
-
-            $CommitFilter = [LibGit2Sharp.CommitFilter]::new()
-            $CommitFilter.IncludeReachableFrom = $IncludeFromCommit.Sha
-
-            if ($Until) {
-                $ExcludeFromCommit = $repo.Lookup($Until)
-                if (-not $ExcludeFromCommit) {
-                    Write-Error -Message ('Commit ''{0}'' not found in repository ''{1}''.' -f $Until, $repo.Info.WorkingDirectory) -ErrorAction $ErrorActionPreference
-                    return
-                }
-                if ($IncludeFromCommit.Sha -eq $ExcludeFromCommit.Sha) {
-                    Write-Error -Message ('Commit reference ''{0}'' and ''{1}'' refer to the same commit with hash ''{2}''.' -f $Since, $Until, $IncludeFromCommit.Sha)
-                    return
-                }
-                $CommitFilter.ExcludeReachableFrom = $ExcludeFromCommit.Sha
-            }
-
-            $filteredCommits = $repo.Commits.QueryBy($CommitFilter)
-
-            if ($NoMerges) {
-                $filteredCommits = $filteredCommits | Where-Object { $_.Parents.Count -le 1 }
-            }
-
-            $filteredCommits
+            $CommitFilter.ExcludeReachableFrom = $ExcludeFromCommit.Sha
         }
-        $commits | ForEach-Object {
-            [LibGit2Sharp.Patch]$patchObj = $null
-            if ($Patch) {
-                $parent = [System.Linq.Enumerable]::FirstOrDefault($_.Parents)
-                if ($parent) {
-                    $patchObj = [PowerGit.Diff]::GetTreePatch($repo, $_, $parent)
-                }
-            }
-            [PowerGit.CommitInfo]::new($_, $patchObj)
-        }
-    } finally {
-        $repo.Dispose()
+
+        $filteredCommits = $repo.Commits.QueryBy($CommitFilter)
+
+        if ($NoMerges) {
+            $filteredCommits = $filteredCommits | Where-Object { $_.Parents.Count -le 1 }
     }
+
+    $filteredCommits
+}
+$commits
 }

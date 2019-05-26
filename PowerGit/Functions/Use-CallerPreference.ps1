@@ -53,12 +53,12 @@ function Use-CallerPreference {
     #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         #[Management.Automation.PSScriptCmdlet]
         # The module function's `$PSCmdlet` object. Requires the function be decorated with the `[CmdletBinding()]` attribute.
         $Cmdlet,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [Management.Automation.SessionState]
         # The module function's `$ExecutionContext.SessionState` object.  Requires the function be decorated with the `[CmdletBinding()]` attribute.
         #
@@ -83,17 +83,17 @@ function Use-CallerPreference {
         $parameterName = $commonPreferences[$prefName]
 
         # Don't do anything if the parameter was passed in.
-        if ( $Cmdlet.MyInvocation.BoundParameters.ContainsKey($parameterName) ) {
+        if ($Cmdlet.MyInvocation.BoundParameters.ContainsKey($parameterName)) {
             continue
         }
 
         $variable = $Cmdlet.SessionState.PSVariable.Get($prefName)
         # Don't do anything if caller didn't use a common parameter.
-        if ( -not $variable ) {
+        if (-not $variable) {
             continue
         }
 
-        if ( $SessionState -eq $ExecutionContext.SessionState ) {
+        if ($SessionState -eq $ExecutionContext.SessionState) {
             Set-Variable -Scope 1 -Name $variable.Name -Value $variable.Value -Force -Confirm:$false -WhatIf:$false
         } else {
             $SessionState.PSVariable.Set($variable.Name, $variable.Value)

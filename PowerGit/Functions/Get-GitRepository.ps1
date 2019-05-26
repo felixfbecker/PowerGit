@@ -10,6 +10,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+$repos = New-Object System.Collections.Generic.List[LibGit2Sharp.Repository]
+
+function Clear-GitRepositoryCache {
+    foreach ($repo in $repos) {
+        $repo.Dispose()
+    }
+    $repos.Clear()
+}
+
 function Get-GitRepository {
     <#
     .SYNOPSIS
@@ -33,21 +42,22 @@ function Get-GitRepository {
     [CmdletBinding()]
     [OutputType([LibGit2Sharp.Repository])]
     param(
-        [string]
         # The root to the repository to get. Defaults to the current directory.
-        $RepoRoot = (Get-Location).ProviderPath
+        [string] $RepoRoot = (Get-Location).ProviderPath
     )
 
     Set-StrictMode -Version 'Latest'
 
     $RepoRoot = Resolve-Path -Path $RepoRoot -ErrorAction Ignore | Select-Object -ExpandProperty 'ProviderPath'
-    if ( -not $RepoRoot ) {
+    if (-not $RepoRoot) {
         Write-Error -Message ('Repository ''{0}'' does not exist.' -f $PSBoundParameters['RepoRoot'])
         return
     }
 
     try {
-        New-Object 'LibGit2Sharp.Repository' ($RepoRoot)
+        $repo = [LibGit2Sharp.Repository]::new($RepoRoot)
+        $script:repos.Add($repo)
+        $repo
     } catch {
         Write-Error -ErrorRecord $_
     }

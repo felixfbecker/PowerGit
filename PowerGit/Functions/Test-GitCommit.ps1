@@ -33,7 +33,7 @@ function Test-GitCommit {
     [CmdletBinding()]
     [OutputType([bool])]
     param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]
         # A revision to test, e.g. a branch name, partial commit SHA hash, full commit SHA hash, tag name, etc.
         #
@@ -48,7 +48,7 @@ function Test-GitCommit {
     Set-StrictMode -Version 'Latest'
     Use-CallerPreference -Cmdlet $PSCmdlet -Session $ExecutionContext.SessionState
 
-    if ( (Get-GitCommit -Revision $Revision -RepoRoot $RepoRoot -ErrorAction Ignore) ) {
+    if ((Get-GitCommit -Revision $Revision -RepoRoot $RepoRoot -ErrorAction Ignore)) {
         return $true
     }
 
