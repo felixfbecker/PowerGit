@@ -56,7 +56,9 @@ function Get-GitRepository {
 
     # Return repo from cache if possible
     if ($script:repos.ContainsKey($RepoRoot)) {
-        return $script:repos[$RepoRoot]
+        $repo = $script:repos[$RepoRoot]
+        $repo.RetrieveStatus()
+        return $repo
     }
 
     try {
