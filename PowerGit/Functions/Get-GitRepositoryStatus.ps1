@@ -22,27 +22,13 @@ function Get-GitRepositoryStatus {
 
     You can get status for specific files and directories with the Path parameter. If you provide a `RepoRoot` parameter to work with a specific repository, the values of the `Path` parameter should be relative to the root of that repository. With no `RepoRoot` parameter, the paths in the `Path` parameter are treated as relative to the current directory. Wildcards are supported and are passed directly to Git to evaluate (i.e. use Git wildcard syntax not PowerShell's).
 
-    The `LibGit2Sharp.StatusEntry` objects returned have several extended type data members added. You should use these members instead of using the object's `State` property.
+    In the default output, the first column will show characters that indicate the state of each item, e.g.
 
-     * `IsStaged`: `$true` if the item has been staged for the next commit; `$false` otherwise.
-     * `IsAdded`: returns `$true` if the item is new in the working directory or has been staged for the next commit; `$false` otherwise.
-     * `IsConflicted`: returns `$true` if the item was merged and currently has conflicts; `$false` otherwise.
-     * `IsDeleted`: returns `$true` if the item was deleted from the working directory or has been staged for removal in the next commit; `$false` otherwise.
-     * `IsIgnored`: returns `$true` if the item is ignored; `$false` otherwise. You'll only see ignored items if you use the `IncludeIgnored` switch.
-     * `IsModified`: returns `$true` if the item is modified; `$false` otherwise.
-     * `IsRenamed`: returns `$true` if the item was renamed; `$false` otherwise.
-     * `IsTypeChanged`: returns `$true` if the item's type was changed; `$false` otherwise.
-     * `IsUnchanged`: returns `$true` if the item is unchanged; `$false` otherwise.
-     * `IsUnreadable`: returns `$true` if the item is unreadable; `$false` otherwise.
-     * `IsUntracked`: returns `$true` if the item is untracked (i.e. hasn't been staged or added to the repository); `$false` otherwise.
-
-    When displayed in a table (the default), the first column will show characters that indicate the state of each item, e.g.
-
-         A  PowerGit\Formats\LibGit2Sharp.StatusEntry.ps1xml
-         A  PowerGit\Functions\Get-GitRepositoryStatus.ps1
-         M  PowerGit\PowerGit.psd1
-         D  PowerGit\Types\LibGit2Sharp.StatusEntry.types.ps1xml
-         A  Tests\Get-GitRepositoryStatus.Tests.ps1
+        A  PowerGit\Formats\LibGit2Sharp.StatusEntry.ps1xml
+        A  PowerGit\Functions\Get-GitRepositoryStatus.ps1
+        M  PowerGit\PowerGit.psd1
+        D  PowerGit\Types\LibGit2Sharp.StatusEntry.types.ps1xml
+        A  Tests\Get-GitRepositoryStatus.Tests.ps1
 
     The state will display:
 
@@ -54,8 +40,6 @@ function Get-GitRepositoryStatus {
      * `T` on dark-yellow background if the item's type was changed (i.e. `IsTypeChanged` returns `$true`)
      * `U` on brown background if the item can't be read (i.e. `IsUnreadable` returns `$true`)
      * `C` on dark-red background if the item was merged with conflicts (i.e. `IsConflicted` return `$true`)
-
-    If no state characters are shown, the file is unchanged (i.e. `IsUnchanged` return `$true`).
 
     This function implements the `git status` command.
 
@@ -81,7 +65,7 @@ function Get-GitRepositoryStatus {
     Demonstrates how to get the status for specific files under the root of a specific repository. In this case, only modified files named `build.ps1` or that match the wildcard `*.cs` under `C:\Projects\PowerGit` will be returned.
     #>
     [CmdletBinding()]
-    [OutputType([LibGit2Sharp.StatusEntry])]
+    [OutputType([LibGit2Sharp.RepositoryStatus])]
     param(
         [Parameter(Position = 0)]
         # The path to specific files and/or directories whose status to get. Git-style wildcards are supported.
@@ -106,6 +90,9 @@ function Get-GitRepositoryStatus {
     try {
         $statusOptions = [LibGit2Sharp.StatusOptions]::new()
 
+        $statusOptions.DetectRenamesInWorkDir = $true
+        $statusOptions.DetectRenamesInIndex = $true
+        $statusOptions.IncludeIgnored = $IncludeIgnored
         if ($IncludeIgnored) {
             $statusOptions.RecurseIgnoredDirs = $true
         }
@@ -146,13 +133,8 @@ function Get-GitRepositoryStatus {
             }
 
             $status = $repo.RetrieveStatus($statusOptions)
-            if (-not $status.IsDirty) {
-                Write-Information "Nothing to commit, working tree clean"
-                return
-            }
-            $status |
-                Where-Object { $IncludeIgnored -or -not $_.IsIgnored } |
-                Sort-Object -Property @{ Expression = 'IsStaged'; Descending = $true }, 'FilePath'
+
+            Write-Output -InputObject $status -NoEnumerate
         } finally {
             Pop-Location -StackName 'Get-GitRepositoryStatus' -ErrorAction Ignore
         }

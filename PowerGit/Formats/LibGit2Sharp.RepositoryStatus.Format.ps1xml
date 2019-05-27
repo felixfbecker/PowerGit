@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<Configuration>
+    <DefaultSettings>
+        <EnumerableExpansions>
+            <!--
+                Make sure the RepositoryStatus object is formatted with below CustomControl,
+                not expanded to each FileStatus object
+            -->
+            <EnumerableExpansion>
+                <EntrySelectedBy>
+                    <TypeName>LibGit2Sharp.RepositoryStatus</TypeName>
+                </EntrySelectedBy>
+                <Expand>CoreOnly</Expand>
+            </EnumerableExpansion>
+        </EnumerableExpansions>
+    </DefaultSettings>
+    <Controls>
+        <Control>
+            <Name>Clean</Name>
+            <CustomControl>
+                <CustomEntries>
+                    <CustomEntry>
+                        <CustomItem>
+                            <Text>Nothing to commit, working tree clean</Text>
+                        </CustomItem>
+                    </CustomEntry>
+                </CustomEntries>
+            </CustomControl>
+        </Control>
+        <Control>
+            <!-- Input: LibGit2Sharp.FileStatus[] -->
+            <Name>IndexStatus</Name>
+            <CustomControl>
+                <CustomEntries>
+                    <CustomEntry>
+                        <CustomItem>
+                            <Text>&#27;[4;1mChanges to be committed:&#27;[0m</Text>
+                            <NewLine />
+                            <NewLine />
+                            <ExpressionBinding>
+                                <ScriptBlock>$_</ScriptBlock>
+                                <EnumerateCollection>true</EnumerateCollection>
+                                <CustomControlName>IndexStatusEntry</CustomControlName>
+                            </ExpressionBinding>
+                            <NewLine />
+                        </CustomItem>
+                    </CustomEntry>
+                </CustomEntries>
+            </CustomControl>
+        </Control>
+        <Control>
+            <!-- Input: LibGit2Sharp.FileStatus[] -->
+            <Name>WorkDirStatus</Name>
+            <CustomControl>
+                <CustomEntries>
+                    <CustomEntry>
+                        <CustomItem>
+                            <Text>&#27;[4;1mChanges not staged for commit:&#27;[0m</Text>
+                            <NewLine />
+                            <NewLine />
+                            <ExpressionBinding>
+                                <ScriptBlock>$_</ScriptBlock>
+                                <EnumerateCollection>false</EnumerateCollection>
+                                <CustomControlName>WorkDirStatusEntry</CustomControlName>
+                            </ExpressionBinding>
+                        </CustomItem>
+                    </CustomEntry>
+                </CustomEntries>
+            </CustomControl>
+        </Control>
+        <Control>
+            <!-- Input: LibGit2Sharp.FileStatus with IndexChange -->
+            <Name>IndexStatusEntry</Name>
+            <CustomControl>
+                <CustomEntries>
+                    <CustomEntry>
+                        <CustomItem>
+                            <Frame>
+                                <LeftIndent>2</LeftIndent>
+                                <CustomItem>
+                                    <ExpressionBinding>
+                                        <ScriptBlock>$_.IndexChange.ToColoredString()</ScriptBlock>
+                                    </ExpressionBinding>
+                                    <Text> </Text>
+                                    <ExpressionBinding>
+                                        <PropertyName>FilePath</PropertyName>
+                                    </ExpressionBinding>
+                                    <NewLine />
+                                </CustomItem>
+                            </Frame>
+                        </CustomItem>
+                    </CustomEntry>
+                </CustomEntries>
+            </CustomControl>
+        </Control>
+        <Control>
+            <!-- Input: LibGit2Sharp.FileStatus with WorkDirChange -->
+            <Name>WorkDirStatusEntry</Name>
+            <CustomControl>
+                <CustomEntries>
+                    <CustomEntry>
+                        <CustomItem>
+                            <Frame>
+                                <LeftIndent>2</LeftIndent>
+                                <CustomItem>
+                                    <ExpressionBinding>
+                                        <ScriptBlock>$_.WorkDirChange.ToColoredString()</ScriptBlock>
+                                    </ExpressionBinding>
+                                    <Text> </Text>
+                                    <ExpressionBinding>
+                                        <PropertyName>FilePath</PropertyName>
+                                    </ExpressionBinding>
+                                    <NewLine />
+                                </CustomItem>
+                            </Frame>
+                        </CustomItem>
+                    </CustomEntry>
+                </CustomEntries>
+            </CustomControl>
+        </Control>
+    </Controls>
+    <ViewDefinitions>
+        <View>
+            <!-- Mirrors the git status output -->
+            <Name>Status</Name>
+            <ViewSelectedBy>
+                <TypeName>LibGit2Sharp.RepositoryStatus</TypeName>
+            </ViewSelectedBy>
+            <CustomControl>
+                <CustomEntries>
+                    <CustomEntry>
+                        <CustomItem>
+                            <!-- Clean -->
+                            <ExpressionBinding>
+                                <CustomControlName>Clean</CustomControlName>
+                                <ScriptBlock>$true</ScriptBlock>
+                                <ItemSelectionCondition>
+                                    <ScriptBlock>-not ($_ | ForEach-Object { $_ })</ScriptBlock>
+                                </ItemSelectionCondition>
+                            </ExpressionBinding>
+                            <!-- Dirty, staged changes -->
+                            <ExpressionBinding>
+                                <PropertyName>ChangedInIndex</PropertyName>
+                                <CustomControlName>IndexStatus</CustomControlName>
+                                <ItemSelectionCondition>
+                                    <PropertyName>ChangedInIndex</PropertyName>
+                                </ItemSelectionCondition>
+                            </ExpressionBinding>
+                            <!-- Dirty, unstaged changes -->
+                            <ExpressionBinding>
+                                <PropertyName>ChangedInWorkDir</PropertyName>
+                                <CustomControlName>WorkDirStatus</CustomControlName>
+                                <ItemSelectionCondition>
+                                    <PropertyName>ChangedInWorkDir</PropertyName>
+                                </ItemSelectionCondition>
+                            </ExpressionBinding>
+                        </CustomItem>
+                    </CustomEntry>
+                </CustomEntries>
+            </CustomControl>
+        </View>
+    </ViewDefinitions>
+</Configuration>

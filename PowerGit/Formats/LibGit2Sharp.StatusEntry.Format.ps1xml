@@ -13,68 +13,165 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <Configuration>
-    <Controls>
-        <Control>
-            <Name>LibGit2SharpStatusEntry-GroupingFormat</Name>
-            <CustomControl>
-                <CustomEntries>
-                    <CustomEntry>
-                        <CustomItem>
-                            <Frame>
-                                <CustomItem>
-                                    <ExpressionBinding>
-                                        <ScriptBlock>
-                                            $label = if ($_.IsStaged) {
-                                                "Changes to be committed:"
-                                            } else {
-                                                "Changes not staged for commit:"
-                                            }
-                                            "`e[1m`e[4m$label`e[0m"
-                                        </ScriptBlock>
-                                    </ExpressionBinding>
-                                    <NewLine />
-                                </CustomItem>
-                            </Frame>
-                        </CustomItem>
-                    </CustomEntry>
-                </CustomEntries>
-            </CustomControl>
-        </Control>
-    </Controls>
     <ViewDefinitions>
         <View>
-            <Name>LibGit2Sharp.StatusEntry</Name>
+            <Name>Table</Name>
             <ViewSelectedBy>
                 <TypeName>LibGit2Sharp.StatusEntry</TypeName>
             </ViewSelectedBy>
-            <GroupBy>
-                <PropertyName>IsStaged</PropertyName>
-                <CustomControlName>LibGit2SharpStatusEntry-GroupingFormat</CustomControlName>
-            </GroupBy>
             <TableControl>
-                <HideTableHeaders></HideTableHeaders>
                 <TableHeaders>
+                    <!--
+                        Important: each StatusEntry contains the status for one file in both the index and the workdir.
+                        A file may have changes in both, so we must display both (and cannot group by staged/not staged).
+                    -->
                     <TableColumnHeader>
-                        <Label>Change</Label>
-                        <Width>3</Width>
+                        <Label>State</Label>
+                        <Alignment>Left</Alignment>
                     </TableColumnHeader>
                     <TableColumnHeader>
                         <Label>FilePath</Label>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>HeadToIndexRenameDetails</Label>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>IndexToWorkDirRenameDetails</Label>
                     </TableColumnHeader>
                 </TableHeaders>
                 <TableRowEntries>
                     <TableRowEntry>
                         <TableColumnItems>
                             <TableColumnItem>
-                                <ScriptBlock>$_.Change.ToColoredString()</ScriptBlock>
+                                <PropertyName>State</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>FilePath</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    if ($null -ne $_.HeadToIndexRenameDetails) {
+                                        $_.HeadToIndexRenameDetails.OldFilePath + " -> " + $_.HeadToIndexRenameDetails.NewFilePath
+                                    }
+                                </ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    if ($null -ne $_.IndexToWorkDirRenameDetails) {
+                                        $_.IndexToWorkDirRenameDetails.OldFilePath + " -> " + $_.IndexToWorkDirRenameDetails.NewFilePath
+                                    }
+                                </ScriptBlock>
                             </TableColumnItem>
                         </TableColumnItems>
                     </TableRowEntry>
                 </TableRowEntries>
             </TableControl>
+        </View>
+        <View>
+            <Name>BadgesTable</Name>
+            <ViewSelectedBy>
+                <TypeName>LibGit2Sharp.StatusEntry</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+                <TableHeaders>
+                    <!--
+                        Important: each StatusEntry contains the status for one file in both the index and the workdir.
+                        A file may have changes in both, so we must display both (and cannot group by staged/not staged).
+                    -->
+                    <TableColumnHeader>
+                        <Label>WorkDirChange</Label>
+                        <Alignment>Center</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>IndexChange</Label>
+                        <Alignment>Center</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>FilePath</Label>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>HeadToIndexRenameDetails</Label>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>IndexToWorkDirRenameDetails</Label>
+                    </TableColumnHeader>
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    if ($null -ne $_.WorkDirChange) {
+                                        $_.WorkDirChange.ToColoredString()
+                                    }
+                                </ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    if ($null -ne $_.IndexChange) {
+                                        $_.IndexChange.ToColoredString()
+                                    }
+                                </ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>FilePath</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    if ($null -ne $_.HeadToIndexRenameDetails) {
+                                        $_.HeadToIndexRenameDetails.OldFilePath + " -> " + $_.HeadToIndexRenameDetails.NewFilePath
+                                    }
+                                </ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    if ($null -ne $_.IndexToWorkDirRenameDetails) {
+                                        $_.IndexToWorkDirRenameDetails.OldFilePath + " -> " + $_.IndexToWorkDirRenameDetails.NewFilePath
+                                    }
+                                </ScriptBlock>
+                            </TableColumnItem>
+                        </TableColumnItems>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+        <View>
+            <Name>List</Name>
+            <ViewSelectedBy>
+                <TypeName>LibGit2Sharp.StatusEntry</TypeName>
+            </ViewSelectedBy>
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <PropertyName>FilePath</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>State</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>IndexToWorkDirRenameDetails</Label>
+                                <ItemSelectionCondition>
+                                    <PropertyName>IndexToWorkDirRenameDetails</PropertyName>
+                                </ItemSelectionCondition>
+                                <ScriptBlock>
+                                    $_.IndexToWorkDirRenameDetails.OldFilePath + " -> " + $_.IndexToWorkDirRenameDetails.NewFilePath
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>HeadToIndexRenameDetails</Label>
+                                <ItemSelectionCondition>
+                                    <PropertyName>HeadToIndexRenameDetails</PropertyName>
+                                </ItemSelectionCondition>
+                                <ScriptBlock>
+                                    $_.HeadToIndexRenameDetails.OldFilePath + " -> " + $_.HeadToIndexRenameDetails.NewFilePath
+                                </ScriptBlock>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
         </View>
     </ViewDefinitions>
 </Configuration>

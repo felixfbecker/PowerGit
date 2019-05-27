@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,104 +21,43 @@ limitations under the License.
                 <ReferencedMemberName>FilePath</ReferencedMemberName>
             </AliasProperty>
             <ScriptProperty>
-                <Name>Change</Name>
+                <Name>IndexChange</Name>
                 <GetScriptBlock>
-                    if ($this.IsUntracked) {
-                        [LibGit2Sharp.ChangeKind]::Untracked
-                    } elseif ($this.IsConflicted) {
-                        [LibGit2Sharp.ChangeKind]::Conflicted
-                    } elseif ($this.IsIgnored) {
-                        [LibGit2Sharp.ChangeKind]::Ignored
-                    } elseif ($this.IsUnreadable) {
-                        [LibGit2Sharp.ChangeKind]::Unreadable
-                    } elseif ($this.IsModified) {
-                        [LibGit2Sharp.ChangeKind]::Modified
-                    } elseif ($this.IsAdded) {
-                        [LibGit2Sharp.ChangeKind]::Added
-                    } elseif ($this.IsDeleted) {
-                        [LibGit2Sharp.ChangeKind]::Deleted
-                    } elseif ($this.IsRenamed) {
+                    if ($this.State.HasFlag([LibGit2Sharp.FileStatus]::RenamedInIndex)) {
                         [LibGit2Sharp.ChangeKind]::Renamed
-                    } elseif ($this.IsTypeChanged) {
+                    } elseif ($this.State.HasFlag([LibGit2Sharp.FileStatus]::NewInIndex)) {
+                        [LibGit2Sharp.ChangeKind]::Added
+                    } elseif ($this.State.HasFlag([LibGit2Sharp.FileStatus]::TypeChangeInIndex)) {
                         [LibGit2Sharp.ChangeKind]::TypeChanged
-                    } elseif ($this.IsUnchanged) {
-                        [LibGit2Sharp.ChangeKind]::Unchanged
+                    } elseif ($this.State.HasFlag([LibGit2Sharp.FileStatus]::DeletedFromIndex)) {
+                        [LibGit2Sharp.ChangeKind]::Deleted
+                    } elseif ($this.State.HasFlag([LibGit2Sharp.FileStatus]::ModifiedInIndex)) {
+                        [LibGit2Sharp.ChangeKind]::Modified
                     }
                 </GetScriptBlock>
             </ScriptProperty>
             <ScriptProperty>
-                <Name>IsStaged</Name>
+                <Name>WorkDirChange</Name>
                 <GetScriptBlock>
-                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::NewInIndex) -or `
-                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::ModifiedInIndex) -or `
-                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::DeletedFromIndex) -or `
-                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::RenamedInIndex) -or `
-                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::TypeChangeInIndex)
-                </GetScriptBlock>
-            </ScriptProperty>
-            <ScriptProperty>
-                <Name>IsUnchanged</Name>
-                <GetScriptBlock>
-                    return $this.State -eq [LibGit2Sharp.FileStatus]::Unaltered
-                </GetScriptBlock>
-            </ScriptProperty>
-            <ScriptProperty>
-                <Name>IsIgnored</Name>
-                <GetScriptBlock>
-                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::Ignored)
-                </GetScriptBlock>
-            </ScriptProperty>
-            <ScriptProperty>
-                <Name>IsUntracked</Name>
-                <GetScriptBlock>
-                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::NewInWorkdir)
-                </GetScriptBlock>
-            </ScriptProperty>
-            <ScriptProperty>
-                <Name>IsAdded</Name>
-                <GetScriptBlock>
-                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::NewInIndex) -or `
-                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::NewInWorkdir)
-                </GetScriptBlock>
-            </ScriptProperty>
-            <ScriptProperty>
-                <Name>IsModified</Name>
-                <GetScriptBlock>
-                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::ModifiedInIndex) -or `
-                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::ModifiedInWorkdir)
-                </GetScriptBlock>
-            </ScriptProperty>
-            <ScriptProperty>
-                <Name>IsDeleted</Name>
-                <GetScriptBlock>
-                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::DeletedFromIndex) -or `
-                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::DeletedFromWorkdir)
-                </GetScriptBlock>
-            </ScriptProperty>
-            <ScriptProperty>
-                <Name>IsRenamed</Name>
-                <GetScriptBlock>
-                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::RenamedInIndex) -or `
-                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::RenamedInWorkdir)
-                </GetScriptBlock>
-            </ScriptProperty>
-            <ScriptProperty>
-                <Name>IsTypeChanged</Name>
-                <GetScriptBlock>
-                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::TypeChangedInIndex) -or `
-                        $this.State.HasFlag([LibGit2Sharp.FileStatus]::TypeChangedInWorkdir)
-                </GetScriptBlock>
-            </ScriptProperty>
-            <ScriptProperty>
-                <Name>IsUnreadable</Name>
-                <GetScriptBlock>
-                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::Unreadable)
-                </GetScriptBlock>
-            </ScriptProperty>
-            <ScriptProperty>
-                <Name>IsConflicted</Name>
-                <GetScriptBlock>
-                    return $this.State.HasFlag([LibGit2Sharp.FileStatus]::Conflicted)
+                    if ($this.State.HasFlag([LibGit2Sharp.FileStatus]::NewInWorkdir)) {
+                        [LibGit2Sharp.ChangeKind]::Untracked
+                    } elseif ($this.State.HasFlag([LibGit2Sharp.FileStatus]::Conflicted)) {
+                        [LibGit2Sharp.ChangeKind]::Conflicted
+                    } elseif ($this.State.HasFlag([LibGit2Sharp.FileStatus]::Ignored)) {
+                        [LibGit2Sharp.ChangeKind]::Ignored
+                    } elseif ($this.State.HasFlag([LibGit2Sharp.FileStatus]::Unreadable)) {
+                        [LibGit2Sharp.ChangeKind]::Unreadable
+                    } elseif ($this.State.HasFlag([LibGit2Sharp.FileStatus]::ModifiedInWorkdir)) {
+                        [LibGit2Sharp.ChangeKind]::Modified
+                    } elseif ($this.State.HasFlag([LibGit2Sharp.FileStatus]::RenamedInWorkdir)) {
+                        [LibGit2Sharp.ChangeKind]::Added
+                    } elseif ($this.State.HasFlag([LibGit2Sharp.FileStatus]::DeletedFromWorkdir)) {
+                        [LibGit2Sharp.ChangeKind]::Deleted
+                    } elseif ($this.State.HasFlag([LibGit2Sharp.FileStatus]::TypeChangeInWorkdir)) {
+                        [LibGit2Sharp.ChangeKind]::TypeChanged
+                    } elseif ($this.State.HasFlag([LibGit2Sharp.FileStatus]::Unaltered)) {
+                        [LibGit2Sharp.ChangeKind]::Unaltered
+                    }
                 </GetScriptBlock>
             </ScriptProperty>
         </Members>

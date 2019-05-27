@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ limitations under the License.
                         ([LibGit2Sharp.ChangeKind]::Added)       { "`e[42m`e[30m A `e[0m" }
                         ([LibGit2Sharp.ChangeKind]::Modified)    { "`e[43m`e[30m M `e[0m" }
                         ([LibGit2Sharp.ChangeKind]::Deleted)     { "`e[41m`e[30m D `e[0m" }
-                        ([LibGit2Sharp.ChangeKind]::Renamed)     { "`e[48;5;208m`e[30m M `e[0m" }
+                        ([LibGit2Sharp.ChangeKind]::Renamed)     { "`e[48;5;208m`e[30m R `e[0m" }
                         ([LibGit2Sharp.ChangeKind]::Copied)      { "`e[46m`e[30m C `e[0m" }
                         ([LibGit2Sharp.ChangeKind]::Ignored)     { "`e[48;5;247m`e[30m I `e[0m" }
                         ([LibGit2Sharp.ChangeKind]::Conflicted)  { "`e[48;5;124m`e[30m C `e[0m" }

@@ -60,9 +60,9 @@
                         $counts[$flag]++
                     }
                 }
-                if ($file.IsStaged) {
+                if ($null -ne $file.IndexChange) {
                     $indexIsDirty = $true
-                } else {
+                } elseif ($null -ne $file.WorkDirChange) {
                     $workDirIsDirty = $true
                 }
             }
