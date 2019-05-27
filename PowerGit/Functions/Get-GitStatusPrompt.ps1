@@ -1,4 +1,6 @@
-﻿function Get-GitStatusPrompt {
+﻿using namespace LibGit2Sharp;
+
+function Get-GitStatusPrompt {
     <#
     .SYNOPSIS
     Returns a git prompt.

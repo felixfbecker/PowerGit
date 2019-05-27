@@ -53,23 +53,23 @@ function Find-GitRepository {
     }
 
     $Path = Resolve-Path -Path $Path -ErrorAction Ignore | Select-Object -ExpandProperty 'ProviderPath'
-if (-not $Path) {
-    Write-Error -Message ('Can''t find a repository in ''{0}'' because it does not exist.' -f $PSBoundParameters['Path'])
-    return
-}
-
-$startedAt = $Path
-
-while ($Path -and -not [LibGit2Sharp.Repository]::IsValid($Path)) {
-    $Path = Split-Path -Parent -Path $Path
-}
-
-if (-not $Path) {
-    if ($Verify) {
-        Write-Error -Message ('Path ''{0}'' not in a Git repository.' -f $startedAt)
+    if (-not $Path) {
+        Write-Error -Message ('Can''t find a repository in ''{0}'' because it does not exist.' -f $PSBoundParameters['Path'])
+        return
     }
-    return
-}
 
-return Get-GitRepository -RepoRoot $Path
+    $startedAt = $Path
+
+    while ($Path -and -not [LibGit2Sharp.Repository]::IsValid($Path)) {
+        $Path = Split-Path -Parent -Path $Path
+    }
+
+    if (-not $Path) {
+        if ($Verify) {
+            Write-Error -Message ('Path ''{0}'' not in a Git repository.' -f $startedAt)
+        }
+        return
+    }
+
+    return Get-GitRepository -RepoRoot $Path
 }
