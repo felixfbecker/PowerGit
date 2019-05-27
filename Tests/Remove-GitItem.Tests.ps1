@@ -69,11 +69,8 @@ function ThenFileShouldBeStaged {
 
     foreach ( $pathItem in $Path ) {
         It ('should stage {0}' -f $pathItem) {
-            Get-GitRepositoryStatus -RepoRoot $repoRoot -Path $pathItem |
-                Where-Object { $_.IsStaged } |
-                Measure-Object |
-                Select-Object -ExpandProperty 'Count' |
-                Should -Be 1
+            $status = Get-GitRepositoryStatus -RepoRoot $repoRoot -Path $pathItem
+            $status.ChangedInIndex | Should -HaveCount 1
         }
     }
 }
@@ -86,11 +83,8 @@ function ThenFileShouldNotBeStaged {
 
     foreach ( $pathItem in $Path ) {
         It ('should not stage {0}' -f $pathItem) {
-            Get-GitRepositoryStatus -RepoRoot $repoRoot -Path $pathItem 6>$null |
-                Where-Object { $_.IsStaged } |
-                Measure-Object |
-                Select-Object -ExpandProperty 'Count' |
-                Should -Be 0
+            $status = Get-GitRepositoryStatus -RepoRoot $repoRoot -Path $pathItem 6>$null
+            $status.ChangedInIndex | Should -BeNullOrEmpty
         }
     }
 }

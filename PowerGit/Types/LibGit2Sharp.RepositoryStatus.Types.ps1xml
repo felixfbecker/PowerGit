@@ -1,0 +1,19 @@
+<Types>
+    <Type>
+        <Name>LibGit2Sharp.RepositoryStatus</Name>
+        <Members>
+            <ScriptProperty>
+                <Name>ChangedInIndex</Name>
+                <GetScriptBlock>
+                    $this | Where-Object { $null -ne $_.IndexChange }
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>ChangedInWorkdir</Name>
+                <GetScriptBlock>
+                    $this | Where-Object { $null -ne $_.WorkDirChange }
+                </GetScriptBlock>
+            </ScriptProperty>
+        </Members>
+    </Type>
+</Types>

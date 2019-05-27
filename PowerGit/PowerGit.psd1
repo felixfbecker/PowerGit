@@ -67,6 +67,7 @@
         'Types/LibGit2Sharp.Commit.Types.ps1xml',
         'Types/LibGit2Sharp.Remote.Types.ps1xml',
         'Types/LibGit2Sharp.Repository.Types.ps1xml',
+        'Types/LibGit2Sharp.RepositoryStatus.Types.ps1xml',
         'Types/LibGit2Sharp.StatusEntry.Types.ps1xml',
         'Types/LibGit2Sharp.Tag.Types.ps1xml'
     )
@@ -74,9 +75,10 @@
     # Format files (.ps1xml) to be loaded when importing this module
     FormatsToProcess = @(
         'Formats/LibGit2Sharp.Branch.Format.ps1xml',
-        'Formats/LibGit2Sharp.Patch.Format.ps1xml',
-        'Formats/LibGit2Sharp.MergeResult.Format.ps1xml',
         'Formats/LibGit2Sharp.Commit.Format.ps1xml',
+        'Formats/LibGit2Sharp.MergeResult.Format.ps1xml',
+        'Formats/LibGit2Sharp.Patch.Format.ps1xml',
+        'Formats/LibGit2Sharp.RepositoryStatus.Format.ps1xml',
         'Formats/LibGit2Sharp.StatusEntry.Format.ps1xml'
     )
 

@@ -38,6 +38,8 @@ function Test-GitUncommittedChange {
 
     Set-StrictMode -Version 'Latest'
 
-    $status = Get-GitRepositoryStatus -RepoRoot $RepoRoot 6>$null
-    return [bool]$status
+    [LibGit2Sharp.RepositoryStatus]$status = Get-GitRepositoryStatus -RepoRoot $RepoRoot
+    if ($null -ne $status) {
+        $status.IsDirty
+    }
 }

@@ -85,17 +85,13 @@ function Receive-GitBranch {
 
     if (-not $branch.IsTracking) {
         [LibGit2Sharp.Branch]$remoteBranch = $repo.Branches | Where-Object { $_.UpstreamBranchCanonicalName -eq $branch.CanonicalName }
-    if (-not $remoteBranch) {
-        Write-Error -Message ('Branch "{0}" in repository "{1}" isn''t tracking a remote branch and we''re unable to find a remote branch named "{0}".' -f $branch.FriendlyName, $RepoRoot)
-        return
-    }
+        if (-not $remoteBranch) {
+            Write-Error -Message ('Branch "{0}" in repository "{1}" isn''t tracking a remote branch and we''re unable to find a remote branch named "{0}".' -f $branch.FriendlyName, $RepoRoot)
+            return
+        }
 
-    [void]$repo.Branches.Update($branch, {
-            param(
-                [LibGit2Sharp.BranchUpdater]
-                $Updater
-            )
-
+        [void]$repo.Branches.Update($branch, {
+            param([LibGit2Sharp.BranchUpdater] $Updater)
             $Updater.TrackedBranch = $remoteBranch.CanonicalName
         })
     }

@@ -22,9 +22,7 @@ function Assert-FileNotStaged {
     )
 
     foreach ($pathItem in $Path) {
-        Get-GitRepositoryStatus -RepoRoot $RepoRoot -Path $pathItem 6>$null |
-            Where-Object { $_.IsStaged } |
-            Should -BeNullOrEmpty
+        (Get-GitRepositoryStatus -RepoRoot $RepoRoot -Path $pathItem).ChangedInIndex | Should -BeNullOrEmpty
     }
 }
 function Assert-FileStaged {
@@ -37,9 +35,7 @@ function Assert-FileStaged {
     )
 
     foreach ($pathItem in $Path) {
-        Get-GitRepositoryStatus -RepoRoot $RepoRoot -Path $pathItem |
-            Where-Object { $_.IsStaged } |
-            Should -Not -BeNullOrEmpty
+        (Get-GitRepositoryStatus -RepoRoot $RepoRoot -Path $pathItem).ChangedInIndex | Should -Not -BeNullOrEmpty
     }
 }
 
@@ -49,8 +45,6 @@ Describe Add-GitItem {
         $repoRoot = New-GitTestRepo
         Add-GitTestFile -RepoRoot $repoRoot -Path 'file1', 'file2', 'file3', 'file4'
         Add-GitItem -Path (Join-Path -Path $repoRoot -ChildPath 'file1'), (Join-Path -Path $repoRoot -ChildPath 'file2') -RepoRoot $repoRoot
-
-        $status = Get-GitRepositoryStatus -RepoRoot $repoRoot -Path 'file1'
 
         Assert-FileStaged -Path 'file1', 'file2' -RepoRoot $repoRoot
         Assert-FileNotStaged -Path 'file3', 'file4' -RepoRoot $repoRoot
