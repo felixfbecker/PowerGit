@@ -79,7 +79,6 @@
                 $promptText += " `e[32m+$($counts[[FileStatus]::NewInIndex]) ~$($counts[[FileStatus]::ModifiedInIndex]) -$($counts[[FileStatus]::DeletedFromIndex])`e[0m"
             }
         }
-        $repo.Dispose()
 
         $promptText += "`e[33m]`e[0m"
         $promptText

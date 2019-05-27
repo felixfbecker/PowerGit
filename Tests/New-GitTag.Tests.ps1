@@ -31,11 +31,7 @@ Describe 'New-GitTag when creating a new unique tag without passing a target' {
 
     It 'should point at the current head' {
         $r = Find-GitRepository -Path $repo
-        try {
-            (Get-GitTag -RepoRoot $repo -Name $tagName).Sha | Should -Be $r.Head.Tip.Sha
-        } finally {
-            $r.Dispose()
-        }
+        (Get-GitTag -RepoRoot $repo -Name $tagName).Sha | Should -Be $r.Head.Tip.Sha
     }
 
     Assert-ThereAreNoErrors

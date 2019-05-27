@@ -67,25 +67,21 @@ function New-GitTag {
         return
     }
 
-    try {
-        if (-not $Force -and (Test-GitTag -RepoRoot $RepoRoot -Name $Name)) {
-            Write-Error ("Tag '{0}' already exists. Please use a different tag name." -f $Name)
-            return
-        }
-
-        $validTarget = $repo.Lookup($Revision)
-        if (-not $validTarget) {
-            Write-Error ("No valid git object identified by '{0}' exists in the repository." -f $Revision)
-            return
-        }
-
-        $allowOverwrite = $false
-        if ($Force) {
-            $allowOverwrite = $true
-        }
-
-        $repo.Tags.Add($Name, $Revision, $allowOverwrite)
-    } finally {
-        $repo.Dispose()
+    if (-not $Force -and (Test-GitTag -RepoRoot $RepoRoot -Name $Name)) {
+        Write-Error ("Tag '{0}' already exists. Please use a different tag name." -f $Name)
+        return
     }
+
+    $validTarget = $repo.Lookup($Revision)
+    if (-not $validTarget) {
+        Write-Error ("No valid git object identified by '{0}' exists in the repository." -f $Revision)
+        return
+    }
+
+    $allowOverwrite = $false
+    if ($Force) {
+        $allowOverwrite = $true
+    }
+
+    $repo.Tags.Add($Name, $Revision, $allowOverwrite)
 }

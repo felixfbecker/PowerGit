@@ -55,5 +55,4 @@ function Remove-GitItem {
         }
         [LibGit2Sharp.Commands]::Remove($repo, $pathItem, $true)
     }
-    $repo.Dispose()
 }

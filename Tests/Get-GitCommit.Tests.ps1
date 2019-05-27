@@ -57,24 +57,20 @@ function GivenHeadIs {
 }
 
 function AddMerge {
-    try {
-        # Temporary until we get merge functionality in this module
-        $repo = Find-GitRepository -Path $repoRoot
+    # Temporary until we get merge functionality in this module
+    $repo = Find-GitRepository -Path $repoRoot
 
-        $testBranch = 'GitCommitTestBranch'
-        New-GitBranch -RepoRoot $repoRoot -Name $testBranch
+    $testBranch = 'GitCommitTestBranch'
+    New-GitBranch -RepoRoot $repoRoot -Name $testBranch
 
-        GivenCommit -NumberOfCommits 1
-        [LibGit2Sharp.Commands]::Checkout($repo, 'master', [LibGit2Sharp.CheckoutOptions]::new())
+    GivenCommit -NumberOfCommits 1
+    [LibGit2Sharp.Commands]::Checkout($repo, 'master', [LibGit2Sharp.CheckoutOptions]::new())
 
-        $mergeOptions = [LibGit2Sharp.MergeOptions]::new()
-        $mergeOptions.FastForwardStrategy = 'NoFastForward'
-        $mergeSignature = [LibGit2Sharp.Signature]::new('test', 'email@example.com', ([System.DateTimeOffset]::Now))
+    $mergeOptions = [LibGit2Sharp.MergeOptions]::new()
+    $mergeOptions.FastForwardStrategy = 'NoFastForward'
+    $mergeSignature = [LibGit2Sharp.Signature]::new('test', 'email@example.com', ([System.DateTimeOffset]::Now))
 
-        $repo.Merge($testBranch, $mergeSignature, $mergeOptions)
-    } finally {
-        $repo.Dispose()
-    }
+    $repo.Merge($testBranch, $mergeSignature, $mergeOptions)
 }
 
 function AddTag {

@@ -152,18 +152,18 @@ function Send-GitObject {
             $repo.Network.Push($remoteObject, $RefSpec, $pushOptions) | Out-Null
             if ($SetUpstream) {
                 # Setup tracking with the new remote branch.
-                $repo.Branches.Update($BranchObject, {
-                        param([LibGit2Sharp.BranchUpdater] $Updater)
-                        $updater.Remote = $Remote
-                        $updater.UpstreamBranch = $BranchObject.CanonicalName
-                    }) | Out-Null;
+                [void]$repo.Branches.Update($BranchObject, {
+                    param([LibGit2Sharp.BranchUpdater] $Updater)
+                    $updater.Remote = $Remote
+                    $updater.UpstreamBranch = $BranchObject.CanonicalName
+                })
+                $BranchObject = $repo.Branches[$BranchObject.CanonicalName]
             }
             return $BranchObject
         } catch {
             Write-Error -ErrorRecord $_
         } finally {
             $cancel = $true
-            $repo.Dispose()
         }
     }
 }

@@ -29,22 +29,17 @@ Describe 'Receive-GitObject' {
 
     $repo = Find-GitRepository -Path $localRepoPath
     $remote = Find-GitRepository -Path $remoteRepo
-    try {
+    $repo.Head.Tip.Sha | Should Not Be $remote.Head.Tip.Sha
+    Receive-GitObject -RepoRoot $localRepoPath
+
+    It 'should fetch commits for tracked local branches' {
+        [LibGit2Sharp.Branch]$remoteOrigin = $repo.Branches | Where-Object { $_.FriendlyName -eq 'origin/master' }
+        [LibGit2Sharp.Branch]$localOrigin = $repo.Branches | Where-Object { $_.FriendlyName -eq 'master' }
+        $remoteOrigin.Tip.Sha | Should -Not -Be $localOrigin.Tip.Sha
+    }
+
+    It 'should not merge remote changes' {
         $repo.Head.Tip.Sha | Should Not Be $remote.Head.Tip.Sha
-        Receive-GitObject -RepoRoot $localRepoPath
-
-        It 'should fetch commits for tracked local branches' {
-            [LibGit2Sharp.Branch]$remoteOrigin = $repo.Branches | Where-Object { $_.FriendlyName -eq 'origin/master' }
-            [LibGit2Sharp.Branch]$localOrigin = $repo.Branches | Where-Object { $_.FriendlyName -eq 'master' }
-            $remoteOrigin.Tip.Sha | Should -Not -Be $localOrigin.Tip.Sha
-        }
-
-        It 'should not merge remote changes' {
-            $repo.Head.Tip.Sha | Should Not Be $remote.Head.Tip.Sha
-        }
-    } finally {
-        $repo.Dispose()
-        $remote.Dispose()
     }
 
     Assert-ThereAreNoErrors

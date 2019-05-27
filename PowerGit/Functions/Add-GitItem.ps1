@@ -119,10 +119,4 @@ function Add-GitItem {
             }
         }
     }
-
-    end {
-        if (((Test-Path -Path 'variable:repo') -and $repo)) {
-            $repo.Dispose()
-        }
-    }
 }

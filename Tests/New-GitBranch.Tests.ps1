@@ -35,11 +35,7 @@ Describe New-GitBranch {
 
         It 'should be pointing at the current HEAD' {
             $r = Find-GitRepository -Path $repo
-            try {
-                (Get-GitBranch -RepoRoot $repo -Current).Name | Should -Be $r.Head.FriendlyName
-            } finally {
-                $r.Dispose()
-            }
+            (Get-GitBranch -RepoRoot $repo -Current).Name | Should -Be $r.Head.FriendlyName
         }
 
         Assert-ThereAreNoErrors

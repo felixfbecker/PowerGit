@@ -86,6 +86,5 @@ function Reset-GitHead {
         $repo.Reset($resetMode, $commit, $checkoutOptions)
     } finally {
         $cancel = $true
-        $repo.Dispose()
     }
 }

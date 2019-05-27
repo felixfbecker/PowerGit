@@ -151,6 +151,5 @@ Describe 'New-GitSignature.when configuration is missing' {
         if ($email) {
             $config.Set('user.email', $email, 'Global')
         }
-        $config.Dispose()
     }
 }

@@ -30,12 +30,8 @@ Describe Set-GitHead {
 
         It 'should create a detached head state pointing at the commit' {
             $r = Find-GitRepository -Path $repo
-            try {
-                $r.Head.Tip.Sha | Should -Be $c1.Sha
-                (Get-GitBranch -RepoRoot $repo -Current).Name | Should -Match 'no branch'
-            } finally {
-                $r.Dispose()
-            }
+            $r.Head.Tip.Sha | Should -Be $c1.Sha
+            (Get-GitBranch -RepoRoot $repo -Current).Name | Should -Match 'no branch'
         }
 
         Assert-ThereAreNoErrors
@@ -60,13 +56,9 @@ Describe Set-GitHead {
 
         It 'should create a detached head state pointing at the tag' {
             $r = Find-GitRepository -Path $repo
-            try {
-                $r.Head.Tip.Sha | Should -Be $c1.Sha
+            $r.Head.Tip.Sha | Should -Be $c1.Sha
             (Get-GitBranch -RepoRoot $repo -Current).Name | Should Match 'no branch'
-    } finally {
-        $r.Dispose()
-    }
-    }
+        }
     }
 
     Describe 'when updating to a remote reference' {
@@ -91,12 +83,8 @@ Describe Set-GitHead {
 
         It 'should create a detached head pointing at the remote' {
             $r = Find-GitRepository -Path $localRepoPath
-            try {
-                $r.Head.Tip.Sha | Should -Be $c2.Sha
-                (Get-GitBranch -RepoRoot $localRepoPath -Current).Name | Should Match 'no branch'
-            } finally {
-                $r.Dispose()
-            }
+            $r.Head.Tip.Sha | Should -Be $c2.Sha
+            (Get-GitBranch -RepoRoot $localRepoPath -Current).Name | Should Match 'no branch'
         }
 
         Assert-ThereAreNoErrors
@@ -123,15 +111,11 @@ Describe Set-GitHead {
 
         It 'should checkout that branch' {
             $r = Find-GitRepository -Path $repo
-            try {
-                $r.Head.CanonicalName | Should Match $branch1.CanonicalName
+            $r.Head.CanonicalName | Should Match $branch1.CanonicalName
             (Get-GitBranch -RepoRoot $repo -Current).Name | Should Match $branch1.Name
-    } finally {
-        $r.Dispose()
-    }
-    }
+        }
 
-    Assert-ThereAreNoErrors
+        Assert-ThereAreNoErrors
     }
 
     Describe 'when updating to a branch that only exists at the remote origin' {
@@ -152,19 +136,15 @@ Describe Set-GitHead {
 
         It 'should create a local branch to track the remote branch' {
             $r = Find-GitRepository -Path $localRepoPath
-            try {
-                $originBranch = $r.Branches | Where-Object { $_.FriendlyName -eq 'origin/develop' }
+            $originBranch = $r.Branches | Where-Object { $_.FriendlyName -eq 'origin/develop' }
             $localBranch = $r.Branches | Where-Object { $_.FriendlyName -eq 'develop' }
 
-        $originBranch.IsRemote | Should -Be $true
-    $localBranch.IsTracking | Should -Be $true
-    $originBranch.CanonicalName | Should Match $localBranch.TrackedBranch
-    } finally {
-        $r.Dispose()
-    }
-    }
+            $originBranch.IsRemote | Should -Be $true
+            $localBranch.IsTracking | Should -Be $true
+            $originBranch.CanonicalName | Should Match $localBranch.TrackedBranch
+        }
 
-    Assert-ThereAreNoErrors
+        Assert-ThereAreNoErrors
     }
 
     Describe 'when the given repo does not exist' {
@@ -197,12 +177,8 @@ Describe Set-GitHead {
             $status | Should -BeNullOrEmpty
 
             $r = Find-GitRepository -Path $repo
-            try {
-                $r.Head.Tip.Sha | Should -Be $c1.Sha
-                (Get-GitBranch -RepoRoot $repo -Current).Name | Should Match 'no branch'
-            } finally {
-                $r.Dispose()
-            }
+            $r.Head.Tip.Sha | Should -Be $c1.Sha
+            (Get-GitBranch -RepoRoot $repo -Current).Name | Should Match 'no branch'
         }
 
         Assert-ThereAreNoErrors

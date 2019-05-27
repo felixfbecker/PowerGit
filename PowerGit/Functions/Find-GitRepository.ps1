@@ -20,7 +20,8 @@ function Find-GitRepository {
 
     With no parameters, looks in the current directory and up its directory tree. If given a path with the `Path` parameter, it looks in that directory then up its directory tree.
 
-    The repository object that is returned contains resources that don't get automatically removed from memory by .NET. To avoid memory leaks, you must call its `Dispose()` method when you're done using it.
+    Do not dispose the returned repository by calling Dispose() as they are cached.
+    Use Clear-GitRepositoryCache if you want to clear and dispose the cache.
 
     .OUTPUTS
     LibGit2Sharp.Repository.

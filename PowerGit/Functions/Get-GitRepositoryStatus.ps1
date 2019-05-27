@@ -87,59 +87,55 @@ function Get-GitRepositoryStatus {
         return
     }
 
+    $statusOptions = [LibGit2Sharp.StatusOptions]::new()
+
+    $statusOptions.DetectRenamesInWorkDir = $true
+    $statusOptions.DetectRenamesInIndex = $true
+    $statusOptions.IncludeIgnored = $IncludeIgnored
+    if ($IncludeIgnored) {
+        $statusOptions.RecurseIgnoredDirs = $true
+    }
+
+    $currentLocation = (Get-Location).ProviderPath
+    if (-not $currentLocation.EndsWith([IO.Path]::DirectorySeparatorChar)) {
+        $currentLocation = '{0}{1}' -f $currentLocation, [IO.Path]::DirectorySeparatorChar
+    }
+
+    if (-not $currentLocation.StartsWith($repo.Info.WorkingDirectory)) {
+        Push-Location -Path $repo.Info.WorkingDirectory -StackName 'Get-GitRepositoryStatus'
+    }
+
+    $repoRootRegex = $repo.Info.WorkingDirectory.TrimEnd([IO.Path]::DirectorySeparatorChar)
+    $repoRootRegex = '^' + ([regex]::Escape($repoRootRegex)) + [regex]::Escape([IO.Path]::DirectorySeparatorChar) + '?'
+
     try {
-        $statusOptions = [LibGit2Sharp.StatusOptions]::new()
+        if ($Path) {
+            Write-Verbose "repoRootRegex $repoRootRegex"
+            $statusOptions.PathSpec = $Path |
+                ForEach-Object {
+                    $pathItem = $_
 
-        $statusOptions.DetectRenamesInWorkDir = $true
-        $statusOptions.DetectRenamesInIndex = $true
-        $statusOptions.IncludeIgnored = $IncludeIgnored
-        if ($IncludeIgnored) {
-            $statusOptions.RecurseIgnoredDirs = $true
+                    if ([IO.Path]::IsPathRooted($_)) {
+                        return $_
+                    }
+
+                    $fullPath = Join-Path -Path (Get-Location).ProviderPath -ChildPath $_
+                    try {
+                        return [IO.Path]::GetFullPath($fullPath)
+                    } catch {
+                        return $pathItem
+                    }
+                } |
+                ForEach-Object { $_ -replace $repoRootRegex, '' } |
+                ForEach-Object { $_ -replace ([regex]::Escape([IO.Path]::DirectorySeparatorChar)), '/' }
+            Write-Verbose "PathSpec $($statusOptions.PathSpec)"
         }
 
-        $currentLocation = (Get-Location).ProviderPath
-        if (-not $currentLocation.EndsWith([IO.Path]::DirectorySeparatorChar)) {
-            $currentLocation = '{0}{1}' -f $currentLocation, [IO.Path]::DirectorySeparatorChar
-        }
+        $status = $repo.RetrieveStatus($statusOptions)
 
-        if (-not $currentLocation.StartsWith($repo.Info.WorkingDirectory)) {
-            Push-Location -Path $repo.Info.WorkingDirectory -StackName 'Get-GitRepositoryStatus'
-        }
-
-        $repoRootRegex = $repo.Info.WorkingDirectory.TrimEnd([IO.Path]::DirectorySeparatorChar)
-        $repoRootRegex = '^' + ([regex]::Escape($repoRootRegex)) + [regex]::Escape([IO.Path]::DirectorySeparatorChar) + '?'
-
-        try {
-            if ($Path) {
-                Write-Verbose "repoRootRegex $repoRootRegex"
-                $statusOptions.PathSpec = $Path |
-                    ForEach-Object {
-                        $pathItem = $_
-
-                        if ([IO.Path]::IsPathRooted($_)) {
-                            return $_
-                        }
-
-                        $fullPath = Join-Path -Path (Get-Location).ProviderPath -ChildPath $_
-                        try {
-                            return [IO.Path]::GetFullPath($fullPath)
-                        } catch {
-                            return $pathItem
-                        }
-                    } |
-                    ForEach-Object { $_ -replace $repoRootRegex, '' } |
-                    ForEach-Object { $_ -replace ([regex]::Escape([IO.Path]::DirectorySeparatorChar)), '/' }
-                Write-Verbose "PathSpec $($statusOptions.PathSpec)"
-            }
-
-            $status = $repo.RetrieveStatus($statusOptions)
-
-            Write-Output -InputObject $status -NoEnumerate
-        } finally {
-            Pop-Location -StackName 'Get-GitRepositoryStatus' -ErrorAction Ignore
-        }
+        Write-Output -InputObject $status -NoEnumerate
     } finally {
-        $repo.Dispose()
+        Pop-Location -StackName 'Get-GitRepositoryStatus' -ErrorAction Ignore
     }
 }
 

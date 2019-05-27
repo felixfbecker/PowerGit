@@ -113,6 +113,5 @@ function Set-GitHead {
         [LibGit2Sharp.Commands]::Checkout($repo, $Revision, $checkoutOptions)
     } finally {
         $cancel = $true
-        $repo.Dispose()
     }
 }

@@ -10,11 +10,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$repos = New-Object System.Collections.Generic.List[LibGit2Sharp.Repository]
+$repos = @{ }
 
 function Clear-GitRepositoryCache {
     foreach ($repo in $repos) {
-        $repo.Dispose()
+        $repo.Value.Dispose()
     }
     $repos.Clear()
 }
@@ -54,9 +54,14 @@ function Get-GitRepository {
         return
     }
 
+    # Return repo from cache if possible
+    if ($script:repos.ContainsKey($RepoRoot)) {
+        return $script:repos[$RepoRoot]
+    }
+
     try {
         $repo = [LibGit2Sharp.Repository]::new($RepoRoot)
-        $script:repos.Add($repo)
+        $script:repos[$RepoRoot] = $repo
         $repo
     } catch {
         Write-Error -ErrorRecord $_

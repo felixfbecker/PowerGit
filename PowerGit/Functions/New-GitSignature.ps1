@@ -74,22 +74,14 @@ function New-GitSignature {
             return
         }
 
-        try {
-            return Get-Signature -Configuration $repo.Config
-        } finally {
-            $repo.Dispose()
-        }
+        return Get-Signature -Configuration $repo.Config
     }
 
     if ($PSCmdlet.ParameterSetName -eq 'FromConfiguration') {
         $blankGitConfigPath = Join-Path -Path $PSScriptRoot -ChildPath '../gitconfig' -Resolve
         [LibGit2Sharp.Configuration]$config = [LibGit2Sharp.Configuration]::BuildFrom($blankGitConfigPath)
 
-        try {
-            return Get-Signature -Configuration $config
-        } finally {
-            $config.Dispose()
-        }
+        return Get-Signature -Configuration $config
     }
 
     [LibGit2Sharp.Signature]::new($Name, $EmailAddress, ([DateTimeOffset]::Now))

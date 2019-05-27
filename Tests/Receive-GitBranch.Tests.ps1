@@ -73,21 +73,17 @@ function GivenNoUpstreamBranchFor {
     )
 
     $repo = Get-GitRepository -RepoRoot $clientDirectory
-    try {
-        $branch = $repo.Branches | Where-Object { $_.FriendlyName -eq $BranchName }
-        $repo.Branches.Update($branch, {
-                param(
-                    [LibGit2Sharp.BranchUpdater]
-                    $Updater
-                )
+    $branch = $repo.Branches | Where-Object { $_.FriendlyName -eq $BranchName }
+    $repo.Branches.Update($branch, {
+        param(
+            [LibGit2Sharp.BranchUpdater]
+            $Updater
+        )
 
-                $Updater.TrackedBranch = ''
-                $Updater.Remote = ''
-                $Updater.UpstreamBranch = ''
-            })
-    } finally {
-        $repo.Dispose()
-    }
+        $Updater.TrackedBranch = ''
+        $Updater.Remote = ''
+        $Updater.UpstreamBranch = ''
+    })
 }
 
 function Init {
@@ -138,25 +134,17 @@ function ThenHeadIsLastCommit {
     )
 
     $repo = Get-GitRepository -RepoRoot $clientDirectory
-    try {
-        It ('should not create new commit') {
-            $repo.Branches[$BranchName].Tip.Sha | Should -Be $lastCommit.Sha
-        }
-    } finally {
-        $repo.Dispose()
+    It ('should not create new commit') {
+        $repo.Branches[$BranchName].Tip.Sha | Should -Be $lastCommit.Sha
     }
 }
 
 function ThenHeadIsNewCommit {
     $repo = Get-GitRepository -RepoRoot $clientDirectory
-    try {
-        It ('should create new commit') {
-            $head = $repo.Branches['master'].Tip
-            $head.Sha | Should -Not -Be $lastCommit.Sha
-            $head.Parents | Where-Object { $_.Sha -eq $lastCommit.Sha } | Should -Not -BeNullOrEmpty
-        }
-    } finally {
-        $repo.Dispose()
+    It ('should create new commit') {
+        $head = $repo.Branches['master'].Tip
+        $head.Sha | Should -Not -Be $lastCommit.Sha
+        $head.Parents | Where-Object { $_.Sha -eq $lastCommit.Sha } | Should -Not -BeNullOrEmpty
     }
 }
 

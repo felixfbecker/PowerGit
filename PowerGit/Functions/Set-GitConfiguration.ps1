@@ -94,11 +94,7 @@ function Set-GitConfiguration {
             return
         }
 
-        try {
-            $repo.Config.Set($Name, $Value, $Scope)
-        } finally {
-            $repo.Dispose()
-        }
+        $repo.Config.Set($Name, $Value, $Scope)
     } else {
         Update-GitConfigurationSearchPath -Scope $Scope
 
