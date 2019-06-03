@@ -27,7 +27,8 @@ function Copy-GitRepository {
     #>
     param(
         # The URI or path to the source repository to clone.
-        [Parameter(Mandatory, Position = 0)]
+        [Parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName)]
+        [Alias('CloneUrl')]
         [string] $Source,
 
         # The directory where the repository should be cloned to. Must not exist or be empty.
@@ -40,117 +41,120 @@ function Copy-GitRepository {
         [Switch] $PassThru
     )
 
-    Set-StrictMode -Version 'Latest'
-    Use-CallerPreference -Cmdlet $PSCmdlet -Session $ExecutionContext.SessionState
+    process {
 
-    $Source = ConvertTo-GitFullPath -Uri $Source
-    if (-not $DestinationPath) {
-        $DestinationPath = Join-Path $PWD (Split-Path $Source -LeafBase)
-    }
-    $DestinationPath = ConvertTo-GitFullPath -Path $DestinationPath
+        Set-StrictMode -Version 'Latest'
+        Use-CallerPreference -Cmdlet $PSCmdlet -Session $ExecutionContext.SessionState
 
-    $options = [libgit2sharp.CloneOptions]::new()
-    $credentialsProviderCalled = $false
-    $options.CredentialsProvider = {
-        param([string]$Url, [string]$UsernameForUrl, [LibGit2Sharp.SupportedCredentialTypes]$Types)
-        Write-Verbose "Credentials required"
-        if ($credentialsProviderCalled) {
-            $Credential = Get-Credential -Title "Wrong credentials provided for $Url"
+        $Source = ConvertTo-GitFullPath -Uri $Source
+        if (-not $DestinationPath) {
+            $DestinationPath = Join-Path $PWD (Split-Path $Source -LeafBase)
         }
-        Set-Variable -Name credentialsProviderCalled -Value $true -Scope 1
-        if (-not $Credential) {
-            $Credential = Get-Credential -Title "Authentication required for $Url"
-        }
-        $gitCredential = [LibGit2Sharp.SecureUsernamePasswordCredentials]::new()
-        $gitCredential.Username = $Credential.UserName
-        $gitCredential.Password = $Credential.Password
-        return $gitCredential
-    }
+        $DestinationPath = ConvertTo-GitFullPath -Path $DestinationPath
 
-    $cancel = $false
-    $options.OnProgress = {
-        param([string] $serverProgressOutput)
-        try {
-            if ($ProgressPreference -ne 'SilentlyContinue') {
-                if ($serverProgressOutput -match '^(.+):\s+(\d+)% \((\d+/\d+)\)') {
-                    # Compressing objects:   0% (1/123)
-                    # Counting objects:   3% (11/550)
-                    if ($ProgressPreference -ne 'SilentlyContinue') {
-                        Write-Progress `
-                            -Activity $Matches[1] `
-                            -PercentComplete $Matches[2] `
-                            -Status $Matches[3]
+        $options = [libgit2sharp.CloneOptions]::new()
+        $credentialsProviderCalled = $false
+        $options.CredentialsProvider = {
+            param([string]$Url, [string]$UsernameForUrl, [LibGit2Sharp.SupportedCredentialTypes]$Types)
+            Write-Verbose "Credentials required"
+            if ($credentialsProviderCalled) {
+                $Credential = Get-Credential -Title "Wrong credentials provided for $Url"
+            }
+            Set-Variable -Name credentialsProviderCalled -Value $true -Scope 1
+            if (-not $Credential) {
+                $Credential = Get-Credential -Title "Authentication required for $Url"
+            }
+            $gitCredential = [LibGit2Sharp.SecureUsernamePasswordCredentials]::new()
+            $gitCredential.Username = $Credential.UserName
+            $gitCredential.Password = $Credential.Password
+            return $gitCredential
+        }
+
+        $cancel = $false
+        $options.OnProgress = {
+            param([string] $serverProgressOutput)
+            try {
+                if ($ProgressPreference -ne 'SilentlyContinue') {
+                    if ($serverProgressOutput -match '^(.+):\s+(\d+)% \((\d+/\d+)\)') {
+                        # Compressing objects:   0% (1/123)
+                        # Counting objects:   3% (11/550)
+                        if ($ProgressPreference -ne 'SilentlyContinue') {
+                            Write-Progress `
+                                -Activity $Matches[1] `
+                                -PercentComplete $Matches[2] `
+                                -Status $Matches[3]
+                        }
+                    } elseif ($serverProgressOutput -match '^(.+)(?::)?\s+(\d+)') {
+                        # Enumerating objects: 576, done.
+                        # Counting objects 4
+                        if ($ProgressPreference -ne 'SilentlyContinue') {
+                            Write-Progress `
+                                -Activity $Matches[1] `
+                                -PercentComplete -1 `
+                                -Status $Matches[2]
+                        }
+                    } elseif (-not [string]::IsNullOrWhiteSpace($serverProgressOutput)) {
+                        Write-Information $serverProgressOutput
                     }
-                } elseif ($serverProgressOutput -match '^(.+)(?::)?\s+(\d+)') {
-                    # Enumerating objects: 576, done.
-                    # Counting objects 4
-                    if ($ProgressPreference -ne 'SilentlyContinue') {
-                        Write-Progress `
-                            -Activity $Matches[1] `
-                            -PercentComplete -1 `
-                            -Status $Matches[2]
-                    }
-                } elseif (-not [string]::IsNullOrWhiteSpace($serverProgressOutput)) {
-                    Write-Information $serverProgressOutput
                 }
+                Write-Verbose "OnProgress returning $(-not $cancel -and -not $PSCmdlet.Stopping)"
+                return -not $cancel -and -not $PSCmdlet.Stopping
+            } catch [PipelineStoppedException] {
+                return $false
             }
-            Write-Verbose "OnProgress returning $(-not $cancel -and -not $PSCmdlet.Stopping)"
-            return -not $cancel -and -not $PSCmdlet.Stopping
-        } catch [PipelineStoppedException] {
-            return $false
         }
-    }
 
-    $lastUpdated = Get-Date
-    $options.OnTransferProgress = {
-        param([LibGit2Sharp.TransferProgress] $TransferProgress)
-        try {
+        $lastUpdated = Get-Date
+        $options.OnTransferProgress = {
+            param([LibGit2Sharp.TransferProgress] $TransferProgress)
+            try {
 
-            # Only update progress every 1/10th of a second, otherwise updating the progress takes longer than the clone
-            if (((Get-Date) - $lastUpdated).TotalMilliseconds -lt 100) {
-                return $true
-            }
-
-            if ($ProgressPreference -ne 'SilentlyContinue' -and $TransferProgress.TotalObjects -ne 0) {
-                $numBytes = $TransferProgress.ReceivedBytes
-                if ($numBytes -lt 1kb) {
-                    $unit = 'B'
-                } elseif ($numBytes -lt 1mb) {
-                    $unit = 'KB'
-                    $numBytes = $numBytes / 1kb
-                } elseif ($numBytes -lt 1gb) {
-                    $unit = 'MB'
-                    $numBytes = $numBytes / 1mb
-                } elseif ($numBytes -lt 1tb) {
-                    $unit = 'GB'
-                    $numBytes = $numBytes / 1gb
-                } elseif ($numBytes -lt 1pb) {
-                    $unit = 'TB'
-                    $numBytes = $numBytes / 1tb
-                } else {
-                    $unit = 'PB'
-                    $numBytes = $numBytes / 1pb
+                # Only update progress every 1/10th of a second, otherwise updating the progress takes longer than the clone
+                if (((Get-Date) - $lastUpdated).TotalMilliseconds -lt 100) {
+                    return $true
                 }
 
-                Write-Progress -Activity ('Cloning {0} -> {1}' -f $Source, $DestinationPath) `
-                    -Status ('{0}/{1} objects, {2:n0} {3}' -f $TransferProgress.ReceivedObjects, $TransferProgress.TotalObjects, $numBytes, $unit) `
-                    -PercentComplete (($TransferProgress.ReceivedObjects / $TransferProgress.TotalObjects) * 100)
-                Set-Variable -Name 'lastUpdated' -Value (Get-Date) -Scope 1
-                Write-Verbose "OnTransferProgress returning $(-not $cancel -and -not $PSCmdlet.Stopping)"
-            }
-            return -not $cancel -and -not $PSCmdlet.Stopping
-        } catch [PipelineStoppedException] {
-            return $false
-        }
-    }
+                if ($ProgressPreference -ne 'SilentlyContinue' -and $TransferProgress.TotalObjects -ne 0) {
+                    $numBytes = $TransferProgress.ReceivedBytes
+                    if ($numBytes -lt 1kb) {
+                        $unit = 'B'
+                    } elseif ($numBytes -lt 1mb) {
+                        $unit = 'KB'
+                        $numBytes = $numBytes / 1kb
+                    } elseif ($numBytes -lt 1gb) {
+                        $unit = 'MB'
+                        $numBytes = $numBytes / 1mb
+                    } elseif ($numBytes -lt 1tb) {
+                        $unit = 'GB'
+                        $numBytes = $numBytes / 1gb
+                    } elseif ($numBytes -lt 1pb) {
+                        $unit = 'TB'
+                        $numBytes = $numBytes / 1tb
+                    } else {
+                        $unit = 'PB'
+                        $numBytes = $numBytes / 1pb
+                    }
 
-    try {
-        Write-Verbose "Cloning $Source to $DestinationPath"
-        $gitPath = [LibGit2Sharp.Repository]::Clone($Source, $DestinationPath, $options)
-        if ($PassThru -and $gitPath) {
-            Get-Item -Path $gitPath -Force
+                    Write-Progress -Activity ('Cloning {0} -> {1}' -f $Source, $DestinationPath) `
+                        -Status ('{0}/{1} objects, {2:n0} {3}' -f $TransferProgress.ReceivedObjects, $TransferProgress.TotalObjects, $numBytes, $unit) `
+                        -PercentComplete (($TransferProgress.ReceivedObjects / $TransferProgress.TotalObjects) * 100)
+                    Set-Variable -Name 'lastUpdated' -Value (Get-Date) -Scope 1
+                    Write-Verbose "OnTransferProgress returning $(-not $cancel -and -not $PSCmdlet.Stopping)"
+                }
+                return -not $cancel -and -not $PSCmdlet.Stopping
+            } catch [PipelineStoppedException] {
+                return $false
+            }
         }
-    } finally {
-        $cancel = $true
+
+        try {
+            Write-Verbose "Cloning $Source to $DestinationPath"
+            $gitPath = [LibGit2Sharp.Repository]::Clone($Source, $DestinationPath, $options)
+            if ($PassThru -and $gitPath) {
+                Get-Item -Path $gitPath -Force
+            }
+        } finally {
+            $cancel = $true
+        }
     }
 }
