@@ -27,6 +27,19 @@ $revisionCompleterIncludingRemoteBranches = {
         }
 }
 Register-ArgumentCompleter -CommandName Set-GitHead -ParameterName Revision -ScriptBlock $revisionCompleterIncludingRemoteBranches
+Register-ArgumentCompleter -CommandName Reset-GitHead -ParameterName Revision -ScriptBlock $revisionCompleterIncludingRemoteBranches
+
+$branchCompleter = {
+    [CmdletBinding()]
+    param([string]$command, [string]$parameter, [string]$wordToComplete, [CommandAst]$commandAst, [Hashtable]$params)
+    Get-GitBranch -All -Name "$wordToComplete*" |
+        ForEach-Object {
+            $tooltip = "$($_.FriendlyName) → $($_.Tip.Sha.Substring(0, 7)) $($_.Tip.MessageShort.Trim())"
+            [CompletionResult]::new($_.FriendlyName, $_.FriendlyName, [CompletionResultType]::ParameterValue, $tooltip)
+        }
+}
+Register-ArgumentCompleter -CommandName Remove-GitBranch -ParameterName Name -ScriptBlock $branchCompleter
+Register-ArgumentCompleter -CommandName Get-GitBranch -ParameterName Name -ScriptBlock $branchCompleter
 
 $revisionCompleter = {
     [CmdletBinding()]
@@ -39,7 +52,6 @@ $revisionCompleter = {
             [CompletionResult]::new($_.FriendlyName, $_.FriendlyName, [CompletionResultType]::ParameterValue, $tooltip)
         }
 }
-Register-ArgumentCompleter -CommandName Get-GitBranch -ParameterName Name -ScriptBlock $revisionCompleter
 Register-ArgumentCompleter -CommandName Merge-GitCommit -ParameterName Revision -ScriptBlock $revisionCompleter
 Register-ArgumentCompleter -CommandName Get-GitCommit -ParameterName Revision -ScriptBlock $revisionCompleter
 Register-ArgumentCompleter -CommandName Start-GitRebase -ParameterName Branch -ScriptBlock $revisionCompleter
