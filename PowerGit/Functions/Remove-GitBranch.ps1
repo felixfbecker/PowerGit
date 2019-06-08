@@ -33,7 +33,7 @@ function Remove-GitBranch {
         if ($PSCmdlet.ShouldProcess($shouldProcessDescription, $shouldProcessWarning, $shouldProcessCaption)) {
             try {
                 $repo.Branches.Remove($branch)
-                Write-Information "Deleted branch '$Name'"
+                Write-Information "Deleted branch `e[1m$Name`e[0m"
             } catch {
                 Write-Error -ErrorRecord $_
             }
