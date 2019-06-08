@@ -79,7 +79,8 @@
         'Formats/LibGit2Sharp.MergeResult.Format.ps1xml',
         'Formats/LibGit2Sharp.Patch.Format.ps1xml',
         'Formats/LibGit2Sharp.RepositoryStatus.Format.ps1xml',
-        'Formats/LibGit2Sharp.StatusEntry.Format.ps1xml'
+        'Formats/LibGit2Sharp.StatusEntry.Format.ps1xml',
+        'Formats/LibGit2Sharp.TreeEntryChanges.Format.ps1xml'
     )
 
     # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess

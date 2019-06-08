@@ -4,7 +4,7 @@
         <View>
             <Name>List</Name>
             <ViewSelectedBy>
-                <TypeName>LibGit2Sharp.TreeChanges</TypeName>
+                <TypeName>LibGit2Sharp.TreeEntryChanges</TypeName>
             </ViewSelectedBy>
             <ListControl>
                 <ListEntries>
