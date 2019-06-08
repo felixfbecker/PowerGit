@@ -157,6 +157,7 @@ function Send-GitObject {
                         $updater.Remote = $Remote
                         $updater.UpstreamBranch = $BranchObject.CanonicalName
                     }) | Out-Null;
+                $BranchObject = Get-GitBranch -Name $BranchObject.CanonicalName
             }
             return $BranchObject
         } catch {
