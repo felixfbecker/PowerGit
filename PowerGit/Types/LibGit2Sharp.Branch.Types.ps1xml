@@ -31,11 +31,12 @@
             <ScriptProperty>
                 <!-- For pull request titles -->
                 <Name>Title</Name>
-                <GetScriptBlock>
-                    [System.Globalization.CultureInfo]::CurrentCulture.TextInfo.ToTitleCase(
-                        ($this.FriendlyName -replace '[-_]+', ' ')
-                    )
-                </GetScriptBlock>
+                <GetScriptBlock>$this.Tip.MessageShort</GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <!-- For pull request bodies -->
+                <Name>Body</Name>
+                <GetScriptBlock>$this.Tip.Body</GetScriptBlock>
             </ScriptProperty>
             <AliasProperty>
                 <Name>Name</Name>
