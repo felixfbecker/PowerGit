@@ -62,7 +62,7 @@ function Get-GitBranch {
         return
     }
 
-    if ($Current) {
+    if ($Current -or $Name -eq 'HEAD') {
         $repo.Head
     } elseif ($Name -and -not [WildcardPattern]::ContainsWildcardCharacters($Name)) {
         $repo.Branches[$Name]
