@@ -10,6 +10,10 @@ jobs:
     pool:
       vmImage: ubuntu-16.04
     steps:
+      - task: UseDotNet@2
+        displayName: "Install .NET Core SDK"
+        inputs:
+          useGlobalJson: true
       - powershell: ./build.ps1
         displayName: Build assemblies
       - powershell: |
