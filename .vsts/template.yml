@@ -9,6 +9,8 @@ jobs:
     steps:
       - task: UseDotNet@2
         displayName: "Install .NET Core SDK"
+        inputs:
+          useGlobalJson: true
       - powershell: |
           dotnet --info
           ./build.ps1
