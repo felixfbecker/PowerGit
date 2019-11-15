@@ -17,7 +17,7 @@ $revisionCompleterIncludingRemoteBranches = {
     ) |
         ForEach-Object { $_ } |
         ForEach-Object {
-            $suggestion = if ($_.IsRemote) {
+            $suggestion = if ($_.IsRemote -and -not ($wordToComplete -like "$($_.RemoteName)*")) {
                 ($_.FriendlyName -creplace "^$($_.RemoteName)/", "")
             } else {
                 $_.FriendlyName
