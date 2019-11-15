@@ -12,6 +12,7 @@ jobs:
           git config --global user.email "email@example.com"
         displayName: Configure git user
       - powershell: |
+          dotnet --info
           ./build.ps1
           Get-ChildItem ./PowerGit/Assemblies -Recurse
         displayName: Build assemblies
