@@ -1,6 +1,6 @@
 parameters:
-  name: ''
-  queue: ''
+  name: ""
+  queue: ""
 
 jobs:
   - job: ${{ parameters.name }}
@@ -11,7 +11,9 @@ jobs:
           git config --global user.name "GIVEN_NAME SURNAME"
           git config --global user.email "email@example.com"
         displayName: Configure git user
-      - powershell: ./build.ps1
+      - powershell: |
+          ./build.ps1
+          Get-ChildItem ./PowerGit/Assemblies -Recurse
         displayName: Build assemblies
       - powershell: |
           $ProgressPreference = "SilentlyContinue"
@@ -30,7 +32,7 @@ jobs:
       - task: PublishTestResults@2
         inputs:
           testRunner: nUnit
-          testResultsFiles: 'testresults.xml'
+          testResultsFiles: "testresults.xml"
           testRunTitle: ${{ parameters.name }}
         condition: always()
         displayName: Publish test results
