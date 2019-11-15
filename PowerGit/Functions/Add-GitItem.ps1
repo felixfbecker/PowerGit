@@ -107,7 +107,7 @@ function Add-GitItem {
             $pathItem = (Resolve-RealPath $pathItem)
 
             $strComparison = if ($PSVersionTable.PSVersion.Major -lt 6 -or $IsWindows) { [stringcomparison]::InvariantCultureIgnoreCase } else { [stringcomparison]::InvariantCulture }
-            if (-not $pathItem.StartsWith($repo.Info.WorkingDirectory, $strComparison)) {
+            if ($pathItem -ne $repo.Info.WorkingDirectory.TrimEnd('/') -and -not $pathItem.StartsWith($repo.Info.WorkingDirectory, $strComparison)) {
                 Write-Error -Message ('Item ''{0}'' can''t be added because it is not in the repository ''{1}''.' -f $pathItem, $repo.Info.WorkingDirectory)
                 continue
             }
