@@ -26,6 +26,13 @@
                     return $this.Message.Substring($index + 1).Trim()
                 </GetScriptBlock>
             </ScriptProperty>
+            <ScriptProperty>
+                <Name>Refs</Name>
+                <GetScriptBlock>
+                    $refs = $this.Repository.RefsByTarget[$this]
+                    if ($null -eq $refs) { @() } else { $refs }
+                </GetScriptBlock>
+            </ScriptProperty>
         </Members>
     </Type>
 </Types>

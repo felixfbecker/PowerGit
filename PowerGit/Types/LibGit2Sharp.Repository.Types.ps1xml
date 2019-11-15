@@ -16,6 +16,19 @@
                     $this.Head.RepositoryName
                 </GetScriptBlock>
             </ScriptProperty>
+            <ScriptProperty>
+                <Name>RefsByTarget</Name>
+                <GetScriptBlock>
+                    # Lazy-compute and cache value
+                    # This is needed for performance to show refs in Get-GitCommit output
+                    if ($null -ne $this.PSObject.Properties['_refsByTarget']) {
+                        return $this._refsByTarget
+                    }
+                    $refsByTarget = $this.Refs | Group-Object -Property Target -AsHashTable
+                    Add-Member -InputObject $this -MemberType NoteProperty -Name _refsByTarget -Value $refsByTarget -Force
+                    return $refsByTarget
+                </GetScriptBlock>
+            </ScriptProperty>
         </Members>
     </Type>
 </Types>

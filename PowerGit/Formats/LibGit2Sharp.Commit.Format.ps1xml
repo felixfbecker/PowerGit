@@ -13,6 +13,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <Configuration>
+    <DefaultSettings>
+        <DisplayError>true</DisplayError>
+        <ShowError>true</ShowError>
+    </DefaultSettings>
     <ViewDefinitions>
         <!-- Resembles the git log output with format=medium (default) -->
         <View>
@@ -28,6 +32,29 @@ limitations under the License.
                                 <!-- Yellow -->
                                 <Label>&#27;[33mSha</Label>
                                 <ScriptBlock>"$($_.Sha)`e[0m"</ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <!-- Resembles git log -decorate -->
+                                <Label>Refs</Label>
+                                <ItemSelectionCondition>
+                                    <PropertyName>Refs</PropertyName>
+                                </ItemSelectionCondition>
+                                <ScriptBlock>
+                                    $_.Refs | ForEach-Object {
+                                        $str = if ($_.IsTag) {
+                                            "`e[33;1m"
+                                        } elseif ($_.IsLocalBranch) {
+                                            "`e[32;1m"
+                                        } elseif ($_.IsRemoteTrackingBranch) {
+                                            "`e[31;1m"
+                                        } elseif ($_.CanonicalName -eq 'HEAD') {
+                                            "`e[36;1m"
+                                        }
+                                        $str += $_.CanonicalName -replace '^refs/\w+/',''
+                                        $str += "`e[0m"
+                                        $str
+                                    }
+                                </ScriptBlock>
                             </ListItem>
                             <ListItem>
                                 <Label>Author</Label>
@@ -177,13 +204,17 @@ limitations under the License.
                 <TypeName>LibGit2Sharp.Commit</TypeName>
             </ViewSelectedBy>
             <TableControl>
-                <AutoSize />
                 <TableHeaders>
                     <TableColumnHeader>
                         <Label>Sha</Label>
+                        <Width>7</Width>
                     </TableColumnHeader>
                     <TableColumnHeader>
                         <Label>Message</Label>
+                        <Width>72</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Refs</Label>
                     </TableColumnHeader>
                 </TableHeaders>
                 <TableRowEntries>
@@ -195,6 +226,25 @@ limitations under the License.
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>MessageShort</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <!-- Resembles git log -decorate -->
+                                <ScriptBlock>
+                                    $_.Refs | ForEach-Object {
+                                        $str = if ($_.IsTag) {
+                                            "`e[33;1m"
+                                        } elseif ($_.IsLocalBranch) {
+                                            "`e[32;1m"
+                                        } elseif ($_.IsRemoteTrackingBranch) {
+                                            "`e[31;1m"
+                                        } elseif ($_.CanonicalName -eq 'HEAD') {
+                                            "`e[36;1m"
+                                        }
+                                        $str += $_.CanonicalName -replace '^refs/\w+/',''
+                                        $str += "`e[0m"
+                                        $str
+                                    }
+                                </ScriptBlock>
                             </TableColumnItem>
                         </TableColumnItems>
                     </TableRowEntry>
