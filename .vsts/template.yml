@@ -7,15 +7,17 @@ jobs:
     pool:
       vmImage: ${{ parameters.vmImage }}
     steps:
-      - script: |
-          git config --global user.name "GIVEN_NAME SURNAME"
-          git config --global user.email "email@example.com"
-        displayName: Configure git user
+      - task: UseDotNet@2
+        displayName: "Install .NET Core SDK"
       - powershell: |
           dotnet --info
           ./build.ps1
           Get-ChildItem ./PowerGit/Assemblies -Recurse
         displayName: Build assemblies
+      - script: |
+          git config --global user.name "GIVEN_NAME SURNAME"
+          git config --global user.email "email@example.com"
+        displayName: Configure git user
       - powershell: |
           $ProgressPreference = "SilentlyContinue"
           $PSVersionTable
