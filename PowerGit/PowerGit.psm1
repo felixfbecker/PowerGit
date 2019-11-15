@@ -12,24 +12,6 @@
 
 using namespace System.Runtime.InteropServices
 
-$runtime = if ($IsMacOS) {
-    'osx'
-} else {
-    $os = if ($PSVersionTable.PSVersion.Major -lt 6 -or $IsWindows) {
-        'win'
-    } elseif ($IsLinux) {
-        'linux'
-        # TODO detect debian, fedora, alpine, rhel
-    }
-    $arch = [RuntimeInformation]::OSArchitecture.ToString().ToLower()
-    "$os-$arch"
-}
-
-if (-not (Test-Path "$PSScriptRoot/Assemblies/installed")) {
-    Copy-Item "$PSScriptRoot/Assemblies/runtimes/$runtime/native/*.*" "$PSScriptRoot/Assemblies/" -ErrorAction Stop
-    Out-File "$PSScriptRoot/Assemblies/installed"
-}
-
 Import-Module "$PSScriptRoot/Assemblies/LibGit2Sharp.dll"
 Import-Module "$PSScriptRoot/Assemblies/PowerGit.dll"
 
