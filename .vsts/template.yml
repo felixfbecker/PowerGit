@@ -43,7 +43,7 @@ jobs:
           codeCoverageTool: JaCoCo
           summaryFileLocation: $(System.DefaultWorkingDirectory)/coverage.xml
         displayName: Upload coverage to VSTS
-      - bash: bash <(curl -s https://codecov.io/bash) -f coverage.json -P "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
+      - bash: bash "<(curl -s https://codecov.io/bash)" -f coverage.json -P "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
         env:
           CI_BUILD_ID: $(Build.BuildNumber)-$(Agent.OS)
           CODECOV_NAME: ${{ parameters.name }}
