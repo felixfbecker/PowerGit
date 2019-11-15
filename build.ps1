@@ -1,9 +1,12 @@
 param(
     [ValidateSet('Debug', 'Release')]
-    $Configuration = 'Debug'
+    [string] $Configuration = 'Debug',
+
+    [ValidateSet('quiet', 'minimal', 'normal', 'detailed', 'diagnostic')]
+    [string] $Verbosity = 'minimal'
 )
 
-dotnet publish -o "$PSScriptRoot/PowerGit/Assemblies" -c $Configuration
+dotnet publish -o "$PSScriptRoot/PowerGit/Assemblies" -c $Configuration -v $Verbosity
 if ($LASTEXITCODE -ne 0) {
     throw 'Build failed'
 }
