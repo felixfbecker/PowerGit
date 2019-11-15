@@ -106,11 +106,11 @@ function Get-GitRepositoryStatus {
             Push-Location -Path $repo.Info.WorkingDirectory -StackName 'Get-GitRepositoryStatus'
         }
 
-        $repoRootRegex = $repo.Info.WorkingDirectory.TrimEnd([IO.Path]::DirectorySeparatorChar)
-        $repoRootRegex = '^' + ([regex]::Escape($repoRootRegex)) + [regex]::Escape([IO.Path]::DirectorySeparatorChar) + '?'
 
         try {
             if ($Path) {
+                $repoRootRegex = $repo.Info.WorkingDirectory.TrimEnd([IO.Path]::DirectorySeparatorChar)
+                $repoRootRegex = '^' + ([regex]::Escape($repoRootRegex)) + [regex]::Escape([IO.Path]::DirectorySeparatorChar) + '?'
                 Write-Verbose "repoRootRegex $repoRootRegex"
                 $statusOptions.PathSpec = $Path |
                     ForEach-Object {
