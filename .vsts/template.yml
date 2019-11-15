@@ -11,10 +11,7 @@ jobs:
         displayName: "Install .NET Core SDK"
         inputs:
           useGlobalJson: true
-      - powershell: |
-          dotnet --info
-          ./build.ps1
-          Get-ChildItem ./PowerGit/Assemblies -Recurse
+      - powershell: ./build.ps1
         displayName: Build assemblies
       - script: |
           git config --global user.name "GIVEN_NAME SURNAME"
