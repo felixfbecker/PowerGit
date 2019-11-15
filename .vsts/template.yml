@@ -7,14 +7,16 @@ jobs:
     pool:
       vmImage: ${{ parameters.vmImage }}
     steps:
+      - task: UseDotNet@2
+        displayName: "Install .NET Core SDK"
+        inputs:
+          useGlobalJson: true
+      - powershell: ./build.ps1
+        displayName: Build assemblies
       - script: |
           git config --global user.name "GIVEN_NAME SURNAME"
           git config --global user.email "email@example.com"
         displayName: Configure git user
-      - powershell: |
-          ./build.ps1
-          Get-ChildItem ./PowerGit/Assemblies -Recurse
-        displayName: Build assemblies
       - powershell: |
           $ProgressPreference = "SilentlyContinue"
           $PSVersionTable
@@ -41,7 +43,9 @@ jobs:
           codeCoverageTool: JaCoCo
           summaryFileLocation: $(System.DefaultWorkingDirectory)/coverage.xml
         displayName: Upload coverage to VSTS
-      - bash: bash <(curl -s https://codecov.io/bash) -f coverage.json -P "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
+      - bash: |
+          curl -s https://codecov.io/bash -o codecov.sh
+          bash codecov.sh -f coverage.json -P "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
         env:
           CI_BUILD_ID: $(Build.BuildNumber)-$(Agent.OS)
           CODECOV_NAME: ${{ parameters.name }}
