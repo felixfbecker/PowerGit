@@ -26,7 +26,7 @@ $runtime = if ($IsMacOS) {
 }
 
 if (-not (Test-Path "$PSScriptRoot/Assemblies/installed")) {
-    Copy-Item "$PSScriptRoot/Assemblies/runtimes/$runtime/native/*.*" "$PSScriptRoot/Assemblies/" -ErrorAction Stop
+    Copy-Item "$PSScriptRoot/Assemblies/$runtime/native/*.*" "$PSScriptRoot/Assemblies/" -ErrorAction Stop
     Out-File "$PSScriptRoot/Assemblies/installed"
 }
 
