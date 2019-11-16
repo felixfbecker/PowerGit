@@ -44,7 +44,8 @@ jobs:
           summaryFileLocation: $(System.DefaultWorkingDirectory)/coverage.xml
         displayName: Upload coverage to VSTS
       - bash: |
-          curl -s https://codecov.io/bash -o codecov.sh
+          set -x
+          curl https://codecov.io/bash -o codecov.sh
           bash codecov.sh -f coverage.json -P "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
         env:
           CI_BUILD_ID: $(Build.BuildNumber)-$(Agent.OS)
