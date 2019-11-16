@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="$(PkgLibGit2Sharp_NativeBinaries)\**\runtimes\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(PkgLibGit2Sharp_NativeBinaries)\runtimes\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
