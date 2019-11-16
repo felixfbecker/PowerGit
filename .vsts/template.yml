@@ -46,7 +46,7 @@ jobs:
       - bash: |
           set -ex
           curl --retry 5 --retry-delay 5 https://codecov.io/bash -o ./codecov.sh
-          bash codecov.sh -f coverage.json -P "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
+          bash codecov.sh -K -f coverage.json -P "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
         env:
           CI_BUILD_ID: $(Build.BuildNumber)-$(Agent.OS)
           CODECOV_NAME: ${{ parameters.name }}
