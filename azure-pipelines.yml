@@ -19,6 +19,8 @@ jobs:
       - powershell: |
           $ProgressPreference = 'SilentlyContinue'
           Install-Module -Force -Scope CurrentUser PSScriptAnalyzer
+          Import-Module PSScriptAnalyzer
+          Get-Module PSScriptAnalyzer
           Invoke-ScriptAnalyzer -Path . -Recurse -Settings ./PSScriptAnalyzerSettings.psd1 | Format-List -Property RuleName,Message,ScriptPath,Line,Column
         displayName: Run PSScriptAnalyzer
   - template: .vsts/template.yml
