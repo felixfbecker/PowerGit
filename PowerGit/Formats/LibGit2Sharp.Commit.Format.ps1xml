@@ -189,7 +189,8 @@ limitations under the License.
                                 <ScriptBlock>
                                     $parent = [System.Linq.Enumerable]::FirstOrDefault($_.Parents)
                                     $getPatch = $_.Repository.Diff.GetType().GetMethod('Compare', [Type[]]@([LibGit2Sharp.Tree], [LibGit2Sharp.Tree])).MakeGenericMethod([LibGit2Sharp.Patch])
-                                    $getPatch.Invoke($_.Repository.Diff, @($_.Tree, $parent.Tree)) | ConvertTo-ColoredPatch
+                                    $patch = $getPatch.Invoke($_.Repository.Diff, @($parent.Tree, $_.Tree))
+                                    ConvertTo-ColoredPatch -Patch $patch.Content
                                 </ScriptBlock>
                             </ListItem>
                         </ListItems>
