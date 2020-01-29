@@ -5,5 +5,11 @@
   "rangeStrategy": "replace",
   "nuget": {
     "enabled": true
-  }
+  },
+  "packageRules": [
+    {
+      "packagePatterns": ["^LibGit2Sharp"],
+      "groupName": "libgit2sharp"
+    }
+  ]
 }
