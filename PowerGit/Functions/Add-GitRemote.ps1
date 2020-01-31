@@ -20,6 +20,10 @@ function Add-GitRemote {
         if (-not $repo) {
             return
         }
-        $repo.Network.Remotes.Add($Name, $Url)
+        try {
+            $repo.Network.Remotes.Add($Name, $Url)
+        } catch {
+            Write-Error -Exception $_.Exception
+        }
     }
 }
