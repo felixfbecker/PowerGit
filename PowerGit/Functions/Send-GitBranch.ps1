@@ -86,6 +86,9 @@ function Send-GitBranch {
         if ($Credential) {
             $sendParams.Credential = $Credential
         }
+        if ($Remote) {
+            $sendParams.Remote = $Remote
+        }
         if (-not $InputObject) {
             Write-Warning "No git branch matching $Name"
             return
