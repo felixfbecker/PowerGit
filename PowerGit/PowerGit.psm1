@@ -12,20 +12,31 @@
 
 using namespace System.Runtime.InteropServices
 
-$runtime = if ($IsMacOS) {
-    'osx'
-} else {
-    $os = if ($PSVersionTable.PSVersion.Major -lt 6 -or $IsWindows) {
-        'win'
-    } elseif ($IsLinux) {
-        'linux'
-        # TODO detect debian, fedora, alpine, rhel
-    }
-    $arch = [RuntimeInformation]::OSArchitecture.ToString().ToLower()
-    "$os-$arch"
-}
-
 if (-not (Test-Path "$PSScriptRoot/Assemblies/installed")) {
+    $runtime = if ($IsMacOS) {
+        'osx'
+    } else {
+        $arch = [RuntimeInformation]::OSArchitecture.ToString().ToLower()
+        $os = if ($PSVersionTable.PSVersion.Major -lt 6 -or $IsWindows) {
+            'win'
+        } elseif ($IsLinux) {
+            $distro = (lsb_release --id --short).ToLower()
+            $version = lsb_release --release --short
+            if ($distro -eq 'debian' -and [int]$version -ge 9) {
+                "$distro.9"
+            } elseif ($distro -eq 'ubuntu' -and (($version -eq '16.04' -and $arch -eq 'arm64') -or ($version -eq '18.04' -and $arch -eq 'x64'))) {
+                "$distro.$version"
+            } elseif ($distro -eq 'alpine' -and $version -eq '3.9') {
+                "$distro.$version"
+            } elseif ($distro -in 'alpine','debian','rhel','fedora') {
+                $distro
+            } else {
+                'linux'
+            }
+        }
+        "$os-$arch"
+    }
+
     Copy-Item "$PSScriptRoot/Assemblies/$runtime/native/*.*" "$PSScriptRoot/Assemblies/" -ErrorAction Stop
     Out-File "$PSScriptRoot/Assemblies/installed"
 }

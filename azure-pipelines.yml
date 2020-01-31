@@ -25,7 +25,7 @@ jobs:
         displayName: Run PSScriptAnalyzer
   - template: .vsts/template.yml
     parameters:
-      name: test_linux
+      name: test_ubuntu_16_04
       vmImage: ubuntu-16.04
   - template: .vsts/template.yml
     parameters:
@@ -40,7 +40,7 @@ jobs:
       vmImage: ubuntu-18.04
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     dependsOn:
-      - test_linux
+      - test_ubuntu_16_04
       - test_macos
       - test_windows
     steps:
