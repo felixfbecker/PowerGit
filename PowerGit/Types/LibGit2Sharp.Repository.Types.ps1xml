@@ -6,14 +6,14 @@
                 <!-- The second-last part of the URL path -->
                 <Name>Owner</Name>
                 <GetScriptBlock>
-                    $this.Head.Owner
+                    $this.Head.Owner ?? $this.Network.Remotes['origin'].Owner
                 </GetScriptBlock>
             </ScriptProperty>
             <ScriptProperty>
                 <!-- The last path part of the URL path, without the .git extension -->
                 <Name>RepositoryName</Name>
                 <GetScriptBlock>
-                    $this.Head.RepositoryName
+                    $this.Head.RepositoryName ?? $this.Network.Remotes['origin'].RepositoryName
                 </GetScriptBlock>
             </ScriptProperty>
             <ScriptProperty>
