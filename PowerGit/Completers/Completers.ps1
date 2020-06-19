@@ -69,6 +69,7 @@ $remoteCompleter = {
         }
 }
 Register-ArgumentCompleter -CommandName Send-GitObject -ParameterName Remote -ScriptBlock $remoteCompleter
+Register-ArgumentCompleter -CommandName Send-GitBranch -ParameterName Remote -ScriptBlock $remoteCompleter
 Register-ArgumentCompleter -CommandName Receive-GitObject -ParameterName Remote -ScriptBlock $remoteCompleter
 Register-ArgumentCompleter -CommandName Get-GitRemote -ParameterName Name -ScriptBlock $remoteCompleter
 Register-ArgumentCompleter -CommandName Update-GitRemote -ParameterName Name -ScriptBlock $remoteCompleter
