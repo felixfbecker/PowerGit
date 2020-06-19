@@ -247,9 +247,9 @@ Set-GitConfiguration -Scope Global -Name 'user.name' -Value 'Felix Becker'
 
 ```powershell
 # Same repo
-New-GitBranch my-branch | Send-GitObject | New-GitHubPullRequest
+New-GitBranch my-branch | Send-GitBranch -SetUpstream | New-GitHubPullRequest
 # From fork with same name to upstream
-New-GitBranch my-branch | Send-GitObject | New-GitHubPullRequest -Owner upstream-user -ForkOwner felixfbecker
+New-GitBranch my-branch | Send-GitBranch -SetUpstream | New-GitHubPullRequest -Owner upstream-user -ForkOwner felixfbecker
 ```
 
 - `Head` is set to the branch name (`refs/heads/...`)
