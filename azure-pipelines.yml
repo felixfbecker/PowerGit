@@ -46,6 +46,10 @@ jobs:
       # - test_macos
       # - test_windows
     steps:
+      - task: UseDotNet@2
+        displayName: "Install .NET Core SDK"
+        inputs:
+          useGlobalJson: true
       - task: NodeTool@0
         inputs:
           versionSpec: ^16.0.0
