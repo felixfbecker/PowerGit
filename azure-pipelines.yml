@@ -43,8 +43,8 @@ jobs:
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     dependsOn:
       - test_ubuntu_16_04
-      - test_macos
-      - test_windows
+      # - test_macos
+      # - test_windows
     steps:
       - task: NodeTool@0
         inputs:
