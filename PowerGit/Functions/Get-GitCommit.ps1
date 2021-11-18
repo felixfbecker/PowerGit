@@ -38,9 +38,13 @@ function Get-GitCommit {
         [Parameter(ParameterSetName = 'CommitFilter')]
         [string] $Since = 'HEAD',
 
-        # The commit and its ancestors which will be` excluded from the returned commit list which starts at `Since`.
+        # The commit and its ancestors which will be excluded from the returned commit list which starts at `Since`.
         [Parameter(ParameterSetName = 'CommitFilter')]
         [string] $Until,
+
+        # Only walk the first parent of merge commits.
+        [Parameter(ParameterSetName = 'CommitFilter')]
+        [switch] $FirstParentOnly,
 
         # Do not include any merge commits in the generated commit list.
         [Parameter(ParameterSetName = 'CommitFilter')]
@@ -80,6 +84,7 @@ function Get-GitCommit {
 
         $CommitFilter = [LibGit2Sharp.CommitFilter]::new()
         $CommitFilter.IncludeReachableFrom = $IncludeFromCommit.Sha
+        $CommitFilter.FirstParentOnly = $FirstParentOnly
 
         if ($Until) {
             $ExcludeFromCommit = $repo.Lookup($Until)
@@ -98,9 +103,9 @@ function Get-GitCommit {
 
         if ($NoMerges) {
             $filteredCommits = $filteredCommits | Where-Object { $_.Parents.Count -le 1 }
-    }
+        }
 
-    $filteredCommits
-}
-$commits
+        $filteredCommits
+    }
+    $commits
 }
